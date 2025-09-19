@@ -1,9 +1,10 @@
 {
   "name": "backend",
   "version": "1.0.0",
+  "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon index.js"
   },
   "repository": {
     "type": "git",
@@ -15,5 +16,14 @@
     "url": "https://github.com/CaiHoangLongUTE/GrubGo/issues"
   },
   "homepage": "https://github.com/CaiHoangLongUTE/GrubGo#readme",
-  "description": ""
+  "description": "GrubGo - Dịch vụ đặt món ăn trực tuyến nhanh chóng và tiện lợi",
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^17.2.2",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.18.1",
+    "nodemon": "^3.1.10"
+  }
 }
