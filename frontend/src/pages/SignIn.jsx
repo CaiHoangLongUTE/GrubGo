@@ -13,17 +13,14 @@ function SignIn() {
     const bgColor = '#fff9f6';
     const borderColor = '#ddd';
     const [showPassword, setShowPassword] = useState(false);
-    const [role, setRole] = useState('user');
     const navigate = useNavigate();
-    const [fullName, setFullName] = useState('');
     const [email, setEmail] = useState('');
-    const [mobile, setMobile] = useState('');
     const [password, setPassword] = useState('');
 
-    const handleSignUp = async()=>{
+    const handleSignIn = async()=>{
         try {
-            const result = await axios.post(`${serverUrl}/api/auth/signup`,{
-                fullName, email, mobile, password, role
+            const result = await axios.post(`${serverUrl}/api/auth/signin`,{
+                email, password
             },{withCredentials:true});
             console.log(result);
         } catch (error) {
@@ -35,27 +32,13 @@ function SignIn() {
         <div className='min-h-screen flex items-center justify-center p-4' style={{ backgroundColor: bgColor }}>
             <div className='bg-white rounded-xl shadow-lg w-full max-w-md p-8 border-[1px]' style={{ border: `1px solid ${borderColor}` }}>
                 <h1 className='text-3xl font-bold mb-2 tetx-[${primaryColor}]' style={{ color: primaryColor }}>GrubGo</h1>
-                <p className='tetx-gray-600 mb-8'>Create your account to get started with dilicious food deliveries</p>
-                {/* Full name */}
-                <div className='mb-4'>
-                    <label htmlFor="fullName" className='block text-gray-700 font-medium mb-1'>Full name</label>
-                    <input type="text" className='w-full border rounded-lg px-3 py-2 focus:outline-none'
-                        placeholder='Enter your full name' style={{ border: `1px solid ${borderColor}` }} 
-                        onChange={(e)=>setFullName(e.target.value)} value={fullName}/>
-                </div>
+                <p className='tetx-gray-600 mb-8'>Sign In to your account to get started with dilicious food deliveries</p>
                 {/*  Email */}
                 <div className='mb-4'>
                     <label htmlFor="email" className='block text-gray-700 font-medium mb-1'>Email</label>
                     <input type="email" className='w-full border rounded-lg px-3 py-2 focus:outline-none'
                         placeholder='Enter your email' style={{ border: `1px solid ${borderColor}` }} 
                         onChange={(e)=>setEmail(e.target.value)} value={email}/>
-                </div>
-                {/* Mobile */}
-                <div className='mb-4'>
-                    <label htmlFor="mobile" className='block text-gray-700 font-medium mb-1'>Mobile</label>
-                    <input type="tel" className='w-full border rounded-lg px-3 py-2 focus:outline-none'
-                        placeholder='Enter your mobile' style={{ border: `1px solid ${borderColor}` }} 
-                        onChange={(e)=>setMobile(e.target.value)} value={mobile}/>
                 </div>
                 {/* Password */}
                 <div className='mb-4'>
@@ -69,27 +52,20 @@ function SignIn() {
                         </button>
                     </div>
                 </div>
-                {/* Role */}
-                <div className='mb-4'>
-                    <label htmlFor="role" className='block text-gray-700 font-medium mb-1'>Role</label>
-                    <div className='flex gap-2'>
-                        {["user", "owner", "driver"].map((r) => (
-                            <button className='flex-1 border rounded-lg px-3 py-2 text-center font-medium transition-colors' 
-                            onClick={() => setRole(r)} 
-                            style={role == r?{backgroundColor:primaryColor, color:"white"}:{border:`1px solid ${primaryColor}`, color:primaryColor}}>{r}</button>
-                        ))}
-                    </div>
+                {/* Forgot Password */}
+                <div className='text-right mb-4 text-[#ff4d2d] font-medium cursor-pointer' onClick={()=>navigate("/forgotpassword")}>
+                    Forgot Password?
                 </div>
-                {/* Sign Up */}
-                <button className='w-full font-semibold rounded-lg py-2 transition duration-200 bg-[#ff4d2d] text-white hover:bg-[#e72e00] cursor-pointer'
-                onClick={handleSignUp}>
-                    Sign Up
+                {/* Sign In */}
+                <button className='w-full font-semibold rounded-lg py-2 transition duration-200 bg-[#ff4d2d] text-white hover:bg-[#e64323] cursor-pointer'
+                onClick={handleSignIn}>
+                    Sign In
                 </button>
                 <button className='w-full mt-4 flex items-center justify-center gap-2 font-semibold rounded-lg px-4 py-2 transition cursor-pointer duration-200 border border-gray-400 hover:bg-gray-200'>
                     <FcGoogle size={20} />
-                    <span>Sign up with Google</span>
+                    <span>Sign in with Google</span>
                 </button>
-                <p className='text-center mt-6 cursor-pointer' onClick={()=>navigate("/signin")}>Already have a account ? <span className='text-[#ff4d2d]' >Sign In</span> </p>
+                <p className='text-center mt-6 cursor-pointer' onClick={()=>navigate("/signup")}>Want to new account ? <span className='text-[#ff4d2d]' >Sign Up</span> </p>
             </div>
             
         </div>  
