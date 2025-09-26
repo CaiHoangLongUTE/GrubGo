@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { FaArrowLeft } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom';
 import { serverUrl } from '../App';
+import axios from 'axios';
 
 function ForgotPassword() {
     const [step, setStep] = useState(1);
@@ -23,7 +24,7 @@ function ForgotPassword() {
 
     const handleVerifyOtp = async () => {
         try {
-            const result = await axios.post(`${serverUrl}/api/auth/verify-otp`, { email, opt }, { withCredentials: true });
+            const result = await axios.post(`${serverUrl}/api/auth/verify-otp`, { email, otp }, { withCredentials: true });
             console.log(result);
             setStep(3);
         } catch (error) {
