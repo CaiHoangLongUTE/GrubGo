@@ -57,7 +57,7 @@ function ForgotPassword() {
                     <div className='mb-5 mt-6'>
                         <label htmlFor="email" className='block text-gray-700 font-medium mb-1'>Email</label>
                         <input type="email" className='w-full border-[1px] border-gray-200 rounded-lg px-3 py-2 focus:outline-none'
-                            placeholder='Enter your email' onChange={(e) => setEmail(e.target.value)} value={email} />
+                            placeholder='Enter your email' onChange={(e) => setEmail(e.target.value)} value={email} required/>
                     </div>
                     {/* Send OTP */}
                     <button className='w-full font-semibold rounded-lg py-2 transition duration-200 bg-[#ff4d2d] text-white hover:bg-[#e72e00] cursor-pointer'
@@ -71,7 +71,7 @@ function ForgotPassword() {
                     <div className='mb-5 mt-6'>
                         <label htmlFor="otp" className='block text-gray-700 font-medium mb-1'>Enter OTP</label>
                         <input type="number" className='w-full border-[1px] border-gray-200 rounded-lg px-3 py-2 focus:outline-none'
-                            placeholder='Enter your OTP' onChange={(e) => setOtp(e.target.value)} value={otp} />
+                            placeholder='Enter your OTP' onChange={(e) => setOtp(e.target.value)} value={otp} required/>
                     </div>
                     {/* Verify OTP */}
                     <button className='w-full font-semibold rounded-lg py-2 transition duration-200 bg-[#ff4d2d] text-white hover:bg-[#e72e00] cursor-pointer'
@@ -84,13 +84,13 @@ function ForgotPassword() {
                     <div className='mb-5 mt-6'>
                         <label htmlFor="newPassword" className='block text-gray-700 font-medium mb-1'>New Password</label>
                         <input type="password" className='w-full border-[1px] border-gray-200 rounded-lg px-3 py-2 focus:outline-none'
-                            placeholder='Enter your new password' onChange={(e) => setNewPassword(e.target.value)} value={newPassword} />
+                            placeholder='Enter your new password' onChange={(e) => setNewPassword(e.target.value)} value={newPassword} required/>
                     </div>
                     {/* Confirm Password */}
                     <div className='mb-5 mt-6'>
                         <label htmlFor="confirmPassword" className='block text-gray-700 font-medium mb-1'>Confirm Password</label>
                         <input type="password" className='w-full border-[1px] border-gray-200 rounded-lg px-3 py-2 focus:outline-none'
-                            placeholder='Confirm password' onChange={(e) => setConfirmPassword(e.target.value)} value={confirmPassword} />
+                            placeholder='Confirm password' onChange={(e) => setConfirmPassword(e.target.value)} value={confirmPassword} required/>
                     </div>
                     {/* Reset Password */}
                     <button className='w-full font-semibold rounded-lg py-2 transition duration-200 bg-[#ff4d2d] text-white hover:bg-[#e72e00] cursor-pointer'

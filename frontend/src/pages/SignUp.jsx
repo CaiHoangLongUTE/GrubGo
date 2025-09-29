@@ -8,6 +8,7 @@ import axios from 'axios';
 import { serverUrl } from '../App';
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { auth } from '../../firebase';
+import toast from 'react-hot-toast';
 
 function SignUp() {
     const primaryColor = '#ff4d2d';
@@ -35,7 +36,7 @@ function SignUp() {
 
     const handleGoogleAuth = async () => {
         if (!mobile) {
-            return alert("Mobile number is not required");
+            return toast.error("Please enter mobile number before Google Sign Up", {duration:2000});
         }
         const provider = new GoogleAuthProvider();
         const result = await signInWithPopup(auth, provider);
@@ -46,6 +47,8 @@ function SignUp() {
                 mobile,
                 role
             },{withCredentials:true });
+            toast.success("Login by Google successful", {duration:2000});
+            console.log(data);
         } catch (error) {
             console.log(error);
         }
@@ -61,21 +64,21 @@ function SignUp() {
                     <label htmlFor="fullName" className='block text-gray-700 font-medium mb-1'>Full name</label>
                     <input type="text" className='w-full border rounded-lg px-3 py-2 focus:outline-none'
                         placeholder='Enter your full name' style={{ border: `1px solid ${borderColor}` }}
-                        onChange={(e) => setFullName(e.target.value)} value={fullName} />
+                        onChange={(e) => setFullName(e.target.value)} value={fullName} required/>
                 </div>
                 {/*  Email */}
                 <div className='mb-4'>
                     <label htmlFor="email" className='block text-gray-700 font-medium mb-1'>Email</label>
                     <input type="email" className='w-full border rounded-lg px-3 py-2 focus:outline-none'
                         placeholder='Enter your email' style={{ border: `1px solid ${borderColor}` }}
-                        onChange={(e) => setEmail(e.target.value)} value={email} />
+                        onChange={(e) => setEmail(e.target.value)} value={email} required/>
                 </div>
                 {/* Mobile */}
                 <div className='mb-4'>
                     <label htmlFor="mobile" className='block text-gray-700 font-medium mb-1'>Mobile</label>
                     <input type="tel" className='w-full border rounded-lg px-3 py-2 focus:outline-none'
                         placeholder='Enter your mobile' style={{ border: `1px solid ${borderColor}` }}
-                        onChange={(e) => setMobile(e.target.value)} value={mobile} />
+                        onChange={(e) => setMobile(e.target.value)} value={mobile} required/>
                 </div>
                 {/* Password */}
                 <div className='mb-4'>
@@ -83,7 +86,7 @@ function SignUp() {
                     <div className='relative'>
                         <input type={`${showPassword ? 'text' : 'password'}`} className='w-full border rounded-lg px-3 py-2 focus:outline-none'
                             placeholder='Enter your password' style={{ border: `1px solid ${borderColor}` }}
-                            onChange={(e) => setPassword(e.target.value)} value={password} />
+                            onChange={(e) => setPassword(e.target.value)} value={password} required/>
                         <button className='absolute right-3 cursor-pointer top-[14px] text-gray-500' onClick={() => setShowPassword(prev => !prev)}>
                             {!showPassword ? <FaEye /> : <FaEyeSlash />}
                         </button>
