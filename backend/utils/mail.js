@@ -15,7 +15,7 @@ const transporter = nodemailer.createTransport({
 
 export const sendOtpEmail = async ({to, otp}) => {
     await transporter.sendMail({
-        from: process.env.EMAIL,
+        from: `"GrubGo Support" <${process.env.EMAIL}>`,
         to,
         subject: "[GrubGo] Your OTP Code",
         html: `

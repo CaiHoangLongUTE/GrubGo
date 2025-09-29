@@ -47,7 +47,8 @@ function SignIn() {
                         <input type={`${showPassword ? 'text' : 'password'}`} className='w-full border rounded-lg px-3 py-2 focus:outline-none'
                             placeholder='Enter your password' style={{ border: `1px solid ${borderColor}` }}
                             onChange={(e) => setPassword(e.target.value)} value={password} />
-                        <button className='absolute right-3 cursor-pointer top-[14px] text-gray-500' onClick={() => setShowPassword(prev => !prev)}>
+                        <button className='absolute right-3 cursor-pointer top-[14px] text-gray-500' 
+                        onClick={() => setShowPassword(prev => !prev)}>
                             {!showPassword ? <FaEye /> : <FaEyeSlash />}
                         </button>
                     </div>
