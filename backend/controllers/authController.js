@@ -61,7 +61,7 @@ export const signUp = async (req, res) => {
             httpOnly: true
         });
 
-        return res.status(201).json(user);
+        return res.status(200).json(user);
     } catch (error) {
         return res.status(500).json(`Sign up failed. Error: ${error.message}`);
     }
@@ -142,7 +142,7 @@ export const googleAuth = async (req, res) => {
         const {fullName, email, mobile, role} = req.body;
         let user = await User.findOne({ email });
         if (!user) {
-            user = await User.create({fullName, email, mobile, role, password: null});
+            user = await User.create({fullName, email, mobile, role});
         }
         const token = await genToken(user._id);
         res.cookie("token", token, {

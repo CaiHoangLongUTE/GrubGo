@@ -28,8 +28,11 @@ function SignUp() {
             const result = await axios.post(`${serverUrl}/api/auth/signup`, {
                 fullName, email, mobile, password, role
             }, { withCredentials: true });
+            toast.success("Sign up successful", {duration:2000});
+            navigate('/signin');
             console.log(result);
         } catch (error) {
+            toast.error(error.response?.data?.message || "Sign up failed", { duration: 2000 });
             console.log(error);
         }
     }
@@ -47,9 +50,11 @@ function SignUp() {
                 mobile,
                 role
             },{withCredentials:true });
-            toast.success("Login by Google successful", {duration:2000});
+            toast.success("Sign up with Google successful", {duration:2000});
+            navigate('/signin');
             console.log(data);
         } catch (error) {
+            toast.error(error.response?.data?.message || "Sign up with Google failed", { duration: 2000 });
             console.log(error);
         }
     }

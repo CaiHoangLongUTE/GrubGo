@@ -8,6 +8,7 @@ import axios from 'axios';
 import { serverUrl } from '../App';
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { auth } from '../../firebase';
+import toast from 'react-hot-toast';
 
 function SignIn() {
     const primaryColor = '#ff4d2d';
@@ -24,8 +25,11 @@ function SignIn() {
             const result = await axios.post(`${serverUrl}/api/auth/signin`, {
                 email, password
             }, { withCredentials: true });
+            toast.success("Sign in successful", {duration:2000});
+            navigate('');
             console.log(result);
         } catch (error) {
+            toast.error(error.response?.data?.message || "Sign in failed", { duration: 2000 });
             console.log(error);
         }
     }
@@ -37,8 +41,11 @@ function SignIn() {
             const {data} = await axios.post(`${serverUrl}/api/auth/google-auth`,{
                 email:result.user.email,
             },{withCredentials:true });
+            toast.success("Sign in with Google successful", {duration:2000});
+            navigate('');
             console.log(data);
         } catch (error) {
+            toast.error(error.response?.data?.message || "Sign in with Google failed", { duration: 2000 });
             console.log(error);
         }
     }

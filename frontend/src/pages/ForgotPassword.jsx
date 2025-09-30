@@ -3,6 +3,7 @@ import { FaArrowLeft } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom';
 import { serverUrl } from '../App';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 
 function ForgotPassword() {
     const [step, setStep] = useState(1);
@@ -34,7 +35,7 @@ function ForgotPassword() {
 
     const handleResetPassword = async () => {
         if (newPassword !== confirmPassword) {
-            return alert("Password and confirm password do not match");
+            return toast.error("Passwords do not match", { duration: 2000 });
         }
         try {
             const result = await axios.post(`${serverUrl}/api/auth/reset-password`, { email, newPassword }, { withCredentials: true });
