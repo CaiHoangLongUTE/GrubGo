@@ -4,6 +4,7 @@ import connectDB from "./config/db.js";
 import authRouter from "./routes/authRoute.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import userRouter from "./routes/userRoute.js";
 
 dotenv.config();
 
@@ -17,6 +18,7 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 app.use("/api/auth", authRouter); 
+app.use("/api/user", userRouter); 
 
 console.log("MONGODB_URL:", process.env.MONGODB_URL);
 

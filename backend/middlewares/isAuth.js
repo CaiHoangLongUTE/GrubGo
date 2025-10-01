@@ -1,4 +1,4 @@
-import { jwt } from 'jsonwebtoken';
+import jwt from "jsonwebtoken";
 
 const isAuth = (req, res, next) => {
     try {
@@ -17,3 +17,5 @@ const isAuth = (req, res, next) => {
         return res.status(500).json({ message: "isAuth error" });    
     }
 }
+
+export default isAuth;
