@@ -1,23 +1,28 @@
 import React from 'react'
-import { Route, Routes } from 'react-router-dom'
+import { Navigate, Route, Routes } from 'react-router-dom'
 import SignIn from './pages/SignIn'
 import SignUp from './pages/SignUp'
 import ForgotPassword from './pages/ForgotPassword'
 import { Toaster } from 'react-hot-toast'
 import useGetCurrentUser from './hooks/useGetCurrentUser'
-export const serverUrl="http://localhost:8000"
+import { useSelector } from 'react-redux'
+import Home from './pages/Home'
+
+export const serverUrl = "http://localhost:8000"
 
 const App = () => {
   useGetCurrentUser();
+  const { userData } = useSelector((state) => state.user);
   return (
     <>
-      <Toaster position="top-center" /> 
+      <Toaster position="top-center" />
       <Routes>
-        <Route path="/signin" element={<SignIn />} />
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="/forgotpassword" element={<ForgotPassword />} />
+        <Route path="/signin" element={!userData ? <SignIn /> : <Navigate to="/" />} />
+        <Route path="/signup" element={!userData ? <SignUp /> : <Navigate to="/" />} />
+        <Route path="/forgotpassword" element={!userData ? <ForgotPassword /> : <Navigate to="/" />} />
+        <Route path="/" element={userData ? <Home /> : <Navigate to="/signin" />} />
       </Routes>
-    </>  
+    </>
   )
 }
 

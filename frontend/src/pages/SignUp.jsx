@@ -106,7 +106,7 @@ function SignUp() {
                 <div className='mb-4'>
                     <label htmlFor="role" className='block text-gray-700 font-medium mb-1'>Role</label>
                     <div className='flex gap-2'>
-                        {["user", "owner", "driver"].map((r) => (
+                        {["user", "owner", "delivery"].map((r) => (
                             <button className='flex-1 border rounded-lg px-3 py-2 text-center font-medium transition-colors'
                                 onClick={() => setRole(r)}
                                 style={role == r ? { backgroundColor: primaryColor, color: "white" } : { border: `1px solid ${primaryColor}`, color: primaryColor }}>{r}</button>
