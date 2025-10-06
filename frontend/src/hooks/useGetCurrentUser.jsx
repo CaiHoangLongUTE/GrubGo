@@ -15,7 +15,7 @@ function useGetCurrentUser() {
 
             } catch (error) {
                 console.log(error);
-            }
+            }   
         }
         fetchUser();
     }, [])
