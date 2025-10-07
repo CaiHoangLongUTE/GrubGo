@@ -9,7 +9,7 @@ function Home() {
     const { userData } = useSelector((state) => state.user);
     return (
         <>
-            <Nav />   {/* ✅ Chỉ hiện trong Home */}
+            <Nav />   
             <div className='w-[100vw] min-h-[100vh] pt-[100px] flex flex-col items-center bg-[#fff9f9]'>
                 {userData.role=="user" && <UserDashBoard/>}
                 {userData.role=="owner" && <OwnerDashBoard/>}
