@@ -1,9 +1,10 @@
 import React from 'react'
+import Nav from './Nav'
 
 function UserDashBoard() {
   return (
-    <div className=''>
-      
+    <div className='w-full min-h-screen bg-[#fff9f9] flex flex-col items-center'>
+      <Nav />
     </div>
   )
 }

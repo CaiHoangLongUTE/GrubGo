@@ -1,11 +1,11 @@
 import express from "express";
-import isAuth from "../middlewares/isAuth";
+import isAuth from "../middlewares/isAuth.js";
 import { addItem, editItem } from "../controllers/itemController.js";
 import { upload } from "../middlewares/multer.js";
 
-const itemRoute = express.Router();
+const itemRouter = express.Router();
 
-itemRoute.post("/add-item", isAuth, upload.single("image"), addItem);
-itemRoute.post("/edit-item/:itemId", isAuth, upload.single("image"), editItem);
+itemRouter.post("/add-item", isAuth, upload.single("image"), addItem);
+itemRouter.post("/edit-item/:itemId", isAuth, upload.single("image"), editItem);
 
-export default itemRoute;
+export default itemRouter;

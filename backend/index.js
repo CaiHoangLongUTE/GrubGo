@@ -5,6 +5,8 @@ import authRouter from "./routes/authRoute.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import userRouter from "./routes/userRoute.js";
+import shopRouter from "./routes/shopRoute.js";
+import itemRouter from './routes/itemRoute.js';
 
 dotenv.config();
 
@@ -19,6 +21,8 @@ app.use(express.json());
 app.use(cookieParser());
 app.use("/api/auth", authRouter); 
 app.use("/api/user", userRouter); 
+app.use("/api/shop", shopRouter);
+app.use("/api/item", itemRouter)
 
 console.log("MONGODB_URL:", process.env.MONGODB_URL);
 
