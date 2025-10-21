@@ -16,7 +16,7 @@ export const createEditShop = async (req, res) => {
         else {
             shop = await Shop.findByIdAndUpdate(shop._id, { name, city, state, address, image, owner: req.userId }, { new: true });
         }
-        await shop.populate("owner");
+        await shop.populate("owner items");
         return res.status(201).json(shop);
     } catch (error) {
         return res.status(500).json({ message: `Create shop failed. Error: ${error.message}` });

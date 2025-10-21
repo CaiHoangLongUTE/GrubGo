@@ -8,18 +8,23 @@ import axios from "axios";
 import { setMyShopData } from "../redux/ownerSlice";
 import toast from "react-hot-toast";
 
-function CreateEditShop() {
+function AddItem() {
     const navigate = useNavigate();
     const { myShopData } = useSelector(state => state.owner);
-    const { currentCity, currentState, currentAddress } = useSelector(state => state.user);
-    const [name, setName] = useState(myShopData?.name || "");
-    const [address, setAddress] = useState(myShopData?.address || currentAddress);
-    const [city, setCity] = useState(myShopData?.city || currentCity);
-    const [state, setState] = useState(myShopData?.state || currentState);
-    const [frontendImage, setFrontendImage] = useState(myShopData?.image || null);
+    const [name, setName] = useState("");
+    const [price, setPrice] = useState(0);
+    const [category, setCategory] = useState("");
+    const [foodType, setFoodType] = useState("veg");
+    const [frontendImage, setFrontendImage] = useState(null);
     const [backendImage, setBackendImage] = useState(null);
-    const dispatch=useDispatch();
-    
+    const categories = [
+        "Snacks",
+        "Pizza",
+        "Burgers",
+        "Sanwich"
+    ];
+    const dispatch = useDispatch();
+
     const handleImage = (e) => {
         const file = e.target.files[0];
         setBackendImage(file);
@@ -29,15 +34,15 @@ function CreateEditShop() {
         e.preventDefault();
         try {
             const formData = new FormData();
-            formData.append("name",name);
-            formData.append("address",address);
-            formData.append("city",city);
-            formData.append("state",state);
-            if(backendImage){
-                formData.append("image",backendImage);
+            formData.append("name", name);
+            formData.append("category", category);
+            formData.append("foodType", foodType);
+            formData.append("price", price);
+            if (backendImage) {
+                formData.append("image", backendImage);
             }
-            const result = await axios.post(`${serverUrl}/api/shop/create-edit`,formData,{withCredentials:true});
-            toast.success("Shop details saved successfully",{duration:2000});
+            const result = await axios.post(`${serverUrl}/api/item/add-item`, formData, { withCredentials: true });
+            toast.success("Item added successfully", { duration: 2000 });
             dispatch(setMyShopData(result.data));
             console.log(result.data);
         } catch (error) {
@@ -55,7 +60,7 @@ function CreateEditShop() {
                         <FaUtensils className="text-[#ff4d2d] w-16 h-16" />
                     </div>
                     <div className="text-3xl font-extrabold text-gray-900">
-                        {myShopData ? "Edit Shop" : "Create Shop"}
+                        Add food
                     </div>
                 </div>
 
@@ -67,7 +72,7 @@ function CreateEditShop() {
                             onChange={(e) => setName(e.target.value)} value={name} />
                     </div>
                     <div >
-                        <label className="block text-sm dont-medium text-gray-700 mb-1">Image</label>
+                        <label className="block text-sm dont-medium text-gray-700 mb-1">Food Image</label>
                         <input type="file" accept="image/*" className="w-full px-4 py-2 border rounded-lg 
                         focus:outline-none focus:ring-2 focus:ring-orange-500" onChange={handleImage} />
                         {frontendImage &&
@@ -75,26 +80,31 @@ function CreateEditShop() {
                                 <img src={frontendImage} alt="" className="w-full h-48 object-cover rounded-lg border" />
                             </div>}
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div >
-                            <label className="block text-sm dont-medium text-gray-700 mb-1">City</label>
-                            <input type="text" placeholder="Enter city" className="w-full px-4 py-2 border rounded-lg 
-                            focus:outline-none focus:ring-2 focus:ring-orange-500"
-                                onChange={(e) => setCity(e.target.value)} value={city} />
-                        </div>
-                        <div >
-                            <label className="block text-sm dont-medium text-gray-700 mb-1">State</label>
-                            <input type="text" placeholder="Enter state" className="w-full px-4 py-2 border rounded-lg 
-                            focus:outline-none focus:ring-2 focus:ring-orange-500"
-                                onChange={(e) => setState(e.target.value)} value={state} />
-                        </div>
+                    <div >
+                        <label className="block text-sm dont-medium text-gray-700 mb-1">Price</label>
+                        <input type="number" placeholder="0" className="w-full px-4 py-2 border rounded-lg 
+                        focus:outline-none focus:ring-2 focus:ring-orange-500"
+                            onChange={(e) => setPrice(e.target.value)} value={price} />
                     </div>
                     <div >
-                        <label className="block text-sm dont-medium text-gray-700 mb-1">Address</label>
-                        <input type="text" placeholder="Enter address" className="w-full px-4 py-2 border rounded-lg 
-                        focus:outline-none focus:ring-2 focus:ring-orange-500"
-                            onChange={(e) => setAddress(e.target.value)} value={address} />
+                        <label className="block text-sm dont-medium text-gray-700 mb-1">Select Category</label>
+                        <select className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                            onChange={(e) => setCategory(e.target.value)} value={category}>
+                            <option value="">All</option>
+                            {categories.map((cate,index)=>(
+                                <option key={index} value={cate}>{cate}</option>
+                            ))}
+                        </select>
                     </div>
+                    <div >
+                        <label className="block text-sm dont-medium text-gray-700 mb-1">Select FoodType</label>
+                        <select className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                            onChange={(e) => setFoodType(e.target.value)} value={foodType}>
+                            <option value="veg">Veg</option>
+                            <option value="non-veg">Non-Veg</option>
+                        </select>
+                    </div>
+
                     <button className="w-full bg-[#ff4d2d] text-white py-3 px-6 rounded-lg hover:bg-orange-600 font-semibold
                     shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer">
                         Save
@@ -105,4 +115,4 @@ function CreateEditShop() {
     )
 }
 
-export default CreateEditShop
+export default AddItem
