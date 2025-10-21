@@ -1,9 +1,11 @@
 import Nav from './Nav'
 import { useSelector } from 'react-redux';
 import { FaUtensils } from "react-icons/fa";
+import { useNavigate } from 'react-router-dom';
 
 function OwnerDashBoard() {
   const { myShopData } = useSelector(state => state.owner);
+  const navigate = useNavigate();
 
   return (
     <div className='w-full min-h-screen bg-[#fff9f9] flex flex-col items-center'>
@@ -16,11 +18,17 @@ function OwnerDashBoard() {
               <h2 className='text-xl sm:text-2xl font-bold text-gray-800 mb-2'>Add your restaurant</h2>
               <p className='text-gray-600 mb-4 text-sm sm:text-base'>Join our food delivery platform and start accepting orders for your delicious dishes.</p>
               <button className='bg-[#ff4d2d] text-white py-2 px-5 rounded-full hover:bg-orange-600 font-medium
-              transition-colors duration-200'>
+              transition-colors duration-200' onClick={() => navigate("/create-edit-shop")}>
                 Get started
               </button>
             </div>
           </div>
+        </div>
+      }
+      {myShopData &&
+        <div className='w-full flex flex-col items-center gap-6 px-4 sm:px-6'>
+          <h1 className='text-2xl sm:text-3xl text-gray-900 text-center flex items-center
+          gap-3 mt-8'><FaUtensils size={24} className='text-[#ff4d2d] w-12 h-12' />Welcome to {myShopData.name}</h1>
         </div>
       }
     </div>
