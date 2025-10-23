@@ -1,21 +1,24 @@
 import { IoArrowBack } from "react-icons/io5";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { FaUtensils } from "react-icons/fa";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { serverUrl } from "../App";
 import axios from "axios";
 import { setMyShopData } from "../redux/ownerSlice";
 import toast from "react-hot-toast";
 
-function AddItem() {
+function EditItem() {
     const navigate = useNavigate();
     const { myShopData } = useSelector(state => state.owner);
+    const { itemId } = useParams();
+    const [currentItem, setCurrentItem] = useState(null);
     const [name, setName] = useState("");
     const [price, setPrice] = useState(0);
     const [category, setCategory] = useState("");
-    const [foodType, setFoodType] = useState("veg");
-    const [frontendImage, setFrontendImage] = useState(null);
+    const [foodType, setFoodType] = useState("");
+
+    const [frontendImage, setFrontendImage] = useState("");
     const [backendImage, setBackendImage] = useState(null);
     const categories = [
         "Snacks",
@@ -41,14 +44,34 @@ function AddItem() {
             if (backendImage) {
                 formData.append("image", backendImage);
             }
-            const result = await axios.post(`${serverUrl}/api/item/add-item`, formData, { withCredentials: true });
+            const result = await axios.post(`${serverUrl}/api/item/edit-item/${itemId}`, formData, { withCredentials: true });
             toast.success("Item added successfully", { duration: 2000 });
+            navigate("/");
             dispatch(setMyShopData(result.data));
             console.log(result.data);
         } catch (error) {
             console.log(error);
         }
     }
+
+    useEffect(() => {
+        const handleGetItemById = async () => {
+            try {
+                const result = await axios.get(`${serverUrl}/api/item/get-by-id/${itemId}`, { withCredentials: true });
+                setCurrentItem(result.data);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        handleGetItemById();
+    }, [itemId])
+    useEffect(() => {
+        setName(currentItem?.name||"");
+        setPrice(currentItem?.price||0);
+        setCategory(currentItem?.category||"");
+        setFoodType(currentItem?.foodType||"");
+        setFrontendImage(currentItem?.image||"");
+    }, [currentItem])
     return (
         <div className='flex justify-center flex-col items-center p-6  bg-gradient-to-br from-orange-50 relative to-white min-h-screen'>
             <div className='absolute top-[20px] left-[20px] z-[10] mb-[10px]' onClick={() => navigate("/")}>
@@ -60,7 +83,7 @@ function AddItem() {
                         <FaUtensils className="text-[#ff4d2d] w-16 h-16" />
                     </div>
                     <div className="text-3xl font-extrabold text-gray-900">
-                        Add food
+                        Edit food
                     </div>
                 </div>
 
@@ -91,7 +114,7 @@ function AddItem() {
                         <select className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                             onChange={(e) => setCategory(e.target.value)} value={category}>
                             <option value="">All</option>
-                            {categories.map((cate,index)=>(
+                            {categories.map((cate, index) => (
                                 <option key={index} value={cate}>{cate}</option>
                             ))}
                         </select>
@@ -115,4 +138,4 @@ function AddItem() {
     )
 }
 
-export default AddItem
+export default EditItem

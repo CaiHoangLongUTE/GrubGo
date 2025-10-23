@@ -38,6 +38,7 @@ function CreateEditShop() {
             }
             const result = await axios.post(`${serverUrl}/api/shop/create-edit`,formData,{withCredentials:true});
             toast.success("Shop details saved successfully",{duration:2000});
+            navigate("/");
             dispatch(setMyShopData(result.data));
             console.log(result.data);
         } catch (error) {
@@ -61,13 +62,13 @@ function CreateEditShop() {
 
                 <form className="space-y-5" onSubmit={handleSubmit}>
                     <div >
-                        <label className="block text-sm dont-medium text-gray-700 mb-1">Name</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
                         <input type="text" placeholder="Enter shop name" className="w-full px-4 py-2 border rounded-lg 
                         focus:outline-none focus:ring-2 focus:ring-orange-500"
                             onChange={(e) => setName(e.target.value)} value={name} />
                     </div>
                     <div >
-                        <label className="block text-sm dont-medium text-gray-700 mb-1">Image</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Image</label>
                         <input type="file" accept="image/*" className="w-full px-4 py-2 border rounded-lg 
                         focus:outline-none focus:ring-2 focus:ring-orange-500" onChange={handleImage} />
                         {frontendImage &&
@@ -77,20 +78,20 @@ function CreateEditShop() {
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div >
-                            <label className="block text-sm dont-medium text-gray-700 mb-1">City</label>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
                             <input type="text" placeholder="Enter city" className="w-full px-4 py-2 border rounded-lg 
                             focus:outline-none focus:ring-2 focus:ring-orange-500"
                                 onChange={(e) => setCity(e.target.value)} value={city} />
                         </div>
                         <div >
-                            <label className="block text-sm dont-medium text-gray-700 mb-1">State</label>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">State</label>
                             <input type="text" placeholder="Enter state" className="w-full px-4 py-2 border rounded-lg 
                             focus:outline-none focus:ring-2 focus:ring-orange-500"
                                 onChange={(e) => setState(e.target.value)} value={state} />
                         </div>
                     </div>
                     <div >
-                        <label className="block text-sm dont-medium text-gray-700 mb-1">Address</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
                         <input type="text" placeholder="Enter address" className="w-full px-4 py-2 border rounded-lg 
                         focus:outline-none focus:ring-2 focus:ring-orange-500"
                             onChange={(e) => setAddress(e.target.value)} value={address} />

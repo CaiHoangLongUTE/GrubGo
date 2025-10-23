@@ -3,10 +3,13 @@ import { useSelector } from 'react-redux';
 import { FaUtensils } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom';
 import { FaPen } from "react-icons/fa";
+import OwnerItemCard from './OwnerItemCard';
 
 function OwnerDashBoard() {
   const { myShopData } = useSelector(state => state.owner);
   const navigate = useNavigate();
+  console.log("🧩 myShopData:", myShopData);
+  console.log("🍱 myShopData.items:", myShopData?.items);
 
   return (
     <div className='w-full min-h-screen bg-[#fff9f9] flex flex-col items-center'>
@@ -56,10 +59,16 @@ function OwnerDashBoard() {
                   </button>
                 </div>
               </div>
-            </div>
-          }
-        </div>
-      }
+            </div>}
+          {myShopData?.items?.length > 0 &&
+            <div>
+              {myShopData.items.map((item, index) => (
+                <OwnerItemCard data={item} key={index} />
+
+              ))}
+            </div>}
+
+        </div>}
     </div>
   );
 }

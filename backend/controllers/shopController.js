@@ -11,7 +11,7 @@ export const createEditShop = async (req, res) => {
         }
         let shop = await Shop.findOne({ owner: req.userId });
         if (!shop) {
-            shop = await Shop.create({ name, city, state, address, image, owner: req.userId });
+            shop = await Shop.create({ name, city, state, address, image, owner: req.userId, items: [] });
         }
         else {
             shop = await Shop.findByIdAndUpdate(shop._id, { name, city, state, address, image, owner: req.userId }, { new: true });
@@ -25,7 +25,7 @@ export const createEditShop = async (req, res) => {
 
 export const getMyShop = async (req, res) => {
     try {
-        const shop = await Shop.findOne({ owner: req.userId });
+        const shop = await Shop.findOne({ owner: req.userId }).populate("owner items");
         if(!shop) {
             return null;
         }

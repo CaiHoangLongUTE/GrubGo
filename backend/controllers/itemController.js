@@ -35,8 +35,22 @@ export const editItem = async (req, res) => {
         if (!item) {
             return res.status(400).json({ message: "Item not found" });
         }
-        return res.status(200).json(item);
+        const shop = await Shop.findOne({ owner: req.userId }).populate("items");
+        return res.status(200).json(shop);
     } catch (error) {
         return res.status(500).json({ message: `Edit item failed. Error: ${error.message}` });
+    }
+}
+
+export const getItemById = async (req, res) => {
+    try {
+        const itemId = req.params.itemId;
+        const item = await Item.findById(itemId);
+        if (!item) {
+            return res.status(400).json({ message: "Item not found" });
+        }
+        return res.status(200).json(item);
+    } catch (error) {
+        return res.status(500).json({ message: `Get item failed. Error: ${error.message}` });
     }
 }
