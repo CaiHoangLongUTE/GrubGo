@@ -45,7 +45,7 @@ function EditItem() {
                 formData.append("image", backendImage);
             }
             const result = await axios.post(`${serverUrl}/api/item/edit-item/${itemId}`, formData, { withCredentials: true });
-            toast.success("Item added successfully", { duration: 2000 });
+            toast.success("Item edit successfully", { duration: 2000 });
             navigate("/");
             dispatch(setMyShopData(result.data));
             console.log(result.data);

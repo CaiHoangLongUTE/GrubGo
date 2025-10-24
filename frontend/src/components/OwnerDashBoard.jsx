@@ -61,7 +61,7 @@ function OwnerDashBoard() {
               </div>
             </div>}
           {myShopData?.items?.length > 0 &&
-            <div>
+            <div className="flex flex-col items-center gap-4 w-full max-w-xl">
               {myShopData.items.map((item, index) => (
                 <OwnerItemCard data={item} key={index} />
 

@@ -43,6 +43,7 @@ function AddItem() {
             }
             const result = await axios.post(`${serverUrl}/api/item/add-item`, formData, { withCredentials: true });
             toast.success("Item added successfully", { duration: 2000 });
+            navigate("/");
             dispatch(setMyShopData(result.data));
             console.log(result.data);
         } catch (error) {
