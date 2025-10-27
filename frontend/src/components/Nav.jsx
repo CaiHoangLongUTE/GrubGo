@@ -13,7 +13,7 @@ import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
 function Nav() {
-    const { userData, currentCity } = useSelector(state => state.user);
+    const { userData, currentCity, cartItems } = useSelector(state => state.user);
     const { myShopData } = useSelector(state => state.owner);
     const [showInfo, setShowInfo] = useState(false);
     const [showSearch, setShowSearch] = useState(false);
@@ -83,9 +83,9 @@ function Nav() {
                 </div>
             </> : (<>
                 {userData.role == "user" &&
-                    <div className='relative cursor-pointer'>
+                    <div className='relative cursor-pointer' onClick={()=>navigate("/cart")}>
                         <FiShoppingCart size={24} className='text-[#ff4d2d]' />
-                        <span className='absolute right-[-9px] top-[-12px] text-[#ff4d2d] font-bold'>0</span>
+                        <span className='absolute right-[-9px] top-[-12px] text-[#ff4d2d] font-bold'>{cartItems.length}</span>
                     </div>}
 
                 <button className='hidden md:block px-3 py-1 rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d] text-sm font-medium'>
