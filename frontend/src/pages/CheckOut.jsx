@@ -9,6 +9,9 @@ import { useNavigate } from 'react-router-dom';
 import { setAddress, setLocation } from "../redux/mapSlice";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { MdDeliveryDining } from "react-icons/md";
+import { FaMobileScreenButton } from "react-icons/fa6";
+import { FaCreditCard } from "react-icons/fa";
 
 function RecenterMap({ location }) {
     if (location.lat && location.lon) {
@@ -20,11 +23,15 @@ function RecenterMap({ location }) {
 
 function CheckOut() {
     const { location, address } = useSelector(state => state.map);
+    const { cartItems, totalAmount } = useSelector(state => state.user);
     const [addressInput, setAddressInput] = useState("");
+    const [paymentMethod, setPaymentMethod] = useState("cod");
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const apiKey = import.meta.env.VITE_GEOAPIKEY;
 
+    const deliveryFee = totalAmount > 500 ? 0 : 50;
+    const amountWithDeliveryFee = totalAmount + deliveryFee;
     const onDragEnd = (e) => {
         const { lat, lng } = e.target._latlng;
         dispatch(setLocation({ lat, lon: lng }));
@@ -51,7 +58,7 @@ function CheckOut() {
         try {
             const result = await axios.get(`https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(addressInput)}&format=json&apiKey=${apiKey}`);
             const { lat, lon } = result.data.results[0];
-            dispatch(setLocation({lat, lon}));
+            dispatch(setLocation({ lat, lon }));
         } catch (error) {
             console.log(error);
         }
@@ -62,11 +69,12 @@ function CheckOut() {
 
     return (
         <div className='min-h-screen  bg-[#fff9f6] flex items-center justify-center p-6'>
-            <div className='absolute top-[20px] left-[20px] z-[10]' onClick={() => navigate("/cart")}>
+            <div className='absolute top-[20px] left-[20px] z-[10]' onClick={() => navigate("/")}>
                 <IoArrowBack size={36} className='text-[#ff4d2d]' />
             </div>
             <div className='w-full max-w-[900px] bg-white rounded-2xl shadow-xl p-6 space-y-6'>
                 <h1 className='text-2xl font-bold text-gray-800'>Check out</h1>
+                {/* Map  */}
                 <section>
                     <h2 className='text-lg font-semibold mb-2 flex items-center gap-2 text-gray-800'>
                         <IoLocationSharp size={16} className='text-[#ff4d2d]' />Delivery location</h2>
@@ -92,6 +100,64 @@ function CheckOut() {
                         </div>
                     </div>
                 </section>
+                {/* Payment  */}
+                <section>
+                    <h2 className='text-lg font-semibold mb-2 flex items-center gap-2 text-gray-800'>Payment Method</h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className={`flex items-center gap-3 rounded-xl border p-4 text-left transition ${paymentMethod === "cod" ?
+                            "border-[#ff4d2d] bg-orange-50 shadow" : "border-gray-200 hover:border=gray-300"
+                            }`} onClick={() => setPaymentMethod("cod")}>
+                            <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-green-100">
+                                <MdDeliveryDining className="text-green-600 text-xl" />
+                            </span>
+                            <div>
+                                <p className="font-medium text-gray-800">Cash On Delivery</p>
+                                <p className="text-xs text-gray-500">Pay when food is delivered</p>
+                            </div>
+                        </div>
+                        <div className={`flex items-center gap-3 rounded-xl border p-4 text-left transition ${paymentMethod === "online" ?
+                            "border-[#ff4d2d] bg-orange-50 shadow" : "border-gray-200 hover:border=gray-300"
+                            }`} onClick={() => setPaymentMethod("online")}>
+                            <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-purple-100">
+                                <FaMobileScreenButton className="text-purple-700 text-xl" />
+                            </span>
+                            <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-blue-100">
+                                <FaCreditCard className="text-blue-700 text-xl" />
+                            </span>
+                            <div>
+                                <p className="font-medium text-gray-800">Credit / Debit Card</p>
+                                <p className="text-xs text-gray-500">Payment Securely Online</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                {/* Order Sumary  */}
+                <section>
+                    <h2 className='text-lg font-semibold mb-2 flex items-center gap-2 text-gray-800'>Order Summary</h2>
+                    <div className="rounded-xl border bg-gray-50 p-4 space-y-2">
+                        {cartItems.map((item, index) => (
+                            <div className="flex justify-between text-sm text-gray-700" key={index}>
+                                <span>{item.name} x {item.quantity}</span>
+                                <span>{item.price * item.quantity}</span>
+                            </div>
+                        ))}
+                        <hr className="border-gray-400 my-2" />
+                        <div className="flex justify-between text-sm font-semibold text-gray-800">
+                            <span>Subtotal</span>
+                            <span>{totalAmount}</span>
+                        </div>
+                        <div className="flex justify-between text-sm text-gray-700">
+                            <span>Delivery Fee</span>
+                            <span>{deliveryFee == 0 ? "Free" : deliveryFee}</span>
+                        </div>
+                        <div className="flex justify-between text-sm font-bold text-[#ff4d2d] pt-2">
+                            <span>ToTal</span>
+                            <span>{amountWithDeliveryFee}</span>
+                        </div>
+                    </div>
+                </section>
+                <button className="w-full bg-[#ff4d2d] hover:bg-[#e64526] text-white py-3 rounded-xl font-semibold">
+                    {paymentMethod == "cod" ? "Place Order" : "Pay Now"}</button>
             </div>
         </div>
     )
