@@ -1,25 +1,27 @@
 import mongoose from "mongoose";
 
 const shopOrderItemSchema = new mongoose.Schema({
-    item: { type: mongoose.Schema.Types.ObjectId, ref: "Item", required: true },
+    item: { type: mongoose.Schema.Types.ObjectId, ref: "Item" },
+    name: String,
     price: Number,
     quantity: Number,
 }, { timestamps: true });
 
 const shopOrderSchema = new mongoose.Schema({
-    shop:{type: mongoose.Schema.Types.ObjectId, ref: "Shop", required: true },
-    owner: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    shop: { type: mongoose.Schema.Types.ObjectId, ref: "Shop" },
+    owner: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     subTotal: Number,
-    shopOrderItems:[shopOrderItemSchema],
+    shopOrderItems: [shopOrderItemSchema],
 }, { timestamps: true });
 
 const orderSchema = new mongoose.Schema({
-    user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     paymentMethod: { type: String, enum: ["cod", "online"], required: true },
-    deliveryAdress: { Text: String, latitude: Number, longitude: Number, required: true },
-    totalAmount: { type: Number, required: true },
-    shopOrder:[shopOrderSchema],
+    deliveryAddress: { text: String, latitude: Number, longitude: Number },
+    totalAmount: { type: Number },
+    shopOrders: [shopOrderSchema],
 }, { timestamps: true });
 
 const Order = mongoose.model("Order", orderSchema);
+export default Order;
 
