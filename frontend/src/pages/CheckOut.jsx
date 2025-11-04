@@ -13,6 +13,7 @@ import { MdDeliveryDining } from "react-icons/md";
 import { FaMobileScreenButton } from "react-icons/fa6";
 import { FaCreditCard } from "react-icons/fa";
 import { serverUrl } from './../App';
+import { addMyOrder } from "../redux/userSlice";
 
 function RecenterMap({ location }) {
     if (location.lat && location.lon) {
@@ -76,7 +77,7 @@ function CheckOut() {
                 totalAmount: amountWithDeliveryFee,
                 cartItems
             }, { withCredentials: true });
-            console.log(result.data);
+            dispatch(addMyOrder(result.data));
             navigate("/order-placed");
         } catch (error) {
             console.log(error);
