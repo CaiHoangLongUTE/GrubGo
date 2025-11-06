@@ -104,7 +104,7 @@ export const updateOrderStatus = async (req, res) => {
         }
         shopOrder.status = status;
         let deliveryPersonPayload = [];
-        if (status == "out of delivery" || !shopOrder.assignment) {
+        if (status == "out of delivery" && !shopOrder.assignment) {
             const { longitude, latitude } = order.deliveryAddress;
             const nearByDeliveryPerson = await User.find({
                 role: "delivery",
@@ -154,7 +154,7 @@ export const updateOrderStatus = async (req, res) => {
         await order.populate("shopOrders.shop", "name");
         await order.populate("shopOrders.assignedDeliveryPerson", "fullName email mobile");
 
-        
+
 
         return res.status(200).json({
             shopOrder: updatedShopOrder,
@@ -165,5 +165,30 @@ export const updateOrderStatus = async (req, res) => {
         })
     } catch (error) {
         return res.status(500).json({ message: `Update order status failed. Error: ${error.message}` });
+    }
+}
+
+export const getDeliveryPersonAssignment = async (req, res) => {
+    try {
+        const deliveryPersonId = req.userId;
+        const assignments = await DeliveryAssignment.find({
+            brodcastedTo: deliveryPersonId,
+            status: "brodcasted"
+        })
+        .populate("order")
+        .populate("shop")   
+
+        const formated = assignments.map(a=>({
+            assignmentId: a._id,
+            orderId: a.order._id,
+            shopName: a.shop.name,
+            deliveryAddress: a.order.deliveryAddress,
+            items: a.order.shopOrders.find(so=>so._id.equals(a.shopOrderId)).shopOrderItems||[],
+            subTotal: a.order.shopOrders.find(so=>so._id.equals(a.shopOrderId))?.subTotal,
+        }))
+
+        return res.status(200).json(formated);
+    } catch (error) {
+        return res.status(500).json({ message: `Get delivery person assignment failed. Error: ${error.message}` });
     }
 }
