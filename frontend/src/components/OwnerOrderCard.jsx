@@ -51,14 +51,19 @@ function OwnerOrderCard({ data }) {
           <option value="out of delivery">Out of delivery</option>
         </select>
       </div>
+
       {data.shopOrders.status == "out of delivery" &&
         <div className="mt-3 p-2 border rounded-lg text-sm bg-orange-50">
-          <p>Available Delivery Person:</p>
+          {data.shopOrders.assignedDeliveryPerson ? <p>Assigned Delivery Person</p> :
+            <p>Available Delivery Person:</p>}
           {availableDeliveryPerson?.length > 0 ? (
             availableDeliveryPerson.map((p, index) => (
               <div className="text-gray-800">{p.fullName}-{p.mobile}</div>
             ))
-          ) : <div>Waiting available delivery person</div>}
+          )
+            : data.shopOrders.assignedDeliveryPerson
+              ? <div>{data.shopOrders.assignedDeliveryPerson.fullName}-{data.shopOrders.assignedDeliveryPerson.mobile}</div>
+              : <div>Waiting available delivery person</div>}
         </div>}
       <div className="text-right font-bold text-gray-800 text-sm">
         Total: {data.shopOrders.subTotal}
