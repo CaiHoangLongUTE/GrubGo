@@ -1,6 +1,8 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom';
 
 function UserOrderCard({ data }) {
+  const navigate = useNavigate();
   const formateDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('vi-VN', { year: 'numeric', month: 'long', day: 'numeric' });
@@ -38,7 +40,8 @@ function UserOrderCard({ data }) {
 
       <div className='flex justify-between items-center border-t pt-2'>
         <p className='font-semibold'>Total: {data.totalAmount} VND</p>
-        <button className='bg-[#ff4d2d] hover:bg-[#e64526] text-white px-4 py-2 rounded-lg text-sm'>Track Order</button>
+        <button className='bg-[#ff4d2d] hover:bg-[#e64526] text-white px-4 py-2 rounded-lg text-sm'
+        onClick={()=>navigate(`/track-order/${data._id}`)}>Track Order</button>
       </div>
     </div>
   )
