@@ -15,6 +15,9 @@ const shopOrderSchema = new mongoose.Schema({
     status: { type: String, enum: ["pending", "preparing", "out of delivery", "delivered"], default: "pending" },
     assignment: { type: mongoose.Schema.Types.ObjectId, ref: "DeliveryAssignment", default: null },
     assignedDeliveryPerson: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    deliveryOtp: { type: String, default: null },
+    otpExpires: { type: Date, default: null },
+    deliveryAt: { type: Date, default: null },
 }, { timestamps: true });
 
 const orderSchema = new mongoose.Schema({

@@ -47,7 +47,7 @@ function TrackOrder() {
                             </div> : <p className="font-semibold">Delivery not assigned</p>}
                     </> : <p className="text-green-600 font-semibold text-lg">Delived</p>}
 
-                    {shopOrder.assignedDeliveryPerson &&
+                    {shopOrder.assignedDeliveryPerson && shopOrder.status != "delivered" &&
                         <div>
                             <DeliveryPersonTracking data={{
                                 deliveryPersonLocation: {
