@@ -5,11 +5,28 @@ import CategoryCard from './CategoryCard'
 import { useSelector } from 'react-redux';
 import ShopCard from './ShopCard';
 import FoodCard from './FoodCard';
+import { useNavigate } from 'react-router-dom';
 
 function UserDashBoard() {
   const { currentCity, shopsInMyCity, itemsInMyCity } = useSelector((state) => state.user);
+  const [updatedItemsList, setUpdatedItemsList] = React.useState([]);
+  const navigate = useNavigate();
   const cateScrollRef = useRef(null);
   const shopScrollRef = useRef(null);
+
+  const handleFilterByCategory = (category) => {
+   if(category=="All"){
+    setUpdatedItemsList(itemsInMyCity);
+   }
+   else{
+    const filteredItems = itemsInMyCity.filter((item) => item?.category === category);
+    setUpdatedItemsList(filteredItems);
+   }
+  }
+
+  useEffect(() => {
+    setUpdatedItemsList(itemsInMyCity);
+  }, [itemsInMyCity]);
 
   useEffect(() => {
     const handleWheel = (e) => {
@@ -37,7 +54,8 @@ function UserDashBoard() {
         <div className='w-full'>
           <div ref={cateScrollRef} className='w-full flex overflow-x-auto gap-4 pb-2'>
             {categories.map((cate, index) => (
-              <CategoryCard name={cate.category} image={cate.image} key={index} />
+              <CategoryCard name={cate.category} image={cate.image} key={index} 
+              onClick={() => handleFilterByCategory(cate.category)}/>
             ))}
           </div>
         </div>
@@ -48,7 +66,7 @@ function UserDashBoard() {
         <div className='w-full'>
           <div ref={shopScrollRef} className='w-full flex overflow-x-auto gap-4 pb-2'>
             {shopsInMyCity.map((shop, index) => (
-              <ShopCard name={shop.name} image={shop.image} key={index} />
+              <ShopCard name={shop.name} image={shop.image} key={index} onClick={() => navigate(`/shop/${shop._id}`)}/>
             ))}
           </div>
         </div>
@@ -57,7 +75,7 @@ function UserDashBoard() {
       <div className='w-full max-w-6xl flex flex-col gap-5 items-start p-[10px]'>
         <h1 className='text-gray-800 text-2xl sm:text-3xl'>Best food suggestions</h1>
         <div className='w-full h-auto flex flex-wrap gap-[20px] justify-center'>
-          {itemsInMyCity?.map((item, index) => (
+          {updatedItemsList?.map((item, index) => (
             <FoodCard data={item} key={index} />
           ))}
         </div>
