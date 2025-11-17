@@ -15,7 +15,10 @@ function UserOrderCard({ data }) {
           <p className='text-sm text-gray-500'>Date: {formateDate(data.createdAt)}</p>
         </div>
         <div className='text-right'>
-          <p className='text-sm text-gray-500'>{data.paymentMethod.toUpperCase()}</p>
+          {data.paymentMethod === "cod"
+            ? <p className='text-sm text-gray-500'>{data.paymentMethod.toUpperCase()}</p>
+            : <p className='text-sm text-gray-500'>Payment: {data.payment ? "true" : "false"}</p>}
+
           <p className='font-medium text-blue-600'>{data.shopOrders?.[0].status}</p>
         </div>
       </div>
@@ -41,7 +44,7 @@ function UserOrderCard({ data }) {
       <div className='flex justify-between items-center border-t pt-2'>
         <p className='font-semibold'>Total: {data.totalAmount} VND</p>
         <button className='bg-[#ff4d2d] hover:bg-[#e64526] text-white px-4 py-2 rounded-lg text-sm'
-        onClick={()=>navigate(`/track-order/${data._id}`)}>Track Order</button>
+          onClick={() => navigate(`/track-order/${data._id}`)}>Track Order</button>
       </div>
     </div>
   )

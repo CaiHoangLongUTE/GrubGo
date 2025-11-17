@@ -26,6 +26,7 @@ const orderSchema = new mongoose.Schema({
     deliveryAddress: { text: String, latitude: Number, longitude: Number },
     totalAmount: { type: Number },
     shopOrders: [shopOrderSchema],
+    payment: {type: Boolean, default: false},
 }, { timestamps: true });
 
 const Order = mongoose.model("Order", orderSchema);

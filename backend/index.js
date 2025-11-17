@@ -1,4 +1,6 @@
 import dotenv from "dotenv";
+dotenv.config();
+
 import express from "express";
 import connectDB from "./config/db.js";
 import authRouter from "./routes/authRoute.js";
@@ -8,8 +10,7 @@ import userRouter from "./routes/userRoute.js";
 import shopRouter from "./routes/shopRoute.js";
 import itemRouter from './routes/itemRoute.js';
 import orderRouter from "./routes/orderRoute.js";
-
-dotenv.config();
+import PaymentRouter from "./routes/paymentRoute.js";
 
 const app = express();
 const port = process.env.PORT || 8000;
@@ -25,6 +26,7 @@ app.use("/api/user", userRouter);
 app.use("/api/shop", shopRouter);
 app.use("/api/item", itemRouter)
 app.use("/api/order",orderRouter);
+app.use("/api/payment",PaymentRouter);
 
 console.log("MONGODB_URL:", process.env.MONGODB_URL);
 

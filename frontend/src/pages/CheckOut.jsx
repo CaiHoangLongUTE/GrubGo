@@ -25,7 +25,7 @@ function RecenterMap({ location }) {
 
 function CheckOut() {
     const { location, address } = useSelector(state => state.map);
-    const { cartItems, totalAmount } = useSelector(state => state.user);
+    const { cartItems, totalAmount, userData } = useSelector(state => state.user);
     const [addressInput, setAddressInput] = useState("");
     const [paymentMethod, setPaymentMethod] = useState("cod");
     const navigate = useNavigate();
@@ -49,12 +49,10 @@ function CheckOut() {
         }
     }
     const getCurrentLocation = () => {
-        navigator.geolocation.getCurrentPosition(async (position) => {
-            const latitude = position.coords.latitude;
-            const longitude = position.coords.longitude;
-            dispatch(setLocation({ lat: latitude, lon: longitude }));
-            getAddressByLatLng(latitude, longitude);
-        })
+        const latitude = userData.location.coordnates[1];
+        const longitude = userData.location.coordnates[0];
+        dispatch(setLocation({ lat: latitude, lon: longitude }));
+        getAddressByLatLng(latitude, longitude);
     }
     const getLatLngByAddress = async () => {
         try {
@@ -67,22 +65,44 @@ function CheckOut() {
     }
     const handlePlaceOrder = async () => {
         try {
-            const result = await axios.post(`${serverUrl}/api/order/place-order`, {
-                paymentMethod,
-                deliveryAddress: {
-                    text: addressInput,
-                    latitude: location.lat,
-                    longitude: location.lon,
-                },
-                totalAmount: amountWithDeliveryFee,
-                cartItems
-            }, { withCredentials: true });
-            dispatch(addMyOrder(result.data));
-            navigate("/order-placed");
+            if (paymentMethod === "online") {
+                const orderResult = await axios.post(`${serverUrl}/api/order/place-order`, {
+                    paymentMethod,
+                    deliveryAddress: {
+                        text: addressInput,
+                        latitude: location.lat,
+                        longitude: location.lon,
+                    },
+                    totalAmount: amountWithDeliveryFee,
+                    cartItems,
+                }, { withCredentials: true });
+
+                const orderId = orderResult.data._id;
+                const paymentRes = await axios.post(`${serverUrl}/api/payment/create-vnpay-url`, {
+                    totalAmount: amountWithDeliveryFee,
+                    orderId
+                });
+
+                window.location.href = paymentRes.data.paymentUrl; // Redirect sang VNPAY
+            } else {
+                const result = await axios.post(`${serverUrl}/api/order/place-order`, {
+                    paymentMethod,
+                    deliveryAddress: {
+                        text: addressInput,
+                        latitude: location.lat,
+                        longitude: location.lon,
+                    },
+                    totalAmount: amountWithDeliveryFee,
+                    cartItems
+                }, { withCredentials: true });
+                dispatch(addMyOrder(result.data));
+                navigate("/order-placed");
+            }
         } catch (error) {
             console.log(error);
         }
-    }
+    };
+
     useEffect(() => {
         setAddressInput(address);
     }, [address])
@@ -177,7 +197,7 @@ function CheckOut() {
                     </div>
                 </section>
                 <button className="w-full bg-[#ff4d2d] hover:bg-[#e64526] text-white py-3 rounded-xl font-semibold"
-                onClick={handlePlaceOrder}>
+                    onClick={handlePlaceOrder}>
                     {paymentMethod == "cod" ? "Place Order" : "Pay Now"}</button>
             </div>
         </div>
