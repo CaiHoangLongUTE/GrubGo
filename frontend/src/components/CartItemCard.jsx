@@ -8,11 +8,11 @@ import { useDispatch } from 'react-redux';
 function CartItemCard({ data }) {
   const dispatch = useDispatch();
   const handleIncrease = (id, currentQuantity) => {
-    dispatch(updateQuantity({id: id, quantity: currentQuantity + 1}));
+    dispatch(updateQuantity({ id: id, quantity: currentQuantity + 1 }));
   }
   const handleDecrease = (id, currentQuantity) => {
     if (currentQuantity > 1) {
-      dispatch(updateQuantity({id: id, quantity: currentQuantity - 1}));
+      dispatch(updateQuantity({ id: id, quantity: currentQuantity - 1 }));
     }
   }
   return (
@@ -21,8 +21,8 @@ function CartItemCard({ data }) {
         <img src={data.image} alt="" className='w-20 h-20 object-cover rounded-lg border' />
         <div>
           <h1 className='font-medium text-gray-800'>{data.name}</h1>
-          <p className='text-sm text-gray-500'>{data.price} x {data.quantity}</p>
-          <p className='font-bold text-gray-900'>{data.price * data.quantity}</p>
+          <p className='text-sm text-gray-500'>{data.price} ₫ x {data.quantity}</p>
+          <p className='font-bold text-gray-900'>{data.price * data.quantity} ₫</p>
         </div>
       </div>
       <div className='flex items-center gap-3'>
@@ -36,7 +36,7 @@ function CartItemCard({ data }) {
           <FaPlus size={12} />
         </button>
         <button className='p-2 bg-red-100 text-red-600 rounded-full hover:bg-red-200'
-        onClick={()=>dispatch(removeCartItem(data.id))}>
+          onClick={() => dispatch(removeCartItem(data.id))}>
           <FaRegTrashCan />
         </button>
       </div>

@@ -16,11 +16,11 @@ function ForgotPassword() {
     const handleSendOtp = async () => {
         try {
             const result = await axios.post(`${serverUrl}/api/auth/send-otp`, { email }, { withCredentials: true });
-            toast.success("OTP sent to email successfully", { duration: 2000 });
+            toast.success("Mã OTP đã được gửi đến email của bạn", { duration: 2000 });
             console.log(result);
             setStep(2);
         } catch (error) {
-            toast.error(error.response?.data?.message || "Sending OTP failed", { duration: 2000 });
+            toast.error(error.response?.data?.message || "Gửi mã OTP thất bại", { duration: 2000 });
             console.log(error);
         }
     }
@@ -28,26 +28,26 @@ function ForgotPassword() {
     const handleVerifyOtp = async () => {
         try {
             const result = await axios.post(`${serverUrl}/api/auth/verify-otp`, { email, otp }, { withCredentials: true });
-            toast.success("OTP verified successfully", { duration: 2000 });
+            toast.success("Mã OTP đã được xác nhận", { duration: 2000 });
             console.log(result);
             setStep(3);
         } catch (error) {
-            toast.error(error.response?.data?.message || "OTP verification failed", { duration: 2000 });
+            toast.error(error.response?.data?.message || "Xác nhận mã OTP thất bại", { duration: 2000 });
             console.log(error);
         }
     }
 
     const handleResetPassword = async () => {
         if (newPassword !== confirmPassword) {
-            return toast.error("Passwords do not match", { duration: 2000 });
+            return toast.error("Mật khẩu không khớp", { duration: 2000 });
         }
         try {
             const result = await axios.post(`${serverUrl}/api/auth/reset-password`, { email, newPassword }, { withCredentials: true });
-            toast.success("Password reset successful", { duration: 2000 });
+            toast.success("Mật khẩu đã được thay đổi", { duration: 2000 });
             console.log(result);
             navigate('/signin');
         } catch (error) {
-            toast.error(error.response?.data?.message || "Password reset failed", { duration: 2000 });
+            toast.error(error.response?.data?.message || "Thay đổi mật khẩu thất bại", { duration: 2000 });
             console.log(error);
         }
     }
@@ -57,52 +57,52 @@ function ForgotPassword() {
             <div className='bg-white rounded-xl shadow-lg w-full max-w-md p-8 border-[1px] border-[#ddd]'>
                 <div className='flex items-center gap-4'>
                     <FaArrowLeft size={20} className='text-[#ff4d2d] cursor-pointer' onClick={() => navigate('/signin')} />
-                    <h1 className='text-2xl font-bold text-center text-[#ff4d2d]'>Forgot Password</h1>
+                    <h1 className='text-2xl font-bold text-center text-[#ff4d2d]'>Quên mật khẩu?</h1>
                 </div>
                 {step == 1 && <div>
                     {/*  Email */}
                     <div className='mb-5 mt-6'>
                         <label htmlFor="email" className='block text-gray-700 font-medium mb-1'>Email</label>
                         <input type="email" className='w-full border-[1px] border-gray-200 rounded-lg px-3 py-2 focus:outline-none'
-                            placeholder='Enter your email' onChange={(e) => setEmail(e.target.value)} value={email} required/>
+                            placeholder='Nhập email' onChange={(e) => setEmail(e.target.value)} value={email} required />
                     </div>
                     {/* Send OTP */}
                     <button className='w-full font-semibold rounded-lg py-2 transition duration-200 bg-[#ff4d2d] text-white hover:bg-[#e72e00] cursor-pointer'
                         onClick={handleSendOtp}>
-                        Send OTP
+                        Gửi mã OTP
                     </button>
                 </div>}
 
                 {step == 2 && <div>
                     {/*  OTP */}
                     <div className='mb-5 mt-6'>
-                        <label htmlFor="otp" className='block text-gray-700 font-medium mb-1'>Enter OTP</label>
+                        <label htmlFor="otp" className='block text-gray-700 font-medium mb-1'>Mã OTP</label>
                         <input type="number" className='w-full border-[1px] border-gray-200 rounded-lg px-3 py-2 focus:outline-none'
-                            placeholder='Enter your OTP' onChange={(e) => setOtp(e.target.value)} value={otp} required/>
+                            placeholder='Nhập mã OTP' onChange={(e) => setOtp(e.target.value)} value={otp} required />
                     </div>
                     {/* Verify OTP */}
                     <button className='w-full font-semibold rounded-lg py-2 transition duration-200 bg-[#ff4d2d] text-white hover:bg-[#e72e00] cursor-pointer'
                         onClick={handleVerifyOtp}>
-                        Verify
+                        Xác nhận
                     </button>
                 </div>}
                 {step == 3 && <div>
                     {/*  New Password */}
                     <div className='mb-5 mt-6'>
-                        <label htmlFor="newPassword" className='block text-gray-700 font-medium mb-1'>New Password</label>
+                        <label htmlFor="newPassword" className='block text-gray-700 font-medium mb-1'>Mật khẩu mới</label>
                         <input type="password" className='w-full border-[1px] border-gray-200 rounded-lg px-3 py-2 focus:outline-none'
-                            placeholder='Enter your new password' onChange={(e) => setNewPassword(e.target.value)} value={newPassword} required/>
+                            placeholder='Nhập mật khẩu mới' onChange={(e) => setNewPassword(e.target.value)} value={newPassword} required />
                     </div>
                     {/* Confirm Password */}
                     <div className='mb-5 mt-6'>
-                        <label htmlFor="confirmPassword" className='block text-gray-700 font-medium mb-1'>Confirm Password</label>
+                        <label htmlFor="confirmPassword" className='block text-gray-700 font-medium mb-1'>Xác nhận mật khẩu</label>
                         <input type="password" className='w-full border-[1px] border-gray-200 rounded-lg px-3 py-2 focus:outline-none'
-                            placeholder='Confirm password' onChange={(e) => setConfirmPassword(e.target.value)} value={confirmPassword} required/>
+                            placeholder='Xác nhận mật khẩu mới' onChange={(e) => setConfirmPassword(e.target.value)} value={confirmPassword} required />
                     </div>
                     {/* Reset Password */}
                     <button className='w-full font-semibold rounded-lg py-2 transition duration-200 bg-[#ff4d2d] text-white hover:bg-[#e72e00] cursor-pointer'
                         onClick={handleResetPassword}>
-                        Reset Password
+                        Đổi mật khẩu
                     </button>
                 </div>}
             </div>

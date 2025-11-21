@@ -19,11 +19,11 @@ function OwnerDashBoard() {
           <div className='w-full max-w-md bg-white shadow-lg rounded-2xl p-6 border border-gray-100 hover:shadow-xl transition-shadow duration-300'>
             <div className='flex flex-col items-center text-center'>
               <FaUtensils size={24} className='text-[#ff4d2d] w-16 h-16 sm:w-20 sm:h-20 mb-4' />
-              <h2 className='text-xl sm:text-2xl font-bold text-gray-800 mb-2'>Add your restaurant</h2>
-              <p className='text-gray-600 mb-4 text-sm sm:text-base'>Join our food delivery platform and start accepting orders for your delicious dishes.</p>
+              <h2 className='text-xl sm:text-2xl font-bold text-gray-800 mb-2'>Thêm nhà hàng của bạn</h2>
+              <p className='text-gray-600 mb-4 text-sm sm:text-base'>Tham gia nền tảng giao hàng thức ăn và bắt đầu nhận đơn hàng cho các món ăn ngon miệng của bạn.</p>
               <button className='bg-[#ff4d2d] text-white py-2 px-5 rounded-full hover:bg-orange-600 font-medium
               transition-colors duration-200' onClick={() => navigate("/create-edit-shop")}>
-                Get started
+                Bắt đầu
               </button>
             </div>
           </div>
@@ -32,7 +32,7 @@ function OwnerDashBoard() {
       {myShopData &&
         <div className='w-full flex flex-col items-center gap-6 px-4 sm:px-6'>
           <h1 className='text-2xl sm:text-3xl text-gray-900 text-center flex items-center
-          gap-3 mt-8'><FaUtensils size={24} className='text-[#ff4d2d] w-12 h-12' />Welcome to {myShopData.name}</h1>
+          gap-3 mt-8'><FaUtensils size={24} className='text-[#ff4d2d] w-12 h-12' />Chào mừng đến với nhà hàng {myShopData.name}</h1>
           <div className='bg-white shadow-xl rounded-xl overflow-hidden border border-orange-100 hover:shadow-2xl transition-all
           duration-300 max-w-3xl relative'>
             <div className='absolute top-4 right-4 bg-[#ff4d2d] text-white p-2 rounded-full shadow-md hover:bg-orange-600 
@@ -51,11 +51,11 @@ function OwnerDashBoard() {
               <div className='w-full max-w-md bg-white shadow-lg rounded-2xl p-6 border border-gray-100 hover:shadow-xl transition-shadow duration-300'>
                 <div className='flex flex-col items-center text-center'>
                   <FaUtensils size={24} className='text-[#ff4d2d] w-16 h-16 sm:w-20 sm:h-20 mb-4' />
-                  <h2 className='text-xl sm:text-2xl font-bold text-gray-800 mb-2'>Add your food</h2>
-                  <p className='text-gray-600 mb-4 text-sm sm:text-base'>Share your delicious dishes with our food delivery platform.</p>
+                  <h2 className='text-xl sm:text-2xl font-bold text-gray-800 mb-2'>Thêm món ăn của bạn</h2>
+                  <p className='text-gray-600 mb-4 text-sm sm:text-base'>Chia sẻ món ăn ngon miệng của bạn với nền tảng giao hàng thức ăn.</p>
                   <button className='bg-[#ff4d2d] text-white py-2 px-5 rounded-full hover:bg-orange-600 font-medium
                   transition-colors duration-200' onClick={() => navigate("/add-item")}>
-                    Add Food
+                    Thêm món ăn
                   </button>
                 </div>
               </div>

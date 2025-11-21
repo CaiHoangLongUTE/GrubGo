@@ -27,12 +27,12 @@ function OwnerItemCard({ data }) {
       <div className="flex flex-col justify-between p-3 flex-1">
         <div>
           <h2 className="text-base font-semibold text-[#ff4d2d] mb-1">{data.name}</h2>
-          <p><span className="font-medium text-gray-70">Category:</span> {data.category}</p>
-          <p><span className="font-medium text-gray-70">Food Type:</span> {data.foodType}</p>
+          <p><span className="font-medium text-gray-70">Loại:</span> {data.category}</p>
+          <p><span className="font-medium text-gray-70">Loại ăn:</span> {data.foodType}</p>
         </div>
 
         <div className="flex items-center justify-between">
-          <div className="text-[#ff4d2d] font-bold">{data.price}</div>
+          <div className="text-[#ff4d2d] font-bold">{data.price} ₫</div>
           <div className="flex items-center gap-2">
             <div className="p-2 rounded-full hover:bg-[#ff4d2d]/10 text-[#ff4d2d] cursor-pointer" onClick={() => navigate(`/edit-item/${data._id}`)}>
               <FaPen size={16} />

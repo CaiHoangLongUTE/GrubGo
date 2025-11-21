@@ -31,19 +31,19 @@ function SignUp() {
             const result = await axios.post(`${serverUrl}/api/auth/signup`, {
                 fullName, email, mobile, password, role
             }, { withCredentials: true });
-            toast.success("Sign up successful", { duration: 2000 });
+            toast.success("Đăng ký thành công", { duration: 2000 });
             navigate('/signin');
             console.log(result);
             dispatch(setUserData(result.data));
         } catch (error) {
-            toast.error(error.response?.data?.message || "Sign up failed", { duration: 2000 });
+            toast.error(error.response?.data?.message || "Đăng ký thất bại", { duration: 2000 });
             console.log(error);
         }
     }
 
     const handleGoogleAuth = async () => {
         if (!mobile) {
-            return toast.error("Please enter mobile number before Google Sign Up", { duration: 2000 });
+            return toast.error("Vui lòng nhập số điện thoại trước khi đăng ký với Google", { duration: 2000 });
         }
         const provider = new GoogleAuthProvider();
         const result = await signInWithPopup(auth, provider);
@@ -54,12 +54,12 @@ function SignUp() {
                 mobile,
                 role
             }, { withCredentials: true });
-            toast.success("Sign up with Google successful", { duration: 2000 });
+            toast.success("Đăng ký với Google thành công", { duration: 2000 });
             navigate('/signin');
             console.log(data);
             dispatch(setUserData(data));
         } catch (error) {
-            toast.error(error.response?.data?.message || "Sign up with Google failed", { duration: 2000 });
+            toast.error(error.response?.data?.message || "Đăng ký với Google thất bại", { duration: 2000 });
             console.log(error);
         }
     }
@@ -67,35 +67,35 @@ function SignUp() {
     return (
         <div className='min-h-screen flex items-center justify-center p-4' style={{ backgroundColor: bgColor }}>
             <div className='bg-white rounded-xl shadow-lg w-full max-w-md p-8 border-[1px]' style={{ border: `1px solid ${borderColor}` }}>
-                <h1 className='text-3xl font-bold mb-2 tetx-[${primaryColor}]' style={{ color: primaryColor }}>GrubGo</h1>
-                <p className='tetx-gray-600 mb-8'>Create your account to get started with dilicious food deliveries</p>
+                <h1 className='text-center text-3xl font-bold mb-2 tetx-[${primaryColor}]' style={{ color: primaryColor }}>GrubGo</h1>
+                <p className='text-center tetx-gray-600 mb-8'>Đăng ký tài khoản của riêng bạn để tham gia trải nghiệm vị giác của chúng tôi</p>
                 {/* Full name */}
                 <div className='mb-4'>
-                    <label htmlFor="fullName" className='block text-gray-700 font-medium mb-1'>Full name</label>
+                    <label htmlFor="fullName" className='block text-gray-700 font-medium mb-1'>Họ và tên</label>
                     <input type="text" className='w-full border rounded-lg px-3 py-2 focus:outline-none'
-                        placeholder='Enter your full name' style={{ border: `1px solid ${borderColor}` }}
+                        placeholder='Nhập họ tên' style={{ border: `1px solid ${borderColor}` }}
                         onChange={(e) => setFullName(e.target.value)} value={fullName} required />
                 </div>
                 {/*  Email */}
                 <div className='mb-4'>
                     <label htmlFor="email" className='block text-gray-700 font-medium mb-1'>Email</label>
                     <input type="email" className='w-full border rounded-lg px-3 py-2 focus:outline-none'
-                        placeholder='Enter your email' style={{ border: `1px solid ${borderColor}` }}
+                        placeholder='Nhập email' style={{ border: `1px solid ${borderColor}` }}
                         onChange={(e) => setEmail(e.target.value)} value={email} required />
                 </div>
                 {/* Mobile */}
                 <div className='mb-4'>
-                    <label htmlFor="mobile" className='block text-gray-700 font-medium mb-1'>Mobile</label>
+                    <label htmlFor="mobile" className='block text-gray-700 font-medium mb-1'>Số điện thoại</label>
                     <input type="tel" className='w-full border rounded-lg px-3 py-2 focus:outline-none'
-                        placeholder='Enter your mobile' style={{ border: `1px solid ${borderColor}` }}
+                        placeholder='Nhập số điện thoại' style={{ border: `1px solid ${borderColor}` }}
                         onChange={(e) => setMobile(e.target.value)} value={mobile} required />
                 </div>
                 {/* Password */}
                 <div className='mb-4'>
-                    <label htmlFor="password" className='block text-gray-700 font-medium mb-1'>Password</label>
+                    <label htmlFor="password" className='block text-gray-700 font-medium mb-1'>Mật khẩu</label>
                     <div className='relative'>
                         <input type={`${showPassword ? 'text' : 'password'}`} className='w-full border rounded-lg px-3 py-2 focus:outline-none'
-                            placeholder='Enter your password' style={{ border: `1px solid ${borderColor}` }}
+                            placeholder='Nhập mật khẩu' style={{ border: `1px solid ${borderColor}` }}
                             onChange={(e) => setPassword(e.target.value)} value={password} required />
                         <button className='absolute right-3 cursor-pointer top-[14px] text-gray-500' onClick={() => setShowPassword(prev => !prev)}>
                             {!showPassword ? <FaEye /> : <FaEyeSlash />}
@@ -104,7 +104,7 @@ function SignUp() {
                 </div>
                 {/* Role */}
                 <div className='mb-4'>
-                    <label htmlFor="role" className='block text-gray-700 font-medium mb-1'>Role</label>
+                    <label htmlFor="role" className='block text-gray-700 font-medium mb-1'>Đăng ký tài khoản với tư cách</label>
                     <div className='flex gap-2'>
                         {["user", "owner", "delivery"].map((r) => (
                             <button className='flex-1 border rounded-lg px-3 py-2 text-center font-medium transition-colors'
@@ -116,14 +116,14 @@ function SignUp() {
                 {/* Sign Up */}
                 <button className='w-full font-semibold rounded-lg py-2 transition duration-200 bg-[#ff4d2d] text-white hover:bg-[#e72e00] cursor-pointer'
                     onClick={handleSignUp}>
-                    Sign Up
+                    Đăng ký
                 </button>
                 <button className='w-full mt-4 flex items-center justify-center gap-2 font-semibold rounded-lg px-4 py-2 transition 
                 cursor-pointer duration-200 border border-gray-400 hover:bg-gray-200' onClick={handleGoogleAuth}>
                     <FcGoogle size={20} />
-                    <span>Sign up with Google</span>
+                    <span>Đăng ký với Google</span>
                 </button>
-                <p className='text-center mt-6 cursor-pointer' onClick={() => navigate("/signin")}>Already have a account ? <span className='text-[#ff4d2d]' >Sign In</span> </p>
+                <p className='text-center mt-6 cursor-pointer' onClick={() => navigate("/signin")}>Đã có tài khoản ? <span className='text-[#ff4d2d] underline' >Đăng nhập</span> </p>
             </div>
 
         </div>

@@ -59,7 +59,7 @@ function UserDashBoard() {
         </div>)}
       {/* Category */}
       <div className='w-full max-w-6xl flex flex-col gap-5 items-start p-[10px]'>
-        <h1 className='text-gray-800 text-2xl sm:text-3xl'>Inspiration for your first order</h1>
+        <h1 className='text-gray-800 text-2xl sm:text-3xl'>Danh mục món</h1>
         <div className='w-full'>
           <div ref={cateScrollRef} className='w-full flex overflow-x-auto gap-4 pb-2'>
             {categories.map((cate, index) => (
@@ -71,7 +71,7 @@ function UserDashBoard() {
       </div>
       {/* Shops */}
       <div className='w-full max-w-6xl flex flex-col gap-5 items-start p-[10px]'>
-        <h1 className='text-gray-800 text-2xl sm:text-3xl'>Best shop in {currentCity}</h1>
+        <h1 className='text-gray-800 text-2xl sm:text-3xl'>Nhà hàng uy tín {currentCity}</h1>
         <div className='w-full'>
           <div ref={shopScrollRef} className='w-full flex overflow-x-auto gap-4 pb-2'>
             {shopsInMyCity?.map((shop, index) => (
@@ -82,7 +82,7 @@ function UserDashBoard() {
       </div>
       {/* Food List */}
       <div className='w-full max-w-6xl flex flex-col gap-5 items-start p-[10px]'>
-        <h1 className='text-gray-800 text-2xl sm:text-3xl'>Best food suggestions</h1>
+        <h1 className='text-gray-800 text-2xl sm:text-3xl'>Món ăn gợi ý</h1>
         <div className='w-full h-auto flex flex-wrap gap-[20px] justify-center'>
           {updatedItemsList?.map((item, index) => (
             <FoodCard data={item} key={index} />

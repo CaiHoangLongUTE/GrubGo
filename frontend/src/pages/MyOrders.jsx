@@ -1,13 +1,25 @@
 import React from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { IoArrowBack } from "react-icons/io5";
 import { useNavigate } from 'react-router-dom';
 import UserOrderCard from '../components/UserOrderCard';
 import OwnerOrderCard from '../components/OwnerOrderCard';
+import { useEffect } from 'react';
+import { setMyOrders } from '../redux/userSlice';
 
 function MyOrders() {
-    const { userData, myOrders } = useSelector(state => state.user);
+    const { userData, myOrders, socket } = useSelector(state => state.user);
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        socket?.on("newOrder", (data) => {
+            if (data.shopOrders?.owner._id == userData._id) {
+                dispatch(setMyOrders([data, ...myOrders]));
+            }
+        })
+        return () => { socket?.off("newOrder") }
+    }, [socket]);
     return (
         <div className='w-full min-h-screen bg-[#fff9f6] flex justify-center px-4'>
             <div className='w-full max-w-[800px] p-4'>
@@ -15,16 +27,16 @@ function MyOrders() {
                     <div className='z-[10]' onClick={() => navigate("/")}>
                         <IoArrowBack size={36} className='text-[#ff4d2d]' />
                     </div>
-                    <h1 className='text-2xl font-bold text-start'>My Orders</h1>
+                    <h1 className='text-2xl font-bold text-start'>Đơn hàng</h1>
                 </div>
                 <div className='space-y-6'>
                     {myOrders?.map((order, index) => (
-                        userData.role == "user" 
-                        ?
+                        userData.role == "user"
+                            ?
                             (<UserOrderCard data={order} key={index} />)
-                        : userData.role == "owner" ?
-                            (<OwnerOrderCard data={order} key={index} />)
-                        : null
+                            : userData.role == "owner" ?
+                                (<OwnerOrderCard data={order} key={index} />)
+                                : null
                     ))}
                 </div>
             </div>

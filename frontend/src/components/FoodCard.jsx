@@ -49,7 +49,7 @@ function FoodCard({ data }) {
                 <div className='flex items-center gap-1 mt-1'>
                     {renderStars(data.rating?.average || 0)}
                     <span className='text-xs text-gray-500'>
-                        {data.rating?.count || 0} Reviews
+                        {data.rating?.count || 0} Đánh giá
                     </span>
                 </div>
             </div>
@@ -65,7 +65,7 @@ function FoodCard({ data }) {
                     </button>
                     <button className={`${cartItems.some(item => item.id == data._id) ? "bg-gray-800" : "bg-[#ff4d2d]"} 
                     text-white px-3 py-2 transition-colors`} onClick={() => dispatch(
-                            quantity > 0 ? addToCart({
+                        quantity > 0 ? addToCart({
                             id: data._id,
                             name: data.name,
                             price: data.price,
@@ -73,7 +73,7 @@ function FoodCard({ data }) {
                             shop: data.shop,
                             quantity,
                             foodType: data.foodType,
-                        }): null)}><FaShoppingCart /></button>
+                        }) : null)}><FaShoppingCart /></button>
                 </div>
             </div>
 

@@ -11,8 +11,8 @@ import image10 from './assets/image10.avif';
 
 export const categories = [
     {"category": "Snacks", "image": image1},
-    {"category": "Main Course", "image": image2},
-    {"category": "Desserts", "image": image3},
+    {"category": "Bánh căn", "image": image2},
+    {"category": "Bánh ngọt", "image": image3},
     {"category": "Pizza", "image": image4},
     {"category": "Burger", "image": image5},
     {"category": "Sanwich", "image": image6},

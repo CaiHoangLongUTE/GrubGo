@@ -18,8 +18,8 @@ function CreateEditShop() {
     const [state, setState] = useState(myShopData?.state || currentState);
     const [frontendImage, setFrontendImage] = useState(myShopData?.image || null);
     const [backendImage, setBackendImage] = useState(null);
-    const dispatch=useDispatch();
-    
+    const dispatch = useDispatch();
+
     const handleImage = (e) => {
         const file = e.target.files[0];
         setBackendImage(file);
@@ -29,15 +29,15 @@ function CreateEditShop() {
         e.preventDefault();
         try {
             const formData = new FormData();
-            formData.append("name",name);
-            formData.append("address",address);
-            formData.append("city",city);
-            formData.append("state",state);
-            if(backendImage){
-                formData.append("image",backendImage);
+            formData.append("name", name);
+            formData.append("address", address);
+            formData.append("city", city);
+            formData.append("state", state);
+            if (backendImage) {
+                formData.append("image", backendImage);
             }
-            const result = await axios.post(`${serverUrl}/api/shop/create-edit`,formData,{withCredentials:true});
-            toast.success("Shop details saved successfully",{duration:2000});
+            const result = await axios.post(`${serverUrl}/api/shop/create-edit`, formData, { withCredentials: true });
+            toast.success("Shop details saved successfully", { duration: 2000 });
             navigate("/");
             dispatch(setMyShopData(result.data));
             console.log(result.data);
@@ -56,19 +56,19 @@ function CreateEditShop() {
                         <FaUtensils className="text-[#ff4d2d] w-16 h-16" />
                     </div>
                     <div className="text-3xl font-extrabold text-gray-900">
-                        {myShopData ? "Edit Shop" : "Create Shop"}
+                        {myShopData ? "Cập nhật thông tin nhà hàng" : "Thêm thông tin nhà hàng"}
                     </div>
                 </div>
 
                 <form className="space-y-5" onSubmit={handleSubmit}>
                     <div >
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
-                        <input type="text" placeholder="Enter shop name" className="w-full px-4 py-2 border rounded-lg 
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Tên shop</label>
+                        <input type="text" placeholder="Nhập tên shop" className="w-full px-4 py-2 border rounded-lg 
                         focus:outline-none focus:ring-2 focus:ring-orange-500"
                             onChange={(e) => setName(e.target.value)} value={name} />
                     </div>
                     <div >
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Image</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Hình ảnh shop</label>
                         <input type="file" accept="image/*" className="w-full px-4 py-2 border rounded-lg 
                         focus:outline-none focus:ring-2 focus:ring-orange-500" onChange={handleImage} />
                         {frontendImage &&
@@ -78,27 +78,27 @@ function CreateEditShop() {
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div >
-                            <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
-                            <input type="text" placeholder="Enter city" className="w-full px-4 py-2 border rounded-lg 
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Thành phố</label>
+                            <input type="text" placeholder="Nhập thành phố" className="w-full px-4 py-2 border rounded-lg 
                             focus:outline-none focus:ring-2 focus:ring-orange-500"
                                 onChange={(e) => setCity(e.target.value)} value={city} />
                         </div>
                         <div >
-                            <label className="block text-sm font-medium text-gray-700 mb-1">State</label>
-                            <input type="text" placeholder="Enter state" className="w-full px-4 py-2 border rounded-lg 
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Tỉnh/Thành phố</label>
+                            <input type="text" placeholder="Nhập tỉnh/thành phố" className="w-full px-4 py-2 border rounded-lg 
                             focus:outline-none focus:ring-2 focus:ring-orange-500"
                                 onChange={(e) => setState(e.target.value)} value={state} />
                         </div>
                     </div>
                     <div >
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
-                        <input type="text" placeholder="Enter address" className="w-full px-4 py-2 border rounded-lg 
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Địa chỉ</label>
+                        <input type="text" placeholder="Nhập địa chỉ" className="w-full px-4 py-2 border rounded-lg 
                         focus:outline-none focus:ring-2 focus:ring-orange-500"
                             onChange={(e) => setAddress(e.target.value)} value={address} />
                     </div>
                     <button className="w-full bg-[#ff4d2d] text-white py-3 px-6 rounded-lg hover:bg-orange-600 font-semibold
                     shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer">
-                        Save
+                        Cập nhật
                     </button>
                 </form>
             </div>

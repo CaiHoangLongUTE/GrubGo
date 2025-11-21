@@ -26,8 +26,8 @@ function OwnerOrderCard({ data }) {
         <p className='text-sm text-gray-500'>{data.user.email}</p>
         <p className="flex items-center gap-2 text-sm text-gray-600 mt-1"><MdPhone /><span>{data.user.mobile}</span></p>
         {data.paymentMethod === "online"
-          ? <p className="gap-2 text-sm text-gray-600">Payment: {data.payment ? "true" : "false"}</p>
-          : <p className="gap-2 text-sm text-gray-600">Payment Method: {data.paymentMethod}</p>}
+          ? <p className="gap-2 text-sm text-gray-600">Thanh toán: {data.payment ? "true" : "false"}</p>
+          : <p className="gap-2 text-sm text-gray-600">Phương thức thanh toán: {data.paymentMethod}</p>}
       </div>
 
       <div className="flex items-start gap-2 text-gray-600 text-sm">
@@ -44,21 +44,21 @@ function OwnerOrderCard({ data }) {
         ))}
       </div>
       <div className="flex justify-between items-center mt-auto pt-3 border-t border-gray-100">
-        <span className="text-sm">Status: <span className="font-semibold capitalize text-[#ff4d2d]">
+        <span className="text-sm">Trạng thái: <span className="font-semibold capitalize text-[#ff4d2d]">
           {data.shopOrders.status}</span></span>
         <select className="rounded-md border px-3 py-1 text-sm focus:outline-none 
         focus:ring-2 border-[#ff4d2d]" onChange={(e) => handleUpdateStatus(data._id, data.shopOrders.shop._id, e.target.value)}>
           <option >Change</option>
-          <option value="pending">Pending</option>
-          <option value="preparing">Preparing</option>
-          <option value="out of delivery">Out of delivery</option>
+          <option value="pending">Đang chờ</option>
+          <option value="preparing">Đang chuẩn bị</option>
+          <option value="out of delivery">Đang giao</option>
         </select>
       </div>
 
       {data.shopOrders.status == "out of delivery" &&
         <div className="mt-3 p-2 border rounded-lg text-sm bg-orange-50">
-          {data.shopOrders.assignedDeliveryPerson ? <p>Assigned Delivery Person</p> :
-            <p>Available Delivery Person:</p>}
+          {data.shopOrders.assignedDeliveryPerson ? <p>Người giao hàng</p> :
+            <p>Người giao hàng chưa được giao</p>}
           {availableDeliveryPerson?.length > 0 ? (
             availableDeliveryPerson.map((p, index) => (
               <div className="text-gray-800">{p.fullName}-{p.mobile}</div>
@@ -66,10 +66,10 @@ function OwnerOrderCard({ data }) {
           )
             : data.shopOrders.assignedDeliveryPerson
               ? <div>{data.shopOrders.assignedDeliveryPerson.fullName}-{data.shopOrders.assignedDeliveryPerson.mobile}</div>
-              : <div>Waiting available delivery person</div>}
+              : <div>Đang chờ người giao hàng</div>}
         </div>}
       <div className="text-right font-bold text-gray-800 text-sm">
-        Total: {data.shopOrders.subTotal}
+        Tổng tiền: {data.shopOrders.subTotal}
       </div>
     </div>
   )

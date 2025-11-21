@@ -6,10 +6,10 @@ function OrderPlaced() {
   return (
     <div className='min-h-screen bg-[#fff9f6] flex flex-col items-center justify-center px-4 text-center relative overflow-hidden'>
       <FaCircleCheck className="text-green-500 text-6xl mb-4" />
-      <h1 className="text-3xl font-bold text-gray-800 mb-2">Order Placed</h1>
-      <p className="text-gray-600 max-w-md mb-6">Your order has been successfully placed</p>
+      <h1 className="text-3xl font-bold text-gray-800 mb-2">Đặt hàng thành công</h1>
+      <p className="text-gray-600 max-w-md mb-6">Đơn hàng của bạn đã được đặt thành công</p>
       <button className="bg-[#ff2d2d] hover:bg-[#e64526] text-white px-6 py-3 rounded-lg text-lg
-      font-medium transition" onClick={() => navigate("/my-orders")}>Back to my orders</button>
+      font-medium transition" onClick={() => navigate("/my-orders")}>Quay lại đơn hàng</button>
     </div>
   )
 }

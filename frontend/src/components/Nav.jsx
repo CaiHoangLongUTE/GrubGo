@@ -59,7 +59,7 @@ function Nav() {
                     </div>
                     <div className='w-[80%] flex items-center gap-[10px] px-[10px]'>
                         <IoIosSearch size={24} className='text-[#ff4d2d]' />
-                        <input type="text" placeholder='Search delicious food' className='px-[10px] text-gray-700 outline-0 
+                        <input type="text" placeholder='Tìm kiếm món ăn' className='px-[10px] text-gray-700 outline-0 
                         w-full' onChange={(e) => setQuery(e.target.value)} value={query} />
                     </div>
                 </div>
@@ -73,7 +73,7 @@ function Nav() {
                     </div>
                     <div className='w-[80%] flex items-center gap-[10px] px-[10px]'>
                         <IoIosSearch size={24} className='text-[#ff4d2d]' />
-                        <input type="text" placeholder='Search delicious food' className='px-[10px] text-gray-700 outline-0 
+                        <input type="text" placeholder='Tìm kiếm món ăn' className='px-[10px] text-gray-700 outline-0 
                         w-full' onChange={(e) => setQuery(e.target.value)} value={query} />
                     </div>
                 </div>}
@@ -86,7 +86,7 @@ function Nav() {
                         <button className='hidden md:flex items-center gap-1 p-2 cursor-pointer rounded-full bg-[#ff4d2d]/10 
                         text-[#ff4d2d]' onClick={() => navigate("/add-item")}>
                             <FaPlus size={24} />
-                            <span>Add Food Item</span>
+                            <span>Thêm món ăn</span>
                         </button>
                         <button className='md:hidden flex items-center p-2 cursor-pointer rounded-full bg-[#ff4d2d]/10 
                         text-[#ff4d2d]' onClick={() => navigate("/add-item")}>
@@ -96,7 +96,7 @@ function Nav() {
                     <div className='hidden md:flex items-center gap-2 cursor-pointer relative px-3 py-1  rounded-xl 
                     bg-[#ff4d2d]/10 text-[#ff4d2d] font-medium' onClick={() => navigate("/my-orders")}>
                         <TbReceipt size={24} />
-                        <span>My Orders</span>
+                        <span>Đơn hàng</span>
                         <span className='absolute -right-2 -top-2 text-xs font-bold text-white bg-[#ff4d2d] rounded-full px-[6px] py-[1px]'>0</span>
                     </div>
                     <div className='md:hidden flex items-center gap-2 cursor-pointer relative px-3 py-1  rounded-xl 
@@ -113,7 +113,7 @@ function Nav() {
 
                     <button className='hidden md:block px-3 py-1 rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d] text-sm font-medium'
                         onClick={() => navigate("/my-orders")}>
-                        My Orders
+                        Đơn hàng
                     </button>
                 </>)}
 
@@ -128,8 +128,8 @@ function Nav() {
                             <div className='tetx-[16px] font-semibold'>{userData.fullName}</div>
                             {userData.role == "user" &&
                                 <div className='md:hidden text-[#ff4d2d] font-semibold cursor-pointer'
-                                    onClick={() => navigate("/my-orders")}>My Orders</div>}
-                            <div className='text-[#ff4d2d] font-semibold cursor-pointer' onClick={handleLogOut}>Log Out</div>
+                                    onClick={() => navigate("/my-orders")}>Đơn hàng</div>}
+                            <div className='text-[#ff4d2d] font-semibold cursor-pointer' onClick={handleLogOut}>Đăng xuất</div>
                         </div>
                     }</div>
             </div>

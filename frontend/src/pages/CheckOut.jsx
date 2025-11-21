@@ -113,14 +113,14 @@ function CheckOut() {
                 <IoArrowBack size={36} className='text-[#ff4d2d]' />
             </div>
             <div className='w-full max-w-[900px] bg-white rounded-2xl shadow-xl p-6 space-y-6'>
-                <h1 className='text-2xl font-bold text-gray-800'>Check out</h1>
+                <h1 className='text-2xl font-bold text-gray-800'>Thanh toán</h1>
                 {/* Map  */}
                 <section>
                     <h2 className='text-lg font-semibold mb-2 flex items-center gap-2 text-gray-800'>
-                        <IoLocationSharp size={16} className='text-[#ff4d2d]' />Delivery location</h2>
+                        <IoLocationSharp size={16} className='text-[#ff4d2d]' />Địa chỉ giao hàng</h2>
                     <div className='flex gap-2 mb-3'>
                         <input type="text" className='flex-1 border border-gray-300 rounded-lg p-2 text-sm focus:outline-none 
-                        focus:ring-2 focus:ring-[#ff4d2d]' placeholder='Enter your address...'
+                        focus:ring-2 focus:ring-[#ff4d2d]' placeholder='Nhập địa chỉ giao hàng'
                             value={addressInput} onChange={(e) => setAddressInput(e.target.value)} />
                         <button className='bg-[#ff4d2d] hover:bg-[#e64526] text-white px-3 py-2
                         rounded-lg flex items-center justify-center' onClick={getLatLngByAddress}><IoSearchOutline size={16} /></button>
@@ -142,7 +142,7 @@ function CheckOut() {
                 </section>
                 {/* Payment  */}
                 <section>
-                    <h2 className='text-lg font-semibold mb-2 flex items-center gap-2 text-gray-800'>Payment Method</h2>
+                    <h2 className='text-lg font-semibold mb-2 flex items-center gap-2 text-gray-800'>Phương thức thanh toán</h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className={`flex items-center gap-3 rounded-xl border p-4 text-left transition ${paymentMethod === "cod" ?
                             "border-[#ff4d2d] bg-orange-50 shadow" : "border-gray-200 hover:border=gray-300"
@@ -151,8 +151,8 @@ function CheckOut() {
                                 <MdDeliveryDining className="text-green-600 text-xl" />
                             </span>
                             <div>
-                                <p className="font-medium text-gray-800">Cash On Delivery</p>
-                                <p className="text-xs text-gray-500">Pay when food is delivered</p>
+                                <p className="font-medium text-gray-800">Thanh toán khi nhận hàng</p>
+                                <p className="text-xs text-gray-500">Thanh toán khi nhận hàng</p>
                             </div>
                         </div>
                         <div className={`flex items-center gap-3 rounded-xl border p-4 text-left transition ${paymentMethod === "online" ?
@@ -165,15 +165,15 @@ function CheckOut() {
                                 <FaCreditCard className="text-blue-700 text-xl" />
                             </span>
                             <div>
-                                <p className="font-medium text-gray-800">Credit / Debit Card</p>
-                                <p className="text-xs text-gray-500">Payment Securely Online</p>
+                                <p className="font-medium text-gray-800">Thẻ tín dụng / Debit Card</p>
+                                <p className="text-xs text-gray-500">Thanh toán an toàn trực tuyến</p>
                             </div>
                         </div>
                     </div>
                 </section>
                 {/* Order Sumary  */}
                 <section>
-                    <h2 className='text-lg font-semibold mb-2 flex items-center gap-2 text-gray-800'>Order Summary</h2>
+                    <h2 className='text-lg font-semibold mb-2 flex items-center gap-2 text-gray-800'>Tóm tắt đơn hàng</h2>
                     <div className="rounded-xl border bg-gray-50 p-4 space-y-2">
                         {cartItems.map((item, index) => (
                             <div className="flex justify-between text-sm text-gray-700" key={index}>
@@ -183,22 +183,22 @@ function CheckOut() {
                         ))}
                         <hr className="border-gray-400 my-2" />
                         <div className="flex justify-between text-sm font-semibold text-gray-800">
-                            <span>Subtotal</span>
-                            <span>{totalAmount}</span>
+                            <span>Tổng tiền</span>
+                            <span>{totalAmount} ₫</span>
                         </div>
                         <div className="flex justify-between text-sm text-gray-700">
-                            <span>Delivery Fee</span>
-                            <span>{deliveryFee == 0 ? "Free" : deliveryFee}</span>
+                            <span>Phí giao hàng</span>
+                            <span>{deliveryFee == 0 ? "Free" : deliveryFee} ₫</span>
                         </div>
                         <div className="flex justify-between text-sm font-bold text-[#ff4d2d] pt-2">
-                            <span>ToTal</span>
-                            <span>{amountWithDeliveryFee}</span>
+                            <span>Tổng thanh toán</span>
+                            <span>{amountWithDeliveryFee} ₫</span>
                         </div>
                     </div>
                 </section>
                 <button className="w-full bg-[#ff4d2d] hover:bg-[#e64526] text-white py-3 rounded-xl font-semibold"
                     onClick={handlePlaceOrder}>
-                    {paymentMethod == "cod" ? "Place Order" : "Pay Now"}</button>
+                    {paymentMethod == "cod" ? "Đặt hàng" : "Thanh toán"}</button>
             </div>
         </div>
     )

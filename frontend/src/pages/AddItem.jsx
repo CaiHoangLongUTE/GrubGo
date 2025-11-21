@@ -61,19 +61,19 @@ function AddItem() {
                         <FaUtensils className="text-[#ff4d2d] w-16 h-16" />
                     </div>
                     <div className="text-3xl font-extrabold text-gray-900">
-                        Add food
+                        Thêm món ăn
                     </div>
                 </div>
 
                 <form className="space-y-5" onSubmit={handleSubmit}>
                     <div >
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
-                        <input type="text" placeholder="Enter item name" className="w-full px-4 py-2 border rounded-lg 
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Tên món ăn</label>
+                        <input type="text" placeholder="Nhập tên món ăn" className="w-full px-4 py-2 border rounded-lg 
                         focus:outline-none focus:ring-2 focus:ring-orange-500"
                             onChange={(e) => setName(e.target.value)} value={name} />
                     </div>
                     <div >
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Food Image</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Hình ảnh món ăn</label>
                         <input type="file" accept="image/*" className="w-full px-4 py-2 border rounded-lg 
                         focus:outline-none focus:ring-2 focus:ring-orange-500" onChange={handleImage} />
                         {frontendImage &&
@@ -82,33 +82,33 @@ function AddItem() {
                             </div>}
                     </div>
                     <div >
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Price</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Giá</label>
                         <input type="number" placeholder="0" className="w-full px-4 py-2 border rounded-lg 
                         focus:outline-none focus:ring-2 focus:ring-orange-500"
                             onChange={(e) => setPrice(e.target.value)} value={price} />
                     </div>
                     <div >
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Select Category</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Loại</label>
                         <select className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                             onChange={(e) => setCategory(e.target.value)} value={category}>
                             <option value="">All</option>
-                            {categories.map((cate,index)=>(
+                            {categories.map((cate, index) => (
                                 <option key={index} value={cate}>{cate}</option>
                             ))}
                         </select>
                     </div>
                     <div >
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Select FoodType</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Loại thức ăn</label>
                         <select className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                             onChange={(e) => setFoodType(e.target.value)} value={foodType}>
-                            <option value="veg">Veg</option>
-                            <option value="non-veg">Non-Veg</option>
+                            <option value="veg">Thức ăn chay</option>
+                            <option value="non-veg">Thức ăn mặn</option>
                         </select>
                     </div>
 
                     <button className="w-full bg-[#ff4d2d] text-white py-3 px-6 rounded-lg hover:bg-orange-600 font-semibold
                     shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer">
-                        Save
+                        Thêm món ăn
                     </button>
                 </form>
             </div>

@@ -33,7 +33,7 @@ function Shop() {
       <button className='absolute top-4 left-4 z-20 flex items-center gap-2 bg-black/50 hover:bg-black/70 text-white
       px-3 py-2 rounded-full shadow transition' onClick={() => navigate("/")}>
         <FaBackward />
-        <span>Back</span>
+        <span>Quay lại</span>
       </button>
       {shop && <div className='relative w-full h-64 md:h-80 lg:h-96'>
         <img src={shop.image} alt="" className='w-full h-full object-cover' />
@@ -50,12 +50,12 @@ function Shop() {
 
       <div className='max-w-7xl mx-auto px-6 py-10'>
         <h2 className='flex items-center justify-center gap-3 text-3xl font-bold mb-10 text-gray-800'>
-          <FaUtensils color='red' />Our menu</h2>
+          <FaUtensils color='red' />Menu</h2>
         {items.length > 0 ? (<div className='flex flex-wrap justify-center gap-8'>
           {items.map((item) => (
             <FoodCard key={item._id} data={item} />
           ))}
-        </div>) : <p className='text-center text-gray-500 text-lg'>No item available</p>}
+        </div>) : <p className='text-center text-gray-500 text-lg'>Không có món ăn</p>}
       </div>
     </div>
   )

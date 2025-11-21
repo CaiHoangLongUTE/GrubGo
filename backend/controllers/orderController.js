@@ -55,6 +55,27 @@ export const placeOrder = async (req, res) => {
         })
         await newOrder.populate("shopOrders.shopOrderItems.item", "name image price");
         await newOrder.populate("shopOrders.shop", "name");
+        await newOrder.populate("shopOrders.owner", "name socketId");
+        await newOrder.populate("user", "name email mobile");
+
+        const io = req.app.get("io");
+        if (io) {
+            newOrder.shopOrders.forEach(shopOrder => {
+                const ownerSocketId = shopOrder.owner.socketId;
+                if (ownerSocketId) {
+                    io.to(ownerSocketId).emit("newOrder", {
+                        _id: newOrder._id,
+                        paymentMethod: newOrder.paymentMethod,
+                        user: newOrder.user,
+                        shopOrders: shopOrder,
+                        createdAt: newOrder.createdAt,
+                        deliveryAddress: newOrder.deliveryAddress,
+                        payment: newOrder.payment,
+                    })
+                }
+            })
+        }
+
         return res.status(201).json(newOrder);
     } catch (error) {
         return res.status(500).json({ message: `Place order failed. Error: ${error.message}` });
@@ -87,6 +108,7 @@ export const getMyOrders = async (req, res) => {
                 shopOrders: order.shopOrders.find(o => o.owner._id == req.userId),
                 createdAt: order.createdAt,
                 deliveryAddress: order.deliveryAddress,
+                payment: order.payment,
             })))
             return res.status(200).json(filteredOrders);
         }
@@ -345,7 +367,7 @@ export const verifyDeliveryOtp = async (req, res) => {
         shopOrder.status = "delivered";
         shopOrder.deliveryAt = Date.now();
         await order.save();
-        await DeliveryAssignment.deleteOne({ 
+        await DeliveryAssignment.deleteOne({
             shopOrderId: shopOrder._id,
             order: order._id,
             assignedTo: shopOrder.assignedDeliveryPerson

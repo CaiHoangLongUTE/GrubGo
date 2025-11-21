@@ -70,9 +70,9 @@ export const signUp = async (req, res) => {
 export const signOut = async (req, res) => {
     try {
         res.clearCookie("token");
-        return res.status(200).json({ message: "Log out successfully" });
+        return res.status(200).json({ message: "Đăng xuất thành công" });
     } catch (error) {
-        return res.status(500).json(`Sign out failed. Error: ${error.message}`);
+        return res.status(500).json(`Đăng xuất thất bại. Error: ${error.message}`);
     }
 };
 
@@ -139,10 +139,10 @@ export const resetPassword = async (req, res) => {
 
 export const googleAuth = async (req, res) => {
     try {
-        const {fullName, email, mobile, role} = req.body;
+        const { fullName, email, mobile, role } = req.body;
         let user = await User.findOne({ email });
         if (!user) {
-            user = await User.create({fullName, email, mobile, role});
+            user = await User.create({ fullName, email, mobile, role });
         }
         const token = await genToken(user._id);
         res.cookie("token", token, {
