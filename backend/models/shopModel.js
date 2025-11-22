@@ -8,6 +8,7 @@ const shopSchema = new mongoose.Schema({
     state: { type: String, required: true },
     address: { type: String, required: true },
     items: [{ type: mongoose.Schema.Types.ObjectId, ref: "Item" }],
+    status: { type: String, enum: ["active", "disabled"], default: "active" },
 }, { timestamps: true });
 
 const Shop = mongoose.model("Shop", shopSchema);

@@ -24,6 +24,11 @@ import TrackOrder from './pages/TrackOrder.jsx'
 import Shop from './pages/Shop.jsx'
 import { io } from 'socket.io-client'
 import { setSocket } from './redux/userSlice.js'
+import AdminLayout from './components/AdminLayout.jsx'
+import AdminDashboard from './pages/AdminDashboard.jsx'
+import AdminUsers from './pages/AdminUsers.jsx'
+import AdminShops from './pages/AdminShops.jsx'
+import AdminOrders from './pages/AdminOrders.jsx'
 
 export const serverUrl = "http://localhost:8000"
 
@@ -43,11 +48,11 @@ function App() {
     const socketInstance = io(serverUrl, { withCredentials: true });
     dispatch(setSocket(socketInstance));
     socketInstance.on("connect", () => {
-      if(userData){
+      if (userData) {
         socketInstance.emit("identity", { userId: userData._id });
       }
     })
-    return () => {socketInstance.disconnect()}
+    return () => { socketInstance.disconnect() }
   }, [userData?._id])
   return (
     <>
@@ -66,6 +71,14 @@ function App() {
         <Route path="my-orders" element={userData ? <MyOrders /> : <Navigate to="/signin" />} />
         <Route path="track-order/:orderId" element={userData ? <TrackOrder /> : <Navigate to="/signin" />} />
         <Route path="shop/:shopId" element={userData ? <Shop /> : <Navigate to="/signin" />} />
+
+        {/* Admin Routes */}
+        <Route path="/admin" element={userData?.role === "admin" ? <AdminLayout /> : <Navigate to="/" />}>
+          <Route index element={<AdminDashboard />} />
+          <Route path="users" element={<AdminUsers />} />
+          <Route path="shops" element={<AdminShops />} />
+          <Route path="orders" element={<AdminOrders />} />
+        </Route>
       </Routes>
     </>
   )

@@ -14,9 +14,11 @@ const userSchema = new mongoose.Schema({
         coordinates: { type: [Number], default: [0, 0] }
     },
     socketId: { type: String },
-    isOnline: { type: Boolean, default: false }
+    isOnline: { type: Boolean, default: false },
+    status: { type: String, enum: ["active", "banned"], default: "active" }
 }, { timestamps: true });
+
 userSchema.index({ location: "2dsphere" });
 
 const User = mongoose.model("User", userSchema);
-export default User;    
+export default User;

@@ -11,9 +11,11 @@ import shopRouter from "./routes/shopRoute.js";
 import itemRouter from './routes/itemRoute.js';
 import orderRouter from "./routes/orderRoute.js";
 import PaymentRouter from "./routes/paymentRoute.js";
+import adminRouter from "./routes/adminRoute.js";
 import http from "http";
 import { Server } from "socket.io";
 import { socketHandler } from "./socket.js";
+import { seedAdmin } from "./utils/seedAdmin.js";
 
 const app = express();
 const server = http.createServer(app);
@@ -45,11 +47,13 @@ app.use("/api/shop", shopRouter);
 app.use("/api/item", itemRouter)
 app.use("/api/order", orderRouter);
 app.use("/api/payment", PaymentRouter);
+app.use("/api/admin", adminRouter);
 socketHandler(io);
 console.log("MONGODB_URL:", process.env.MONGODB_URL);
 const startServer = async () => {
   try {
     await connectDB(); // thử kết nối MongoDB
+    await seedAdmin(); // Tự động tạo admin từ env
     server.listen(port, () => {
       console.log(`🚀 Server running on port ${port}`);
     });
