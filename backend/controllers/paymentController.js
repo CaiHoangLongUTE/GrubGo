@@ -2,6 +2,7 @@ import moment from "moment";
 import querystring from "qs";
 import crypto from "crypto";
 import { vnpayConfig } from "../config/vnpayConfig.js";
+import Order from "../models/orderModel.js";
 
 function sortObject(obj) {
     let sorted = {};
@@ -57,7 +58,7 @@ export const createVnpayUrl = async (req, res) => {
             vnp_IpAddr: ipAddr,
             vnp_CreateDate: createDate,
         };
-        
+
         vnp_Params = sortObject(vnp_Params);
 
         const signData = querystring.stringify(vnp_Params, { encode: false });
@@ -109,7 +110,55 @@ export const vnpayReturn = async (req, res) => {
         }
 
         // ✅ thanh toán thành công
-        return res.status(200).json({ message: "Thanh toán thành công", data: vnp_Params });
+        if (vnp_Params['vnp_ResponseCode'] === '00') {
+            const orderInfo = vnp_Params['vnp_OrderInfo'];
+            const cleanOrderInfo = orderInfo.replace(/\+/g, ' ');
+            const orderId = cleanOrderInfo.split(' ').pop();
+
+            const order = await Order.findById(orderId);
+            if (order) {
+                // Cập nhật payment status
+                order.payment = true;
+                if (order.shopOrders) {
+                    order.shopOrders.forEach(so => {
+                        so.payment = true;
+                        so.paymentAt = new Date();
+                    });
+                }
+                await order.save();
+
+                // Populate thông tin để gửi real-time
+                await order.populate("shopOrders.shopOrderItems.item", "name image price");
+                await order.populate("shopOrders.shop", "name");
+                await order.populate("shopOrders.owner", "name socketId");
+                await order.populate("user", "name email mobile");
+
+                // ✅ Gửi thông báo real-time cho owner
+                const io = req.app.get("io");
+                if (io) {
+                    order.shopOrders.forEach(shopOrder => {
+                        const ownerSocketId = shopOrder.owner.socketId;
+                        if (ownerSocketId) {
+                            io.to(ownerSocketId).emit("newOrder", {
+                                _id: order._id,
+                                paymentMethod: order.paymentMethod,
+                                user: order.user,
+                                shopOrders: shopOrder,
+                                createdAt: order.createdAt,
+                                deliveryAddress: order.deliveryAddress,
+                                payment: order.payment,
+                            });
+                        }
+                    });
+                }
+            }
+
+            // ✅ Redirect về trang order-placed
+            return res.redirect(`http://localhost:5173/order-placed`);
+        } else {
+            // Thanh toán thất bại, redirect về cart
+            return res.redirect(`http://localhost:5173/cart`);
+        }
 
     } catch (error) {
         console.error("❌ Error:", error);
