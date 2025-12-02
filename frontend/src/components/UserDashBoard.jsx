@@ -61,7 +61,7 @@ function UserDashBoard() {
       <div className='w-full max-w-6xl flex flex-col gap-5 items-start p-[10px]'>
         <h1 className='text-gray-800 text-2xl sm:text-3xl'>Danh mục món</h1>
         <div className='w-full'>
-          <div ref={cateScrollRef} className='w-full flex overflow-x-auto gap-4 pb-2'>
+          <div ref={cateScrollRef} className='w-full flex overflow-x-auto gap-4 py-4 px-2'>
             {categories.map((cate, index) => (
               <CategoryCard name={cate.category} image={cate.image} key={index}
                 onClick={() => handleFilterByCategory(cate.category)} />
