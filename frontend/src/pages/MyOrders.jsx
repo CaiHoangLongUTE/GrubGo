@@ -18,7 +18,9 @@ function MyOrders() {
                 dispatch(setMyOrders([data, ...myOrders]));
             }
         })
-        return () => { socket?.off("newOrder") }
+        return () => {
+            socket?.off("newOrder")
+        }
     }, [socket]);
     return (
         <div className='w-full min-h-screen bg-[#fff9f6] flex justify-center px-4'>

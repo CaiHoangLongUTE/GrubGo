@@ -180,11 +180,12 @@ export const updateOrderStatus = async (req, res) => {
 
 
 
+
         return res.status(200).json({
             shopOrder: updatedShopOrder,
             assignedDeliveryPerson: updatedShopOrder?.assignedDeliveryPerson,
             availableDeliveryPerson: deliveryPersonPayload,
-            assignment: updatedShopOrder?.assignment._id,
+            gnment: updatedShopOrder?.assignment?._id,
 
         })
     } catch (error) {

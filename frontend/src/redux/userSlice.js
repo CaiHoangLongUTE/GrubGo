@@ -65,9 +65,12 @@ const userSlice = createSlice({
         },
         updateOrderStatus: (state, action) => {
             const { orderId, shopId, status } = action.payload;
-            const order = state.myOrders.find(o => o._id == orderId);
-            if (order.shopOrders && order.shopOrders.shop._id == shopId) {
-                order.shopOrders.status = status;
+            const index = state.myOrders.findIndex(o => o._id == orderId);
+            if (index !== -1 && state.myOrders[index]?.shopOrders?.shop?._id == shopId) {
+                state.myOrders[index] = {
+                    ...state.myOrders[index],
+                    shopOrders: { ...state.myOrders[index].shopOrders, status }
+                };
             }
         },
         setSearchItems: (state, action) => {
