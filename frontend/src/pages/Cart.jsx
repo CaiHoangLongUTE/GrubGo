@@ -24,13 +24,15 @@ function Cart() {
                             <CartItemCard data={item} key={index} />
                         ))}
                     </div>
-                    <div className='mt-6 bg-white p-4 rounded-xl shadow flex justify-between items-center border'>
-                        <h1 className='text-lg font-semibold'>Tổng tiền</h1>
-                        <span className='text-xl font-bold text-[#ff4d2d]'>{totalAmount} ₫</span>
-                    </div>
-                    <div className='mt-4 flex justify-end'>
-                        <button className='bg-[#ff4d2d] text-white px-6 py-3 rounded-lg text-lg font-medium 
-                        hover:bg-[#e64526] transition' onClick={() => navigate("/checkout")}>Thanh toán</button>
+                    <div className='mt-6 bg-white p-6 rounded-2xl shadow-md flex justify-between items-center border border-gray-100'>
+                        <div>
+                            <h1 className='text-gray-500 text-sm'>Tổng thanh toán</h1>
+                            <span className='text-2xl font-bold text-gray-900'>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(totalAmount)}</span>
+                        </div>
+                        <button className='bg-[#ff4d2d] text-white px-8 py-3 rounded-xl text-lg font-bold shadow-lg shadow-orange-200 hover:shadow-orange-300 hover:bg-[#e64526] transition-all active:scale-95'
+                            onClick={() => navigate("/checkout")}>
+                            Thanh toán
+                        </button>
                     </div>
                 </>)}
             </div>
