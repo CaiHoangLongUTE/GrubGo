@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import UserOrderCard from '../components/UserOrderCard';
 import OwnerOrderCard from '../components/OwnerOrderCard';
 import { useEffect } from 'react';
-import { setMyOrders } from '../redux/userSlice';
+import { setMyOrders, updatePaymentStatus, updateUserOrderStatus } from '../redux/userSlice';
 
 function MyOrders() {
     const { userData, myOrders, socket } = useSelector(state => state.user);
@@ -18,10 +18,22 @@ function MyOrders() {
                 dispatch(setMyOrders([data, ...myOrders]));
             }
         })
+
+        socket?.on("paymentUpdate", (data) => {
+            dispatch(updatePaymentStatus(data));
+        })
+
+        // Listen for status updates (for users)
+        socket?.on("statusUpdate", (data) => {
+            dispatch(updateUserOrderStatus(data));
+        })
+
         return () => {
             socket?.off("newOrder")
+            socket?.off("paymentUpdate")
+            socket?.off("statusUpdate")
         }
-    }, [socket]);
+    }, [socket, myOrders, userData._id, dispatch]);
     return (
         <div className='w-full min-h-screen bg-[#fff9f6] flex justify-center px-4'>
             <div className='w-full max-w-[800px] p-4'>

@@ -139,14 +139,9 @@ export const vnpayReturn = async (req, res) => {
                     order.shopOrders.forEach(shopOrder => {
                         const ownerSocketId = shopOrder.owner.socketId;
                         if (ownerSocketId) {
-                            io.to(ownerSocketId).emit("newOrder", {
-                                _id: order._id,
-                                paymentMethod: order.paymentMethod,
-                                user: order.user,
-                                shopOrders: shopOrder,
-                                createdAt: order.createdAt,
-                                deliveryAddress: order.deliveryAddress,
-                                payment: order.payment,
+                            io.to(ownerSocketId).emit("paymentUpdate", {
+                                orderId: order._id,
+                                payment: true
                             });
                         }
                     });

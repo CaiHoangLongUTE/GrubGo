@@ -63,14 +63,32 @@ const userSlice = createSlice({
         addMyOrder: (state, action) => {
             state.myOrders = [action.payload, ...state.myOrders];
         },
-        updateOrderStatus: (state, action) => {
+        updateOwnerOrderStatus: (state, action) => {
             const { orderId, shopId, status } = action.payload;
-            const index = state.myOrders.findIndex(o => o._id == orderId);
-            if (index !== -1 && state.myOrders[index]?.shopOrders?.shop?._id == shopId) {
-                state.myOrders[index] = {
-                    ...state.myOrders[index],
-                    shopOrders: { ...state.myOrders[index].shopOrders, status }
-                };
+            const order = state.myOrders.find(o => o._id == orderId);
+            if (order.shopOrders && order.shopOrders.shop._id == shopId) {
+                order.shopOrders.status = status;
+            }
+        },
+        // For User: shopOrders is an ARRAY
+        updateUserOrderStatus: (state, action) => {
+            const { orderId, shopId, status } = action.payload;
+            const order = state.myOrders.find(o => o._id == orderId);
+            if (!order) return;
+            const shopOrder = order.shopOrders?.find(so => so.shop?._id == shopId || so.shop == shopId);
+            if (shopOrder) {
+                shopOrder.status = status;
+            }
+        },
+        updatePaymentStatus: (state, action) => {
+            const { orderId } = action.payload;
+            const order = state.myOrders.find(o => o._id == orderId);
+            if (order) {
+                order.payment = true;
+                // Update shopOrders payment status
+                if (order.shopOrders) {
+                    order.shopOrders.payment = true;
+                }
             }
         },
         setSearchItems: (state, action) => {
@@ -83,5 +101,6 @@ const userSlice = createSlice({
 })
 
 export const { setUserData, setCurrentCity, setCurrentState, setCurrentAddress, setShopsInMyCity, setItemsInMyCity,
-    addToCart, updateQuantity, removeCartItem, setMyOrders, addMyOrder, updateOrderStatus, setSearchItems, setSocket } = userSlice.actions;
+    addToCart, updateQuantity, removeCartItem, setMyOrders, addMyOrder, updateOwnerOrderStatus, updateUserOrderStatus,
+    updatePaymentStatus, setSearchItems, setSocket } = userSlice.actions;
 export default userSlice.reducer;

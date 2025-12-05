@@ -2,7 +2,7 @@ import axios from "axios";
 import { MdPhone } from "react-icons/md";
 import { serverUrl } from "../App";
 import { useDispatch } from "react-redux";
-import { updateOrderStatus } from "../redux/userSlice";
+import { updateOwnerOrderStatus } from "../redux/userSlice";
 import { useState } from "react";
 
 function OwnerOrderCard({ data }) {
@@ -12,7 +12,7 @@ function OwnerOrderCard({ data }) {
     try {
       const result = await axios.post(`${serverUrl}/api/order/update-status/${orderId}/${shopId}`, { status }, { withCredentials: true });
       console.log(result.data);
-      dispatch(updateOrderStatus({ orderId, shopId, status }));
+      dispatch(updateOwnerOrderStatus({ orderId, shopId, status }));
       setAvailableDeliveryPerson(result.data.availableDeliveryPerson);
       console.log(result.data);
     } catch (error) {

@@ -178,7 +178,18 @@ export const updateOrderStatus = async (req, res) => {
         await order.populate("shopOrders.shop", "name");
         await order.populate("shopOrders.assignedDeliveryPerson", "fullName email mobile");
 
+        await order.populate("user", "socketId");
 
+        // ✅ Gửi thông báo real-time cho user khi status thay đổi
+        const io = req.app.get("io");
+        if (io && order.user?.socketId) {
+            const userSocketId = order.user.socketId;
+            io.to(userSocketId).emit("statusUpdate", {
+                orderId: order._id,
+                shopId: shopId,
+                status: status
+            });
+        }
 
 
         return res.status(200).json({
