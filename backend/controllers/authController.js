@@ -69,7 +69,11 @@ export const signUp = async (req, res) => {
 
 export const signOut = async (req, res) => {
     try {
-        res.clearCookie("token");
+        res.clearCookie("token", {
+            secure: false,
+            sameSite: "strict",
+            httpOnly: true
+        });
         return res.status(200).json({ message: "Đăng xuất thành công" });
     } catch (error) {
         return res.status(500).json(`Đăng xuất thất bại. Error: ${error.message}`);

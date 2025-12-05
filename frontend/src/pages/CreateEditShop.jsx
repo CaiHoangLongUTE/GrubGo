@@ -62,42 +62,42 @@ function CreateEditShop() {
 
                 <form className="space-y-5" onSubmit={handleSubmit}>
                     <div >
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Tên shop</label>
-                        <input type="text" placeholder="Nhập tên shop" className="w-full px-4 py-2 border rounded-lg 
-                        focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        <label className="block text-sm font-medium text-gray-700 mb-1.5">Tên shop</label>
+                        <input type="text" placeholder="Nhập tên shop" className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50
+                        focus:outline-none focus:ring-2 focus:ring-[#ff4d2d]/20 focus:border-[#ff4d2d] transition-all text-sm"
                             onChange={(e) => setName(e.target.value)} value={name} />
                     </div>
                     <div >
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Hình ảnh shop</label>
-                        <input type="file" accept="image/*" className="w-full px-4 py-2 border rounded-lg 
-                        focus:outline-none focus:ring-2 focus:ring-orange-500" onChange={handleImage} />
+                        <label className="block text-sm font-medium text-gray-700 mb-1.5">Hình ảnh shop</label>
+                        <input type="file" accept="image/*" className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50
+                        focus:outline-none focus:ring-2 focus:ring-[#ff4d2d]/20 focus:border-[#ff4d2d] transition-all text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-[#ff4d2d] hover:file:bg-orange-100" onChange={handleImage} />
                         {frontendImage &&
                             <div className="mt-4">
-                                <img src={frontendImage} alt="" className="w-full h-48 object-cover rounded-lg border" />
+                                <img src={frontendImage} alt="" className="w-full h-48 object-cover rounded-xl border border-gray-200" />
                             </div>}
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div >
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Thành phố</label>
-                            <input type="text" placeholder="Nhập thành phố" className="w-full px-4 py-2 border rounded-lg 
-                            focus:outline-none focus:ring-2 focus:ring-orange-500"
+                            <label className="block text-sm font-medium text-gray-700 mb-1.5">Thành phố</label>
+                            <input type="text" placeholder="Nhập thành phố" className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50
+                            focus:outline-none focus:ring-2 focus:ring-[#ff4d2d]/20 focus:border-[#ff4d2d] transition-all text-sm"
                                 onChange={(e) => setCity(e.target.value)} value={city} />
                         </div>
                         <div >
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Tỉnh/Thành phố</label>
-                            <input type="text" placeholder="Nhập tỉnh/thành phố" className="w-full px-4 py-2 border rounded-lg 
-                            focus:outline-none focus:ring-2 focus:ring-orange-500"
+                            <label className="block text-sm font-medium text-gray-700 mb-1.5">Tỉnh/Thành phố</label>
+                            <input type="text" placeholder="Nhập tỉnh/thành phố" className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50
+                            focus:outline-none focus:ring-2 focus:ring-[#ff4d2d]/20 focus:border-[#ff4d2d] transition-all text-sm"
                                 onChange={(e) => setState(e.target.value)} value={state} />
                         </div>
                     </div>
                     <div >
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Địa chỉ</label>
-                        <input type="text" placeholder="Nhập địa chỉ" className="w-full px-4 py-2 border rounded-lg 
-                        focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        <label className="block text-sm font-medium text-gray-700 mb-1.5">Địa chỉ</label>
+                        <input type="text" placeholder="Nhập địa chỉ" className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50
+                        focus:outline-none focus:ring-2 focus:ring-[#ff4d2d]/20 focus:border-[#ff4d2d] transition-all text-sm"
                             onChange={(e) => setAddress(e.target.value)} value={address} />
                     </div>
-                    <button className="w-full bg-[#ff4d2d] text-white py-3 px-6 rounded-lg hover:bg-orange-600 font-semibold
-                    shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer">
+                    <button className="w-full bg-[#ff4d2d] text-white py-3 px-6 rounded-xl hover:bg-[#e64323] font-bold
+                    shadow-lg shadow-orange-200 hover:shadow-orange-300 transition-all duration-200 cursor-pointer active:scale-[0.98]">
                         Cập nhật
                     </button>
                 </form>

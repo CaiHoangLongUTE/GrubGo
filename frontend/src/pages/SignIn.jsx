@@ -56,45 +56,55 @@ function SignIn() {
     }
 
     return (
-        <div className='min-h-screen flex items-center justify-center p-4' style={{ backgroundColor: bgColor }}>
-            <div className='bg-white rounded-xl shadow-lg w-full max-w-md p-8 border-[1px]' style={{ border: `1px solid ${borderColor}` }}>
-                <h1 className='text-center text-3xl font-bold mb-2 tetx-[${primaryColor}]' style={{ color: primaryColor }}>GrubGo</h1>
-                <p className='text-center tetx-gray-600 mb-8'>Đăng nhập tài khoản của riêng bạn để tham gia trải nghiệm vị giác của chúng tôi</p>
+        <div className='min-h-screen flex items-center justify-center p-4 bg-[#fff9f6]'>
+            <div className='bg-white rounded-2xl shadow-xl w-full max-w-md p-8 border border-gray-100'>
+                <h1 className='text-center text-3xl font-extrabold mb-2 text-[#ff4d2d]'>GrubGo</h1>
+                <p className='text-center text-gray-500 mb-8 text-sm'>Đăng nhập tài khoản của riêng bạn để tham gia trải nghiệm vị giác của chúng tôi</p>
                 {/*  Email */}
                 <div className='mb-4'>
-                    <label htmlFor="email" className='block text-gray-700 font-medium mb-1'>Email</label>
-                    <input type="email" className='w-full border rounded-lg px-3 py-2 focus:outline-none'
-                        placeholder='Nhập email' style={{ border: `1px solid ${borderColor}` }}
+                    <label htmlFor="email" className='block text-gray-700 font-medium mb-1.5 text-sm'>Email</label>
+                    <input type="email" className='w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#ff4d2d]/20 focus:border-[#ff4d2d] bg-gray-50 transition-all text-sm'
+                        placeholder='Nhập email'
                         onChange={(e) => setEmail(e.target.value)} value={email} required />
                 </div>
                 {/* Password */}
                 <div className='mb-4'>
-                    <label htmlFor="password" className='block text-gray-700 font-medium mb-1'>Password</label>
+                    <label htmlFor="password" className='block text-gray-700 font-medium mb-1.5 text-sm'>Password</label>
                     <div className='relative'>
-                        <input type={`${showPassword ? 'text' : 'password'}`} className='w-full border rounded-lg px-3 py-2 focus:outline-none'
-                            placeholder='Nhập password' style={{ border: `1px solid ${borderColor}` }}
+                        <input type={`${showPassword ? 'text' : 'password'}`} className='w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#ff4d2d]/20 focus:border-[#ff4d2d] bg-gray-50 transition-all text-sm'
+                            placeholder='Nhập password'
                             onChange={(e) => setPassword(e.target.value)} value={password} required />
-                        <button className='absolute right-3 cursor-pointer top-[14px] text-gray-500'
+                        <button className='absolute right-3 cursor-pointer top-[14px] text-gray-400 hover:text-gray-600'
                             onClick={() => setShowPassword(prev => !prev)}>
                             {!showPassword ? <FaEye /> : <FaEyeSlash />}
                         </button>
                     </div>
                 </div>
                 {/* Forgot Password */}
-                <div className='text-right mb-4 text-[#ff4d2d] font-medium cursor-pointer' onClick={() => navigate("/forgotpassword")}>
-                    Quên mật khẩu?
+                <div className='text-right mb-6'>
+                    <span className='text-[#ff4d2d] font-medium cursor-pointer text-sm hover:underline' onClick={() => navigate("/forgotpassword")}>
+                        Quên mật khẩu?
+                    </span>
                 </div>
                 {/* Sign In */}
-                <button className='w-full font-semibold rounded-lg py-2 transition duration-200 bg-[#ff4d2d] text-white hover:bg-[#e64323] cursor-pointer'
+                <button className='w-full font-bold rounded-xl py-3 transition duration-200 bg-[#ff4d2d] text-white hover:bg-[#e64323] cursor-pointer shadow-lg shadow-orange-200 hover:shadow-orange-300 active:scale-[0.98]'
                     onClick={handleSignIn}>
                     Đăng nhập
                 </button>
-                <button className='w-full mt-4 flex items-center justify-center gap-2 font-semibold rounded-lg px-4 py-2 transition 
-                cursor-pointer duration-200 border border-gray-400 hover:bg-gray-200' onClick={handleGoogleAuth}>
+                <div className="relative my-6">
+                    <div className="absolute inset-0 flex items-center">
+                        <div className="w-full border-t border-gray-200"></div>
+                    </div>
+                    <div className="relative flex justify-center text-sm">
+                        <span className="px-2 bg-white text-gray-500">Hoặc</span>
+                    </div>
+                </div>
+                <button className='w-full flex items-center justify-center gap-2 font-semibold rounded-xl px-4 py-3 transition 
+                cursor-pointer duration-200 border border-gray-200 hover:bg-gray-50 text-gray-700 active:scale-[0.98]' onClick={handleGoogleAuth}>
                     <FcGoogle size={20} />
                     <span>Đăng nhập với Google</span>
                 </button>
-                <p className='text-center mt-6 cursor-pointer' onClick={() => navigate("/signup")}>Tạo tài khoản mới ? <span className='text-[#ff4d2d] underline' >Đăng ký</span> </p>
+                <p className='text-center mt-8 text-sm text-gray-600'>Chưa có tài khoản? <span className='text-[#ff4d2d] font-bold cursor-pointer hover:underline' onClick={() => navigate("/signup")}>Đăng ký ngay</span> </p>
             </div>
 
         </div>

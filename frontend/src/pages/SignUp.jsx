@@ -65,65 +65,74 @@ function SignUp() {
     }
 
     return (
-        <div className='min-h-screen flex items-center justify-center p-4' style={{ backgroundColor: bgColor }}>
-            <div className='bg-white rounded-xl shadow-lg w-full max-w-md p-8 border-[1px]' style={{ border: `1px solid ${borderColor}` }}>
-                <h1 className='text-center text-3xl font-bold mb-2 tetx-[${primaryColor}]' style={{ color: primaryColor }}>GrubGo</h1>
-                <p className='text-center tetx-gray-600 mb-8'>Đăng ký tài khoản của riêng bạn để tham gia trải nghiệm vị giác của chúng tôi</p>
+        <div className='min-h-screen flex items-center justify-center p-4 bg-[#fff9f6]'>
+            <div className='bg-white rounded-2xl shadow-xl w-full max-w-md p-8 border border-gray-100'>
+                <h1 className='text-center text-3xl font-extrabold mb-2 text-[#ff4d2d]'>GrubGo</h1>
+                <p className='text-center text-gray-500 mb-8 text-sm'>Đăng ký tài khoản của riêng bạn để tham gia trải nghiệm vị giác của chúng tôi</p>
                 {/* Full name */}
                 <div className='mb-4'>
-                    <label htmlFor="fullName" className='block text-gray-700 font-medium mb-1'>Họ và tên</label>
-                    <input type="text" className='w-full border rounded-lg px-3 py-2 focus:outline-none'
-                        placeholder='Nhập họ tên' style={{ border: `1px solid ${borderColor}` }}
+                    <label htmlFor="fullName" className='block text-gray-700 font-medium mb-1.5 text-sm'>Họ và tên</label>
+                    <input type="text" className='w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#ff4d2d]/20 focus:border-[#ff4d2d] bg-gray-50 transition-all text-sm'
+                        placeholder='Nhập họ tên'
                         onChange={(e) => setFullName(e.target.value)} value={fullName} required />
                 </div>
                 {/*  Email */}
                 <div className='mb-4'>
-                    <label htmlFor="email" className='block text-gray-700 font-medium mb-1'>Email</label>
-                    <input type="email" className='w-full border rounded-lg px-3 py-2 focus:outline-none'
-                        placeholder='Nhập email' style={{ border: `1px solid ${borderColor}` }}
+                    <label htmlFor="email" className='block text-gray-700 font-medium mb-1.5 text-sm'>Email</label>
+                    <input type="email" className='w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#ff4d2d]/20 focus:border-[#ff4d2d] bg-gray-50 transition-all text-sm'
+                        placeholder='Nhập email'
                         onChange={(e) => setEmail(e.target.value)} value={email} required />
                 </div>
                 {/* Mobile */}
                 <div className='mb-4'>
-                    <label htmlFor="mobile" className='block text-gray-700 font-medium mb-1'>Số điện thoại</label>
-                    <input type="tel" className='w-full border rounded-lg px-3 py-2 focus:outline-none'
-                        placeholder='Nhập số điện thoại' style={{ border: `1px solid ${borderColor}` }}
+                    <label htmlFor="mobile" className='block text-gray-700 font-medium mb-1.5 text-sm'>Số điện thoại</label>
+                    <input type="tel" className='w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#ff4d2d]/20 focus:border-[#ff4d2d] bg-gray-50 transition-all text-sm'
+                        placeholder='Nhập số điện thoại'
                         onChange={(e) => setMobile(e.target.value)} value={mobile} required />
                 </div>
                 {/* Password */}
                 <div className='mb-4'>
-                    <label htmlFor="password" className='block text-gray-700 font-medium mb-1'>Mật khẩu</label>
+                    <label htmlFor="password" className='block text-gray-700 font-medium mb-1.5 text-sm'>Mật khẩu</label>
                     <div className='relative'>
-                        <input type={`${showPassword ? 'text' : 'password'}`} className='w-full border rounded-lg px-3 py-2 focus:outline-none'
-                            placeholder='Nhập mật khẩu' style={{ border: `1px solid ${borderColor}` }}
+                        <input type={`${showPassword ? 'text' : 'password'}`} className='w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#ff4d2d]/20 focus:border-[#ff4d2d] bg-gray-50 transition-all text-sm'
+                            placeholder='Nhập mật khẩu'
                             onChange={(e) => setPassword(e.target.value)} value={password} required />
-                        <button className='absolute right-3 cursor-pointer top-[14px] text-gray-500' onClick={() => setShowPassword(prev => !prev)}>
+                        <button className='absolute right-3 cursor-pointer top-[14px] text-gray-400 hover:text-gray-600' onClick={() => setShowPassword(prev => !prev)}>
                             {!showPassword ? <FaEye /> : <FaEyeSlash />}
                         </button>
                     </div>
                 </div>
                 {/* Role */}
-                <div className='mb-4'>
-                    <label htmlFor="role" className='block text-gray-700 font-medium mb-1'>Đăng ký tài khoản với tư cách</label>
+                <div className='mb-6'>
+                    <label htmlFor="role" className='block text-gray-700 font-medium mb-2 text-sm'>Đăng ký tài khoản với tư cách</label>
                     <div className='flex gap-2'>
                         {["user", "owner", "delivery"].map((r) => (
-                            <button className='flex-1 border rounded-lg px-3 py-2 text-center font-medium transition-colors'
+                            <button className={`flex-1 border rounded-xl px-3 py-2 text-center font-medium transition-all text-sm capitalize ${role === r ? 'bg-[#ff4d2d] text-white border-[#ff4d2d] shadow-md shadow-orange-200' : 'bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100'}`}
                                 onClick={() => setRole(r)}
-                                style={role == r ? { backgroundColor: primaryColor, color: "white" } : { border: `1px solid ${primaryColor}`, color: primaryColor }}>{r}</button>
+                                key={r}
+                            >{r}</button>
                         ))}
                     </div>
                 </div>
                 {/* Sign Up */}
-                <button className='w-full font-semibold rounded-lg py-2 transition duration-200 bg-[#ff4d2d] text-white hover:bg-[#e72e00] cursor-pointer'
+                <button className='w-full font-bold rounded-xl py-3 transition duration-200 bg-[#ff4d2d] text-white hover:bg-[#e64323] cursor-pointer shadow-lg shadow-orange-200 hover:shadow-orange-300 active:scale-[0.98]'
                     onClick={handleSignUp}>
                     Đăng ký
                 </button>
-                <button className='w-full mt-4 flex items-center justify-center gap-2 font-semibold rounded-lg px-4 py-2 transition 
-                cursor-pointer duration-200 border border-gray-400 hover:bg-gray-200' onClick={handleGoogleAuth}>
+                <div className="relative my-6">
+                    <div className="absolute inset-0 flex items-center">
+                        <div className="w-full border-t border-gray-200"></div>
+                    </div>
+                    <div className="relative flex justify-center text-sm">
+                        <span className="px-2 bg-white text-gray-500">Hoặc</span>
+                    </div>
+                </div>
+                <button className='w-full flex items-center justify-center gap-2 font-semibold rounded-xl px-4 py-3 transition 
+                cursor-pointer duration-200 border border-gray-200 hover:bg-gray-50 text-gray-700 active:scale-[0.98]' onClick={handleGoogleAuth}>
                     <FcGoogle size={20} />
                     <span>Đăng ký với Google</span>
                 </button>
-                <p className='text-center mt-6 cursor-pointer' onClick={() => navigate("/signin")}>Đã có tài khoản ? <span className='text-[#ff4d2d] underline' >Đăng nhập</span> </p>
+                <p className='text-center mt-8 text-sm text-gray-600'>Đã có tài khoản? <span className='text-[#ff4d2d] font-bold cursor-pointer hover:underline' onClick={() => navigate("/signin")}>Đăng nhập</span> </p>
             </div>
 
         </div>
