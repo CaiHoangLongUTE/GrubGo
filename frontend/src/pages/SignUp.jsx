@@ -13,10 +13,6 @@ import { useDispatch } from 'react-redux';
 import { setUserData } from '../redux/userSlice';
 
 function SignUp() {
-    const primaryColor = '#ff4d2d';
-    const hoverColor = '#e64323';
-    const bgColor = '#fff9f6';
-    const borderColor = '#ddd';
     const [showPassword, setShowPassword] = useState(false);
     const [role, setRole] = useState('user');
     const navigate = useNavigate();
@@ -31,10 +27,10 @@ function SignUp() {
             const result = await axios.post(`${serverUrl}/api/auth/signup`, {
                 fullName, email, mobile, password, role
             }, { withCredentials: true });
+            dispatch(setUserData(result.data));
             toast.success("Đăng ký thành công", { duration: 2000 });
             navigate('/signin');
             console.log(result);
-            dispatch(setUserData(result.data));
         } catch (error) {
             toast.error(error.response?.data?.message || "Đăng ký thất bại", { duration: 2000 });
             console.log(error);
@@ -54,10 +50,10 @@ function SignUp() {
                 mobile,
                 role
             }, { withCredentials: true });
+            dispatch(setUserData(data));
             toast.success("Đăng ký với Google thành công", { duration: 2000 });
             navigate('/signin');
             console.log(data);
-            dispatch(setUserData(data));
         } catch (error) {
             toast.error(error.response?.data?.message || "Đăng ký với Google thất bại", { duration: 2000 });
             console.log(error);

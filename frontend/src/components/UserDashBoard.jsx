@@ -1,18 +1,20 @@
 import React, { useEffect, useRef } from 'react'
 import Nav from './Nav'
-import { categories } from '../category'
 import CategoryCard from './CategoryCard'
 import { useSelector } from 'react-redux';
 import ShopCard from './ShopCard';
 import FoodCard from './FoodCard';
 import { useNavigate } from 'react-router-dom';
+import useGetCategories from '../hooks/useGetCategories';
 
 function UserDashBoard() {
-  const { currentCity, shopsInMyCity, itemsInMyCity, searchItems } = useSelector((state) => state.user);
+  const { currentCity, shopsInMyCity, itemsInMyCity, searchItems, categories } = useSelector((state) => state.user);
   const [updatedItemsList, setUpdatedItemsList] = React.useState([]);
   const navigate = useNavigate();
   const cateScrollRef = useRef(null);
   const shopScrollRef = useRef(null);
+
+  useGetCategories();
 
   const handleFilterByCategory = (category) => {
     if (category == "All") {
@@ -63,8 +65,8 @@ function UserDashBoard() {
         <div className='w-full'>
           <div ref={cateScrollRef} className='w-full flex overflow-x-auto gap-4 py-4 px-2'>
             {categories.map((cate, index) => (
-              <CategoryCard name={cate.category} image={cate.image} key={index}
-                onClick={() => handleFilterByCategory(cate.category)} />
+              <CategoryCard name={cate.name} image={cate.image} key={index}
+                onClick={() => handleFilterByCategory(cate.name)} />
             ))}
           </div>
         </div>
@@ -75,7 +77,8 @@ function UserDashBoard() {
         <div className='w-full'>
           <div ref={shopScrollRef} className='w-full flex overflow-x-auto gap-4 pb-2'>
             {shopsInMyCity?.map((shop, index) => (
-              <ShopCard name={shop.name} image={shop.image} key={index} onClick={() => navigate(`/shop/${shop._id}`)} />
+              <ShopCard name={shop.name} image={shop.image} key={index}
+                onClick={() => navigate(`/shop/${shop._id}`)} />
             ))}
           </div>
         </div>

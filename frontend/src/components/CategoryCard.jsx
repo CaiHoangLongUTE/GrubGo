@@ -9,12 +9,12 @@ function CategoryCard({ name, image, onClick }) {
         alt={name}
         className='w-full h-full object-cover'
       />
-      {/* Gradient Overlay */}
-      <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-300' />
+      {/* Gradient Overlay - Darker at bottom for better text visibility */}
+      <div className='absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent' />
 
-      {/* Text */}
-      <div className='absolute bottom-0 left-0 w-full p-3 text-center'>
-        <span className='text-white font-semibold text-sm md:text-base tracking-wide drop-shadow-md group-hover:text-[#ff4d2d] transition-colors duration-300'>
+      {/* Category Name */}
+      <div className='absolute bottom-0 left-0 w-full p-4 text-center'>
+        <span className='text-white font-bold text-base md:text-lg tracking-wide drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] group-hover:text-[#ff4d2d] transition-colors duration-300'>
           {name}
         </span>
       </div>

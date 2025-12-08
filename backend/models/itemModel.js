@@ -2,11 +2,12 @@ import mongoose from "mongoose";
 
 const itemSchema = new mongoose.Schema({
     name: { type: String, required: true },
+    desc: { type: String },
     image: { type: String, required: true },
     shop: { type: mongoose.Schema.Types.ObjectId, ref: "Shop", required: true },
-    category: { type: String, enum: ["Snacks", "Pizza", "Burgers", "Sanwich"], required: true },
+    category: { type: String, required: true },
     price: { type: Number, min: 0, required: true },
-    foodType: { type: String, enum: ["veg", "non-veg"], required: true },
+    foodType: { type: String, enum: ["food", "drink"], required: true },
     ratings: {
         average: { type: Number, default: 0 },
         count: { type: Number, default: 0 }

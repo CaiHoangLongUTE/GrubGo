@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import { FaLeaf } from "react-icons/fa";
-import { FaDrumstickBite } from "react-icons/fa";
+import { FaBowlFood } from "react-icons/fa6";
+import { RiDrinks2Line } from "react-icons/ri";
 import { FaStar } from "react-icons/fa6";
 import { FaRegStar } from "react-icons/fa6";
 import { FaMinus } from "react-icons/fa";
@@ -38,7 +38,7 @@ function FoodCard({ data }) {
         <div className='group w-[250px] rounded-2xl bg-white shadow-md overflow-hidden hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 flex flex-col border border-gray-100'>
             <div className='relative w-full h-[170px] flex justify-center items-center bg-gray-50 overflow-hidden'>
                 <div className='absolute top-3 right-3 bg-white/90 backdrop-blur-sm rounded-full p-1.5 shadow-sm z-10'>
-                    {data.foodType == "veg" ? <FaLeaf className='text-green-600' size={14} /> : <FaDrumstickBite className='text-red-600' size={14} />}
+                    {data.foodType == "food" ? <FaBowlFood className='text-orange-500' size={14} /> : <RiDrinks2Line className='text-blue-500' size={14} />}
                 </div>
                 <img src={data.image} alt={data.name} className='w-full h-full object-cover transition-transform duration-500 group-hover:scale-110' />
             </div>

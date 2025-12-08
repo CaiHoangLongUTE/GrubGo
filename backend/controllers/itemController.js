@@ -4,7 +4,7 @@ import Item from './../models/itemModel.js';
 
 export const addItem = async (req, res) => {
     try {
-        const { name, category, foodType, price } = req.body;
+        const { name, desc, category, foodType, price } = req.body;
         let image;
         if (req.file) {
             image = await uploadOnCloudinary(req.file.path);
@@ -13,7 +13,7 @@ export const addItem = async (req, res) => {
         if (!shop) {
             return res.status(400).json({ message: "Shop not found" });
         }
-        const item = await Item.create({ name, category, foodType, price, image, shop: shop._id });
+        const item = await Item.create({ name, desc, category, foodType, price, image, shop: shop._id });
         shop.items.push(item._id);
         await shop.save();
         await shop.populate("owner");
@@ -30,12 +30,12 @@ export const addItem = async (req, res) => {
 export const editItem = async (req, res) => {
     try {
         const itemId = req.params.itemId;
-        const { name, category, foodType, price } = req.body;
+        const { name, desc, category, foodType, price } = req.body;
         let image;
         if (req.file) {
             image = await uploadOnCloudinary(req.file.path);
         }
-        const item = await Item.findByIdAndUpdate(itemId, { name, category, foodType, price, image }, { new: true });
+        const item = await Item.findByIdAndUpdate(itemId, { name, desc, category, foodType, price, image }, { new: true });
         if (!item) {
             return res.status(400).json({ message: "Item not found" });
         }

@@ -15,10 +15,10 @@ function useGetCity() {
             const longitude = position.coords.longitude;
             dispatch(setLocation({ lat: latitude, lon: longitude }));
             const result = await axios.get(`https://api.geoapify.com/v1/geocode/reverse?lat=${latitude}&lon=${longitude}&format=json&apiKey=${apiKey}`);
-            console.log(result.data.results[0].district);
+            console.log(result.data);
             dispatch(setCurrentCity(result?.data?.results[0].city));
             dispatch(setCurrentState(result?.data?.results[0].state || result?.data?.results[0].district));
-            dispatch(setCurrentAddress(result?.data?.results[0].address_line2 || result?.data?.results[0].address_line1));   
+            dispatch(setCurrentAddress(result?.data?.results[0].address_line2 || result?.data?.results[0].address_line1));
             dispatch(setAddress(result?.data?.results[0].address_line2));
         })
     }, [userData])

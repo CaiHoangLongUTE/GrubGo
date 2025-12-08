@@ -11,21 +11,17 @@ import toast from "react-hot-toast";
 function EditItem() {
     const navigate = useNavigate();
     const { myShopData } = useSelector(state => state.owner);
+    const { categories } = useSelector(state => state.user);
     const { itemId } = useParams();
     const [currentItem, setCurrentItem] = useState(null);
     const [name, setName] = useState("");
+    const [desc, setDesc] = useState("");
     const [price, setPrice] = useState(0);
     const [category, setCategory] = useState("");
     const [foodType, setFoodType] = useState("");
 
     const [frontendImage, setFrontendImage] = useState("");
     const [backendImage, setBackendImage] = useState(null);
-    const categories = [
-        "Snacks",
-        "Pizza",
-        "Burgers",
-        "Sanwich"
-    ];
     const dispatch = useDispatch();
 
     const handleImage = (e) => {
@@ -38,6 +34,7 @@ function EditItem() {
         try {
             const formData = new FormData();
             formData.append("name", name);
+            formData.append("desc", desc);
             formData.append("category", category);
             formData.append("foodType", foodType);
             formData.append("price", price);
@@ -67,6 +64,7 @@ function EditItem() {
     }, [itemId])
     useEffect(() => {
         setName(currentItem?.name || "");
+        setDesc(currentItem?.desc || "");
         setPrice(currentItem?.price || 0);
         setCategory(currentItem?.category || "");
         setFoodType(currentItem?.foodType || "");
@@ -95,6 +93,17 @@ function EditItem() {
                             onChange={(e) => setName(e.target.value)} value={name} />
                     </div>
                     <div >
+                        <label className="block text-sm font-medium text-gray-700 mb-1.5">Mô tả (tùy chọn)</label>
+                        <textarea
+                            placeholder="Nhập mô tả món ăn"
+                            className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50
+                            focus:outline-none focus:ring-2 focus:ring-[#ff4d2d]/20 focus:border-[#ff4d2d] transition-all text-sm resize-none"
+                            onChange={(e) => setDesc(e.target.value)}
+                            value={desc}
+                            rows="3"
+                        />
+                    </div>
+                    <div >
                         <label className="block text-sm font-medium text-gray-700 mb-1.5">Hình ảnh món ăn</label>
                         <input type="file" accept="image/*" className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50
                         focus:outline-none focus:ring-2 focus:ring-[#ff4d2d]/20 focus:border-[#ff4d2d] transition-all text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-[#ff4d2d] hover:file:bg-orange-100" onChange={handleImage} />
@@ -114,8 +123,8 @@ function EditItem() {
                         <select className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#ff4d2d]/20 focus:border-[#ff4d2d] transition-all text-sm"
                             onChange={(e) => setCategory(e.target.value)} value={category}>
                             <option value="">Tất cả</option>
-                            {categories.map((cate, index) => (
-                                <option key={index} value={cate}>{cate}</option>
+                            {categories.map((cate) => (
+                                <option key={cate._id} value={cate.name}>{cate.name}</option>
                             ))}
                         </select>
                     </div>
@@ -123,8 +132,8 @@ function EditItem() {
                         <label className="block text-sm font-medium text-gray-700 mb-1.5">Loại món ăn</label>
                         <select className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#ff4d2d]/20 focus:border-[#ff4d2d] transition-all text-sm"
                             onChange={(e) => setFoodType(e.target.value)} value={foodType}>
-                            <option value="veg">Thức ăn chay</option>
-                            <option value="non-veg">Thức ăn mặn</option>
+                            <option value="food">Thức ăn</option>
+                            <option value="drink">Nước uống</option>
                         </select>
                     </div>
 

@@ -29,6 +29,8 @@ import AdminDashboard from './pages/AdminDashboard.jsx'
 import AdminUsers from './pages/AdminUsers.jsx'
 import AdminShops from './pages/AdminShops.jsx'
 import AdminOrders from './pages/AdminOrders.jsx'
+import AdminCategories from './pages/AdminCategories.jsx'
+import useGetCategories from './hooks/useGetCategories.jsx'
 
 export const serverUrl = "http://localhost:8000"
 
@@ -38,6 +40,7 @@ function App() {
 
   useGetCurrentUser();
   useGetCity();
+  useGetCategories();
   useGetMyShop();
   useGetShopByCity();
   useGetItemByCity();
@@ -78,6 +81,7 @@ function App() {
           <Route path="users" element={<AdminUsers />} />
           <Route path="shops" element={<AdminShops />} />
           <Route path="orders" element={<AdminOrders />} />
+          <Route path="categories" element={<AdminCategories />} />
         </Route>
       </Routes>
     </>

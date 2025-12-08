@@ -6,7 +6,7 @@ import { setItemsInMyCity } from '../redux/userSlice';
 
 function useGetItemByCity() {
     const dispatch = useDispatch();
-    const {currentCity} = useSelector(state=>state.user);
+    const { currentCity } = useSelector(state => state.user);
     useEffect(() => {
         const fetchItems = async () => {
             try {
@@ -16,7 +16,7 @@ function useGetItemByCity() {
                 console.log(result.data);
             } catch (error) {
                 console.log(error);
-            }   
+            }
         }
         fetchItems();
     }, [currentCity])

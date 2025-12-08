@@ -14,3 +14,5 @@ export const isAdmin = async (req, res, next) => {
         return res.status(500).json({ message: `Authorization failed. Error: ${error.message}` });
     }
 }
+
+export default isAdmin;
