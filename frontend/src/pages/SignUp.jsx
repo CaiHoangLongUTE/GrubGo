@@ -102,11 +102,15 @@ function SignUp() {
                 <div className='mb-6'>
                     <label htmlFor="role" className='block text-gray-700 font-medium mb-2 text-sm'>Đăng ký tài khoản với tư cách</label>
                     <div className='flex gap-2'>
-                        {["user", "owner", "delivery"].map((r) => (
-                            <button className={`flex-1 border rounded-xl px-3 py-2 text-center font-medium transition-all text-sm capitalize ${role === r ? 'bg-[#ff4d2d] text-white border-[#ff4d2d] shadow-md shadow-orange-200' : 'bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100'}`}
-                                onClick={() => setRole(r)}
-                                key={r}
-                            >{r}</button>
+                        {[
+                            { value: "user", label: "Khách hàng" },
+                            { value: "owner", label: "Chủ quán" },
+                            { value: "delivery", label: "Người giao hàng" }
+                        ].map((r) => (
+                            <button className={`flex-1 border rounded-xl px-3 py-2 text-center font-medium transition-all text-sm ${role === r.value ? 'bg-[#ff4d2d] text-white border-[#ff4d2d] shadow-md shadow-orange-200' : 'bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100'}`}
+                                onClick={() => setRole(r.value)}
+                                key={r.value}
+                            >{r.label}</button>
                         ))}
                     </div>
                 </div>

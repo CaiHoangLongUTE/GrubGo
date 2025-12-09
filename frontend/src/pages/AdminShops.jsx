@@ -72,9 +72,11 @@ const AdminShops = () => {
                         <img src={shop.image} alt={shop.name} className="w-full h-48 object-cover" />
                         <div className="p-4">
                             <h3 className="text-lg font-semibold text-gray-800 mb-2">{shop.name}</h3>
-                            <p className="text-sm text-gray-500 mb-1">Owner: {shop.owner?.fullName}</p>
-                            <p className="text-sm text-gray-500 mb-1">{shop.city}, {shop.state}</p>
-                            <p className="text-sm text-gray-500 mb-3">{shop.address}</p>
+                            <p className="text-sm text-gray-500 mb-1"><span className="font-medium">Chủ quán:</span> {shop.owner?.fullName}</p>
+                            <p className="text-sm text-gray-500 mb-1"><span className="font-medium">Thành phố:</span> {shop.state}, {shop.city}</p>
+                            <p className="text-sm text-gray-500 mb-3"><span className="font-medium">Địa chỉ:</span> {shop.address}</p>
+                            {shop.hotline && <p className="text-sm text-gray-500 mb-1"><span className="font-medium">Hotline:</span> {shop.hotline}</p>}
+                            <p className="text-sm text-gray-500 mb-3"><span className="font-medium">Giờ mở cửa:</span> {shop.openTime || "08:00"} - {shop.closeTime || "22:00"}</p>
 
                             <div className="flex items-center justify-between">
                                 <span className={`px-3 py-1 text-xs font-semibold rounded-full ${shop.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>

@@ -27,7 +27,7 @@ function OwnerItemCard({ data }) {
       <div className="flex flex-col justify-between p-3 flex-1">
         <div>
           <h2 className="text-lg font-bold text-gray-800 mb-1">{data.name}</h2>
-          <p className="text-sm text-gray-500"><span className="font-medium text-gray-700">Danh mục:</span> {data.category}</p>
+          <p className="text-sm text-gray-500"><span className="font-medium text-gray-700">Danh mục:</span> {data.category?.name || data.category}</p>
           <p className="text-sm text-gray-500"><span className="font-medium text-gray-700">Loại:</span> <span className="capitalize">{data.foodType === 'food' ? 'Thức ăn' : 'Nước uống'}</span></p>
         </div>
 

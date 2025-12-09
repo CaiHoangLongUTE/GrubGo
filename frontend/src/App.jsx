@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import SignIn from './pages/SignIn'
+import Landing from './pages/Landing'
 import SignUp from './pages/SignUp'
 import ForgotPassword from './pages/ForgotPassword'
 import { Toaster } from 'react-hot-toast'
@@ -64,7 +65,7 @@ function App() {
         <Route path="/signin" element={!userData ? <SignIn /> : <Navigate to="/" />} />
         <Route path="/signup" element={!userData ? <SignUp /> : <Navigate to="/" />} />
         <Route path="/forgotpassword" element={!userData ? <ForgotPassword /> : <Navigate to="/" />} />
-        <Route path="/" element={userData ? <Home /> : <Navigate to="/signin" />} />
+        <Route path="/" element={userData ? <Home /> : <Landing />} />
         <Route path="/create-edit-shop" element={userData ? <CreateEditShop /> : <Navigate to="/signin" />} />
         <Route path="/add-item" element={userData ? <AddItem /> : <Navigate to="/signin" />} />
         <Route path="/edit-item/:itemId" element={userData ? <EditItem /> : <Navigate to="/signin" />} />

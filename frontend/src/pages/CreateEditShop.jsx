@@ -16,6 +16,9 @@ function CreateEditShop() {
     const [address, setAddress] = useState(myShopData?.address || currentAddress);
     const [city, setCity] = useState(myShopData?.city || currentCity);
     const [state, setState] = useState(myShopData?.state || currentState);
+    const [hotline, setHotline] = useState(myShopData?.hotline || "");
+    const [openTime, setOpenTime] = useState(myShopData?.openTime || "08:00");
+    const [closeTime, setCloseTime] = useState(myShopData?.closeTime || "22:00");
     const [frontendImage, setFrontendImage] = useState(myShopData?.image || null);
     const [backendImage, setBackendImage] = useState(null);
     const dispatch = useDispatch();
@@ -33,6 +36,9 @@ function CreateEditShop() {
             formData.append("address", address);
             formData.append("city", city);
             formData.append("state", state);
+            formData.append("hotline", hotline);
+            formData.append("openTime", openTime);
+            formData.append("closeTime", closeTime);
             if (backendImage) {
                 formData.append("image", backendImage);
             }
@@ -95,6 +101,26 @@ function CreateEditShop() {
                         <input type="text" placeholder="Nhập địa chỉ" className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50
                         focus:outline-none focus:ring-2 focus:ring-[#ff4d2d]/20 focus:border-[#ff4d2d] transition-all text-sm"
                             onChange={(e) => setAddress(e.target.value)} value={address} />
+                    </div>
+                    <div >
+                        <label className="block text-sm font-medium text-gray-700 mb-1.5">Hotline (tùy chọn)</label>
+                        <input type="tel" placeholder="Nhập số điện thoại" className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50
+                        focus:outline-none focus:ring-2 focus:ring-[#ff4d2d]/20 focus:border-[#ff4d2d] transition-all text-sm"
+                            onChange={(e) => setHotline(e.target.value)} value={hotline} />
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div >
+                            <label className="block text-sm font-medium text-gray-700 mb-1.5">Giờ mở cửa</label>
+                            <input type="time" className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50
+                            focus:outline-none focus:ring-2 focus:ring-[#ff4d2d]/20 focus:border-[#ff4d2d] transition-all text-sm"
+                                onChange={(e) => setOpenTime(e.target.value)} value={openTime} />
+                        </div>
+                        <div >
+                            <label className="block text-sm font-medium text-gray-700 mb-1.5">Giờ đóng cửa</label>
+                            <input type="time" className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50
+                            focus:outline-none focus:ring-2 focus:ring-[#ff4d2d]/20 focus:border-[#ff4d2d] transition-all text-sm"
+                                onChange={(e) => setCloseTime(e.target.value)} value={closeTime} />
+                        </div>
                     </div>
                     <button className="w-full bg-[#ff4d2d] text-white py-3 px-6 rounded-xl hover:bg-[#e64323] font-bold
                     shadow-lg shadow-orange-200 hover:shadow-orange-300 transition-all duration-200 cursor-pointer active:scale-[0.98]">

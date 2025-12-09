@@ -5,7 +5,7 @@ const itemSchema = new mongoose.Schema({
     desc: { type: String },
     image: { type: String, required: true },
     shop: { type: mongoose.Schema.Types.ObjectId, ref: "Shop", required: true },
-    category: { type: String, required: true },
+    category: { type: mongoose.Schema.Types.ObjectId, ref: "Category", required: true },
     price: { type: Number, min: 0, required: true },
     foodType: { type: String, enum: ["food", "drink"], required: true },
     ratings: {

@@ -29,6 +29,11 @@ function AddItem() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
+            if (!name || !category || !foodType || !price || !backendImage) {
+                toast.error("Vui lòng điền đầy đủ thông tin và chọn hình ảnh");
+                return;
+            }
+
             const formData = new FormData();
             formData.append("name", name);
             formData.append("desc", desc);
@@ -101,7 +106,7 @@ function AddItem() {
                             onChange={(e) => setCategory(e.target.value)} value={category}>
                             <option value="">Tất cả</option>
                             {categories.map((cate) => (
-                                <option key={cate._id} value={cate.name}>{cate.name}</option>
+                                <option key={cate._id} value={cate._id}>{cate.name}</option>
                             ))}
                         </select>
                     </div>

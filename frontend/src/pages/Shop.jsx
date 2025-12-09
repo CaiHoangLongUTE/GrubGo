@@ -2,7 +2,7 @@ import axios from 'axios'
 import { serverUrl } from '../App';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { FaStore } from "react-icons/fa";
+import { FaStore, FaPhone, FaClock } from "react-icons/fa6";
 import { FaLocationDot } from "react-icons/fa6";
 import { FaUtensils } from "react-icons/fa";
 import FoodCard from '../components/FoodCard';
@@ -13,6 +13,32 @@ function Shop() {
   const [items, setItems] = useState([]);
   const [shop, setShop] = useState({});
   const navigate = useNavigate();
+
+  // Format phone number with dots
+  const formatPhone = (phone) => {
+    if (!phone) return "";
+    const cleaned = phone.replace(/\D/g, '');
+    if (cleaned.length === 10) {
+      return `${cleaned.slice(0, 4)}.${cleaned.slice(4, 7)}.${cleaned.slice(7)}`;
+    }
+    return phone;
+  };
+
+  // Check if shop is currently open
+  const isShopOpen = () => {
+    if (!shop.openTime || !shop.closeTime) return true;
+
+    const now = new Date();
+    const currentTime = now.getHours() * 60 + now.getMinutes();
+
+    const [openHour, openMin] = shop.openTime.split(':').map(Number);
+    const openTimeInMinutes = openHour * 60 + openMin;
+
+    const [closeHour, closeMin] = shop.closeTime.split(':').map(Number);
+    const closeTimeInMinutes = closeHour * 60 + closeMin;
+
+    return currentTime >= openTimeInMinutes && currentTime <= closeTimeInMinutes;
+  };
 
   const handleShop = async () => {
     try {
@@ -28,6 +54,7 @@ function Shop() {
   useEffect(() => {
     handleShop();
   }, [shopId])
+
   return (
     <div className='min-h-screen bg-gray-50'>
       <div className='relative w-full h-[400px] lg:h-[500px] group overflow-hidden'>
@@ -62,14 +89,29 @@ function Shop() {
                   {shop.name}
                 </h1>
 
-                <div className='flex flex-col md:flex-row md:items-center gap-4 text-gray-200'>
+                <div className='flex flex-col md:flex-row md:items-center gap-4 text-gray-200 flex-wrap'>
                   <div className='flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-xl border border-white/10'>
                     <FaLocationDot className='text-[#ff4d2d]' />
                     <p className='text-lg font-medium'>{shop.address}</p>
                   </div>
-                  <div className='flex items-center gap-2 text-sm opacity-80'>
-                    <span className='w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse'></span>
-                    <span>Đang mở cửa</span>
+
+                  {shop.hotline && (
+                    <div className='flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-xl border border-white/10'>
+                      <FaPhone className='text-[#ff4d2d]' />
+                      <p className='text-lg font-medium'>{formatPhone(shop.hotline)}</p>
+                    </div>
+                  )}
+
+                  {(shop.openTime || shop.closeTime) && (
+                    <div className='flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-xl border border-white/10'>
+                      <FaClock className='text-[#ff4d2d]' />
+                      <p className='text-lg font-medium'>{shop.openTime || "..."} - {shop.closeTime || "..."}</p>
+                    </div>
+                  )}
+
+                  <div className='flex items-center gap-2 text-sm opacity-80 ml-2'>
+                    <span className={`w-1.5 h-1.5 rounded-full animate-pulse ${isShopOpen() ? 'bg-green-400' : 'bg-red-400'}`}></span>
+                    <span>{isShopOpen() ? 'Đang mở cửa' : 'Đã đóng cửa'}</span>
                   </div>
                 </div>
               </div>

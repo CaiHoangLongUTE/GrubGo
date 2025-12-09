@@ -66,7 +66,7 @@ function EditItem() {
         setName(currentItem?.name || "");
         setDesc(currentItem?.desc || "");
         setPrice(currentItem?.price || 0);
-        setCategory(currentItem?.category || "");
+        setCategory(currentItem?.category?._id || currentItem?.category || "");
         setFoodType(currentItem?.foodType || "");
         setFrontendImage(currentItem?.image || "");
     }, [currentItem])

@@ -7,7 +7,9 @@ const shopSchema = new mongoose.Schema({
     city: { type: String, required: true },
     state: { type: String, required: true },
     address: { type: String, required: true },
-    items: [{ type: mongoose.Schema.Types.ObjectId, ref: "Item" }],
+    hotline: { type: String },
+    openTime: { type: String },
+    closeTime: { type: String },
     status: { type: String, enum: ["active", "disabled"], default: "active" },
 }, { timestamps: true });
 

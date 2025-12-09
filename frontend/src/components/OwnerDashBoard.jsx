@@ -8,8 +8,6 @@ import OwnerItemCard from './OwnerItemCard';
 function OwnerDashBoard() {
   const { myShopData } = useSelector(state => state.owner);
   const navigate = useNavigate();
-  console.log("🧩 myShopData:", myShopData);
-  console.log("🍱 myShopData.items:", myShopData?.items);
 
   return (
     <div className='w-full min-h-screen bg-[#fff9f9] flex flex-col items-center'>
@@ -77,7 +75,7 @@ function OwnerDashBoard() {
             </div>
           </div>
 
-          {myShopData.items.length === 0 &&
+          {(!myShopData?.items || myShopData.items.length === 0) &&
             <div className='flex justify-center items-center p-4 sm:p-6'>
               <div className='w-full max-w-md bg-white shadow-lg rounded-2xl p-6 border border-gray-100 hover:shadow-xl transition-shadow duration-300'>
                 <div className='flex flex-col items-center text-center'>
@@ -94,7 +92,7 @@ function OwnerDashBoard() {
           {myShopData?.items?.length > 0 &&
             <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 py-8">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 justify-items-center">
-                {myShopData.items.map((item, index) => (
+                {myShopData?.items?.map((item, index) => (
                   <OwnerItemCard data={item} key={index} />
                 ))}
               </div>

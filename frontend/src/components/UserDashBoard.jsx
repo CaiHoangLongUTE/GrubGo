@@ -21,7 +21,9 @@ function UserDashBoard() {
       setUpdatedItemsList(itemsInMyCity);
     }
     else {
-      const filteredItems = itemsInMyCity.filter((item) => item?.category === category);
+      const filteredItems = itemsInMyCity.filter((item) =>
+        item?.category?._id === category || item?.category?.name === category
+      );
       setUpdatedItemsList(filteredItems);
     }
   }

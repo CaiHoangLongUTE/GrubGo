@@ -101,9 +101,13 @@ function Nav() {
                     </>}
                     <div className='hidden md:flex items-center gap-2 cursor-pointer relative px-4 py-2 rounded-full 
                     hover:bg-gray-100 text-gray-700 font-medium transition-colors text-sm' onClick={() => navigate("/my-orders")}>
-                        <TbReceipt size={22} />
+                        <TbReceipt size={16} />
                         <span>Đơn hàng</span>
                     </div>
+                    <button className='md:hidden flex items-center p-2 cursor-pointer rounded-full hover:bg-gray-100 
+                    text-gray-600' onClick={() => navigate("/my-orders")}>
+                        <TbReceipt size={20} />
+                    </button>
                 </> : (<>
                     {userData?.role == "user" &&
                         <div className='relative cursor-pointer p-2 rounded-full hover:bg-gray-100 transition-colors group' onClick={() => navigate("/cart")}>
