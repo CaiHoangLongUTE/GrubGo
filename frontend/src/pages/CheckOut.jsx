@@ -1,4 +1,4 @@
-import { IoArrowBack } from "react-icons/io5";
+import { IoArrowBack, IoAdd } from "react-icons/io5";
 import { IoLocationSharp } from "react-icons/io5";
 import { IoSearchOutline } from "react-icons/io5";
 import { TbCurrentLocation } from "react-icons/tb";
@@ -30,7 +30,36 @@ function CheckOut() {
     const [paymentMethod, setPaymentMethod] = useState("cod");
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const [savedAddresses, setSavedAddresses] = useState([]);
     const apiKey = import.meta.env.VITE_GEOAPIKEY;
+
+    useEffect(() => {
+        const fetchAddresses = async () => {
+            try {
+                const result = await axios.get(`${serverUrl}/api/address/get-all`, { withCredentials: true });
+                setSavedAddresses(result.data);
+
+                // Optional: Auto-select default address if available and no location is set
+                const defaultAddr = result.data.find(addr => addr.isDefault);
+                if (defaultAddr && !address) {
+                    dispatch(setAddress(defaultAddr.address));
+                    dispatch(setLocation({ lat: defaultAddr.lat, lon: defaultAddr.lon }));
+                    setAddressInput(defaultAddr.address);
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        if (userData) {
+            fetchAddresses();
+        }
+    }, [userData]);
+
+    const handleSelectAddress = (addr) => {
+        setAddressInput(addr.address);
+        dispatch(setAddress(addr.address));
+        dispatch(setLocation({ lat: addr.lat, lon: addr.lon }));
+    }
 
     const deliveryFee = totalAmount > 500 ? 0 : 50;
     const amountWithDeliveryFee = totalAmount + deliveryFee;
@@ -44,13 +73,14 @@ function CheckOut() {
             const result = await axios.get(`https://api.geoapify.com/v1/geocode/reverse?lat=${lat}&lon=${lng}&format=json&apiKey=${apiKey}`);
             console.log(result?.data?.results[0].address_line1);
             dispatch(setAddress(result?.data?.results[0].address_line1));
+            setAddressInput(result?.data?.results[0].address_line1);
         } catch (error) {
             console.log(error);
         }
     }
     const getCurrentLocation = () => {
-        const latitude = userData.location.coordnates[1];
-        const longitude = userData.location.coordnates[0];
+        const latitude = userData.location.coordinates[1];
+        const longitude = userData.location.coordinates[0];
         dispatch(setLocation({ lat: latitude, lon: longitude }));
         getAddressByLatLng(latitude, longitude);
     }
@@ -117,28 +147,57 @@ function CheckOut() {
                 {/* Map  */}
                 <section>
                     <h2 className='text-lg font-semibold mb-2 flex items-center gap-2 text-gray-800'>
-                        <IoLocationSharp size={16} className='text-[#ff4d2d]' />Địa chỉ giao hàng</h2>
-                    <div className='flex gap-2 mb-3'>
-                        <input type="text" className='flex-1 border border-gray-300 rounded-lg p-2 text-sm focus:outline-none 
-                        focus:ring-2 focus:ring-[#ff4d2d]' placeholder='Nhập địa chỉ giao hàng'
-                            value={addressInput} onChange={(e) => setAddressInput(e.target.value)} />
-                        <button className='bg-[#ff4d2d] hover:bg-[#e64526] text-white px-3 py-2
-                        rounded-lg flex items-center justify-center' onClick={getLatLngByAddress}><IoSearchOutline size={16} /></button>
-                        <button className='bg-blue-500 hover:bg-blue-600 text-white px-3 py-2
-                        rounded-lg flex items-center justify-center' onClick={getCurrentLocation}><TbCurrentLocation size={16} /></button>
-                    </div>
-                    <div className='rounded-xl border overflow-hidden'>
-                        <div className='h-64 w-full flex items-center justify-center'>
-                            <MapContainer className='w-full h-full' center={[location?.lat, location?.lon]}
-                                zoom={13} scrollWheelZoom={true}>
-                                <TileLayer attribution='&copy; 
-                            <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                        <IoLocationSharp size={16} className='text-[#ff4d2d]' />Địa chỉ nhân hàng</h2>
+
+                    {savedAddresses.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-gray-300 rounded-xl bg-gray-50">
+                            <p className="text-gray-500 mb-3 text-sm">Bạn chưa có địa chỉ nhận hàng nào</p>
+                            <button
+                                onClick={() => navigate("/my-addresses?select=true")}
+                                className="px-4 py-2 bg-white border border-[#ff4d2d] text-[#ff4d2d] font-bold rounded-lg hover:bg-orange-50 transition flex items-center gap-2"
+                            >
+                                <IoAdd size={18} /> Thêm địa chỉ mới
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="border border-[#ff4d2d] bg-orange-50/30 p-4 rounded-xl relative">
+                            {/* Selected Address Display */}
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
+                                <span className="font-bold text-gray-800">{userData?.fullName}</span>
+                                <span className="text-gray-400 hidden sm:inline">|</span>
+                                <span className="text-gray-700 font-medium">{userData?.mobile}</span>
+                            </div>
+                            <div className="flex items-start gap-2 mb-3">
+                                <span className="bg-[#ff4d2d] text-white text-[10px] uppercase font-bold px-1.5 py-0.5 rounded mt-0.5 whitespace-nowrap">
+                                    {savedAddresses.find(a => a.address === addressInput)?.tag || "Home"}
+                                </span>
+                                <p className="text-sm text-gray-700 leading-relaxed">
+                                    {addressInput}
+                                </p>
+                            </div>
+
+                            <div className="flex items-center gap-3 mt-4">
+                                <button
+                                    onClick={() => navigate("/my-addresses?select=true")}
+                                    className="text-xs uppercase font-bold text-[#ff4d2d] hover:underline"
+                                >
+                                    Thay đổi
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {addressInput && (
+                        <div className='rounded-xl border overflow-hidden mt-4 h-48'>
+                            <MapContainer className='w-full h-full' center={[location?.lat || 0, location?.lon || 0]}
+                                zoom={15} scrollWheelZoom={false} dragging={false} zoomControl={false}>
+                                <TileLayer attribution='&copy; Contributors'
                                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                                 <RecenterMap location={location} />
-                                <Marker position={[location?.lat, location?.lon]} draggable eventHandlers={{ dragend: onDragEnd }}></Marker>
+                                <Marker position={[location?.lat || 0, location?.lon || 0]}></Marker>
                             </MapContainer>
                         </div>
-                    </div>
+                    )}
                 </section>
                 {/* Payment  */}
                 <section>

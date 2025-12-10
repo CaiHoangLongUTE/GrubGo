@@ -11,6 +11,7 @@ import shopRouter from "./routes/shopRoute.js";
 import itemRouter from './routes/itemRoute.js';
 import orderRouter from "./routes/orderRoute.js";
 import PaymentRouter from "./routes/paymentRoute.js";
+import addressRoute from "./routes/addressRoute.js";
 import adminRouter from "./routes/adminRoute.js";
 import categoryRouter from "./routes/categoryRoute.js";
 import http from "http";
@@ -44,6 +45,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
+app.use("/api/address", addressRoute);
 app.use("/api/shop", shopRouter);
 app.use("/api/item", itemRouter)
 app.use("/api/order", orderRouter);
