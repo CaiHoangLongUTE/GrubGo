@@ -10,11 +10,11 @@ function Cart() {
     return (
         <div className='min-h-screen bg-[#fff9f6] flex justify-center not-first:p-6'>
             <div className='w-full max-w-[800px]'>
-                <div className='flex items-center gap-[20px] mb-6'>
-                    <div className='z-[10]' onClick={() => navigate("/")}>
-                        <IoArrowBack size={36} className='text-[#ff4d2d]' />
+                <div className='flex items-center gap-4 mb-6 cursor-pointer group w-fit' onClick={() => navigate("/")}>
+                    <div className="p-2 bg-white rounded-full shadow-sm text-[#ff4d2d] group-hover:bg-[#ff4d2d] group-hover:text-white transition-all">
+                        <IoArrowBack size={24} />
                     </div>
-                    <h1 className='text-2xl font-bold text-start'>Giỏ hàng của bạn</h1>
+                    <h1 className='text-2xl font-bold text-gray-800'>Giỏ hàng của bạn</h1>
                 </div>
                 {cartItems?.length == 0 ? (
                     <p className='text-gray-500 text-xl text-center'>Giỏ hàng của bạn đang trống. Hãy thêm món ăn vào nhé 😉</p>

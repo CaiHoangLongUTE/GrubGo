@@ -7,6 +7,17 @@ import { serverUrl } from "../App";
 import axios from "axios";
 import { setMyShopData } from "../redux/ownerSlice";
 import toast from "react-hot-toast";
+import { MapContainer, Marker, TileLayer, useMap } from 'react-leaflet';
+import "leaflet/dist/leaflet.css";
+import { IoSearchOutline } from "react-icons/io5";
+
+function RecenterMap({ location }) {
+    if (location.lat && location.lon) {
+        const map = useMap();
+        map.setView([location.lat, location.lon], 16, { animate: true });
+    }
+    return null;
+}
 
 function CreateEditShop() {
     const navigate = useNavigate();
@@ -21,12 +32,46 @@ function CreateEditShop() {
     const [closeTime, setCloseTime] = useState(myShopData?.closeTime || "22:00");
     const [frontendImage, setFrontendImage] = useState(myShopData?.image || null);
     const [backendImage, setBackendImage] = useState(null);
+    const [lat, setLat] = useState(myShopData?.lat || 0);
+    const [lon, setLon] = useState(myShopData?.lon || 0);
+    const apiKey = import.meta.env.VITE_GEOAPIKEY;
     const dispatch = useDispatch();
 
     const handleImage = (e) => {
         const file = e.target.files[0];
         setBackendImage(file);
         setFrontendImage(URL.createObjectURL(file));
+    }
+
+    const handleGeocode = async () => {
+        if (!address || !city) return toast.error("Vui lòng nhập thành phố và địa chỉ");
+        const query = `${address}, ${state}, ${city}`;
+        try {
+            const result = await axios.get(`https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(query)}&format=json&apiKey=${apiKey}`);
+            if (result.data.results && result.data.results.length > 0) {
+                const { lat, lon } = result.data.results[0];
+                setLat(lat);
+                setLon(lon);
+                toast.success("Đã tìm thấy vị trí trên bản đồ!");
+            } else {
+                toast.error("Không tìm thấy vị trí.");
+            }
+        } catch (error) {
+            console.log("Geocode error", error);
+        }
+    };
+    const getAddressByLatLng = async (lat, lng) => {
+        try {
+            const result = await axios.get(`https://api.geoapify.com/v1/geocode/reverse?lat=${lat}&lon=${lng}&format=json&apiKey=${apiKey}`);
+            if (result.data.results && result.data.results.length > 0) {
+                const data = result.data.results[0];
+                setAddress(data.address_line1 || "");
+                setCity(data.city || "");
+                setState(data.state || "");
+            }
+        } catch (error) {
+            console.log(error);
+        }
     }
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -39,6 +84,8 @@ function CreateEditShop() {
             formData.append("hotline", hotline);
             formData.append("openTime", openTime);
             formData.append("closeTime", closeTime);
+            formData.append("lat", lat);
+            formData.append("lon", lon);
             if (backendImage) {
                 formData.append("image", backendImage);
             }
@@ -98,9 +145,35 @@ function CreateEditShop() {
                     </div>
                     <div >
                         <label className="block text-sm font-medium text-gray-700 mb-1.5">Địa chỉ</label>
-                        <input type="text" placeholder="Nhập địa chỉ" className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50
+                        <div className="flex gap-2">
+                            <input type="text" placeholder="Nhập địa chỉ" className="flex-1 px-4 py-3 border border-gray-200 rounded-xl bg-gray-50
                         focus:outline-none focus:ring-2 focus:ring-[#ff4d2d]/20 focus:border-[#ff4d2d] transition-all text-sm"
-                            onChange={(e) => setAddress(e.target.value)} value={address} />
+                                onChange={(e) => setAddress(e.target.value)} value={address} />
+                            <button type="button" onClick={handleGeocode} className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 rounded-xl flex items-center justify-center transition" title="Tìm vị trí trên bản đồ">
+                                <IoSearchOutline size={20} />
+                            </button>
+                        </div>
+
+                        {(lat !== 0 || lon !== 0) && (
+                            <div className="mt-3 h-56 w-full rounded-xl overflow-hidden border border-gray-200">
+                                <MapContainer className='w-full h-full' center={[lat, lon]} zoom={15} scrollWheelZoom={true}>
+                                    <TileLayer attribution='&copy; Contributors' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                                    <RecenterMap location={{ lat, lon }} />
+                                    <Marker
+                                        position={[lat, lon]}
+                                        draggable={true}
+                                        eventHandlers={{
+                                            dragend: (e) => {
+                                                const { lat, lng } = e.target.getLatLng();
+                                                setLat(lat);
+                                                setLon(lng);
+                                                getAddressByLatLng(lat, lng);
+                                            },
+                                        }}
+                                    ></Marker>
+                                </MapContainer>
+                            </div>
+                        )}
                     </div>
                     <div >
                         <label className="block text-sm font-medium text-gray-700 mb-1.5">Hotline (tùy chọn)</label>

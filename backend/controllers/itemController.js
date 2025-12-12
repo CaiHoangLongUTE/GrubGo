@@ -148,7 +148,9 @@ export const getItemByCity = async (req, res) => {
             return res.status(404).json({ message: "Shop not found" });
         }
         const shopIds = shops.map((shop) => shop._id);
-        const items = await Item.find({ shop: { $in: shopIds } }).populate("category", "name");
+        const items = await Item.find({ shop: { $in: shopIds } })
+            .populate("category", "name")
+            .populate("shop", "name image lat lon");
         return res.status(200).json(items);
     } catch (error) {
         return res.status(500).json({ message: `Get items by city failed. Error: ${error.message}` });
@@ -165,6 +167,7 @@ export const getItemsByShop = async (req, res) => {
 
         const items = await Item.find({ shop: shopId })
             .populate("category", "name")
+            .populate("shop")
             .sort({ updatedAt: -1 });
 
         return res.status(200).json({
@@ -210,7 +213,7 @@ export const searchItems = async (req, res) => {
         }
 
         const items = await Item.find(searchQuery)
-            .populate("shop", "name image")
+            .populate("shop", "name image lat lon")
             .populate("category", "name");
 
         return res.status(200).json(items);

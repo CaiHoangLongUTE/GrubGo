@@ -4,3 +4,6 @@ Admin
 Shop1
 - shop1@gmail.com
 - Shop1@123
+Delivery1
+- delivery1@gmail.com
+- Delivery1@123

@@ -4,7 +4,7 @@ import Item from './../models/itemModel.js';
 
 export const createEditShop = async (req, res) => {
     try {
-        const { name, city, state, address, hotline, openTime, closeTime } = req.body;
+        const { name, city, state, address, hotline, openTime, closeTime, lat, lon } = req.body;
         let image;
         if (req.file) {
             console.log(req.file);
@@ -12,10 +12,10 @@ export const createEditShop = async (req, res) => {
         }
         let shop = await Shop.findOne({ owner: req.userId });
         if (!shop) {
-            shop = await Shop.create({ name, city, state, address, hotline, openTime, closeTime, image, owner: req.userId });
+            shop = await Shop.create({ name, city, state, address, lat, lon, hotline, openTime, closeTime, image, owner: req.userId });
         }
         else {
-            shop = await Shop.findByIdAndUpdate(shop._id, { name, city, state, address, hotline, openTime, closeTime, image }, { new: true });
+            shop = await Shop.findByIdAndUpdate(shop._id, { name, city, state, address, lat, lon, hotline, openTime, closeTime, image }, { new: true });
         }
         await shop.populate("owner");
         return res.status(201).json(shop);
@@ -45,6 +45,8 @@ export const getMyShop = async (req, res) => {
             city: shop.city,
             state: shop.state,
             address: shop.address,
+            lat: shop.lat,
+            lon: shop.lon,
             hotline: shop.hotline,
             openTime: shop.openTime,
             closeTime: shop.closeTime,

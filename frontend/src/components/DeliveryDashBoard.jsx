@@ -12,9 +12,9 @@ function DeliveryDashBoard() {
   const [showOtpBox, setShowOtpBox] = useState(false);
   const [availableAssignments, setAvailableAssignments] = useState([]);
   const [otp, setOtp] = useState("");
-  const getAssignments = async () => {
+  const getAvailableOrders = async () => {
     try {
-      const result = await axios.get(`${serverUrl}/api/order/get-assignments`, { withCredentials: true });
+      const result = await axios.get(`${serverUrl}/api/order/available-orders`, { withCredentials: true });
       setAvailableAssignments(result.data);
     } catch (error) {
       console.log(error);
@@ -28,28 +28,19 @@ function DeliveryDashBoard() {
       setCurrentOrder(result.data);
     } catch (error) {
       console.log(error);
+      setCurrentOrder(null);
     }
   }
 
-  const acceptOrder = async (assignmentId) => {
+  const claimOrder = async (orderId, shopOrderId) => {
     try {
-      const result = await axios.get(`${serverUrl}/api/order/accept-order/${assignmentId}`, { withCredentials: true });
+      const result = await axios.post(`${serverUrl}/api/order/claim/${orderId}/${shopOrderId}`, {}, { withCredentials: true });
       console.log(result.data);
       await getCurrentOrders();
+      await getAvailableOrders(); // Refresh available orders
     } catch (error) {
       console.log(error);
-    }
-  }
-
-  const sendOtp = async () => {
-    try {
-      const result = await axios.post(`${serverUrl}/api/order/send-delivery-otp`, {
-        orderId: currentOrder._id, shopOrderId: currentOrder.shopOrder._id
-      }, { withCredentials: true });
-      console.log(result.data);
-      setShowOtpBox(true);
-    } catch (error) {
-      console.log(error);
+      alert(error.response?.data?.message || "Failed to claim order");
     }
   }
 
@@ -58,14 +49,20 @@ function DeliveryDashBoard() {
       const result = await axios.post(`${serverUrl}/api/order/verify-delivery-otp`, {
         orderId: currentOrder._id, shopOrderId: currentOrder.shopOrder._id, otp
       }, { withCredentials: true });
-      console.log(result.data);
+
+      alert(result.data.message); // Show success message
+      setShowOtpBox(false);
+      setOtp("");
+      await getCurrentOrders(); // Check if there are more orders or clear current
+      await getAvailableOrders(); // Refresh pool
     } catch (error) {
       console.log(error);
+      alert(error.response?.data?.message || "Verification failed");
     }
   }
 
   useEffect(() => {
-    getAssignments();
+    getAvailableOrders();
     getCurrentOrders();
   }, [userData])
   console.log("currentOrder (debug):", currentOrder);
@@ -90,11 +87,12 @@ function DeliveryDashBoard() {
                   <div className='border rounded-lg p-4 flex justify-between items-center' key={index}>
                     <div>
                       <p className='text-sm font-semibold'>{a.shopName}</p>
-                      <p className='text-sm text-gray-500'><span className='font-semibold'>Delivery Address: </span> {a.deliveryAddress.text}</p>
+                      <p className='text-sm text-gray-500'><span className='font-semibold'>Delivery Address: </span> {a.deliveryAddress.address}</p>
                       <p className='text-xs text-gray-400'>{a.items.length} items | {a.subTotal} VND</p>
+                      {a.deliveryFee && <p className='text-xs text-orange-600 font-semibold'>Delivery Fee: {a.deliveryFee.toLocaleString()} VND</p>}
                     </div>
                     <button className='bg-orange-500 text-white px-4 py-1 rounded-lg text-sm hover:bg-orange-600'
-                      onClick={() => acceptOrder(a.assignmentId)}>Accept</button>
+                      onClick={() => claimOrder(a.orderId, a.shopOrderId)}>Accept</button>
                   </div>))
               )
               : <p className='text-gray-400 text-sm'>No available assignments</p>}
@@ -105,16 +103,15 @@ function DeliveryDashBoard() {
           <h2 className='text-lg font-bold mb-3'>Current Order</h2>
           <div className='border rounded-lg p-4 mb-3'>
             <p className='font-bold text-sm'>Shop: {currentOrder?.shopOrder.shop.name}</p>
-            <p className='text-sm text-gray-500'>{currentOrder?.deliveryAddress.text}</p>
+            <p className='text-sm text-gray-500'>{currentOrder?.deliveryAddress.address}</p>
             <p className='text-sx text-gray-400'>{currentOrder.shopOrder.shopOrderItems.length} items | {currentOrder.shopOrder.subTotal} VND</p>
           </div>
           <DeliveryPersonTracking data={currentOrder} />
           {!showOtpBox ?
             <button className='mt-4 w-full bg-green-500 text-white font-semibold py-2 px-4 rounded-xl shadow-md
-          hover:bg-green-600 active:scale-95 transition-all duration-200' onClick={sendOtp}>Mark as a delivered</button>
+          hover:bg-green-600 active:scale-95 transition-all duration-200' onClick={() => setShowOtpBox(true)}>Mark as delivered</button>
             : <div className='mt-4 p-4 border rounded-xl bg-gray-50'>
-              <p className='text-sm font-semibold mb-2'>Enter OTP send to
-                <span className='font-bold text-orange-500'> {currentOrder.user.fullName} </span>
+              <p className='text-sm font-semibold mb-2'>Enter OTP to confirm delivery
               </p>
               <input type="text" className='w-full border px-3 py-2 rounded-lg mb-3 focus:outline-none focus:ring-2
               focus:ring-orange-400'placeholder='Enter OTP' onChange={(e) => setOtp(e.target.value)} value={otp} />

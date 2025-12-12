@@ -7,6 +7,8 @@ const shopSchema = new mongoose.Schema({
     city: { type: String, required: true },
     state: { type: String, required: true },
     address: { type: String, required: true },
+    lat: { type: Number, default: 0 },
+    lon: { type: Number, default: 0 },
     hotline: { type: String },
     openTime: { type: String },
     closeTime: { type: String },

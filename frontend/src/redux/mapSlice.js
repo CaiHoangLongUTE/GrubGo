@@ -8,6 +8,7 @@ const mapSlice = createSlice({
             lon: null,
         },
         address: null,
+        selectedAddress: null, // Complete address object with city, state, etc.
     },
     reducers: {
         setLocation: (state, action) => {
@@ -17,9 +18,12 @@ const mapSlice = createSlice({
         },
         setAddress: (state, action) => {
             state.address = action.payload;
+        },
+        setSelectedAddress: (state, action) => {
+            state.selectedAddress = action.payload;
         }
     }
 })
 
-export const { setLocation, setAddress } = mapSlice.actions;
+export const { setLocation, setAddress, setSelectedAddress } = mapSlice.actions;
 export default mapSlice.reducer;

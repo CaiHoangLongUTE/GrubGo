@@ -28,6 +28,8 @@ import { setSocket } from './redux/userSlice.js'
 import AdminLayout from './components/AdminLayout.jsx'
 import AdminDashboard from './pages/AdminDashboard.jsx'
 import MyAddresses from './pages/MyAddresses.jsx'
+import AddAddress from './pages/AddAddress.jsx'
+import UpdateAddress from './pages/UpdateAddress.jsx'
 import AdminUsers from './pages/AdminUsers.jsx'
 import AdminShops from './pages/AdminShops.jsx'
 import AdminOrders from './pages/AdminOrders.jsx'
@@ -75,6 +77,8 @@ function App() {
         <Route path="order-placed" element={userData ? <OrderPlaced /> : <Navigate to="/signin" />} />
         <Route path="my-orders" element={userData ? <MyOrders /> : <Navigate to="/signin" />} />
         <Route path="my-addresses" element={userData ? <MyAddresses /> : <Navigate to="/signin" />} />
+        <Route path="add-address" element={userData ? <AddAddress /> : <Navigate to="/signin" />} />
+        <Route path="update-address/:id" element={userData ? <UpdateAddress /> : <Navigate to="/signin" />} />
         <Route path="track-order/:orderId" element={userData ? <TrackOrder /> : <Navigate to="/signin" />} />
         <Route path="shop/:shopId" element={userData ? <Shop /> : <Navigate to="/signin" />} />
 

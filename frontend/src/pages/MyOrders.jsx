@@ -37,11 +37,11 @@ function MyOrders() {
     return (
         <div className='w-full min-h-screen bg-[#fff9f6] flex justify-center px-4'>
             <div className='w-full max-w-[800px] p-4'>
-                <div className='flex items-center gap-[20px] mb-6'>
-                    <div className='z-[10]' onClick={() => navigate("/")}>
-                        <IoArrowBack size={36} className='text-[#ff4d2d]' />
+                <div className='flex items-center gap-4 mb-6 cursor-pointer group w-fit' onClick={() => navigate("/")}>
+                    <div className="p-2 bg-white rounded-full shadow-sm text-[#ff4d2d] group-hover:bg-[#ff4d2d] group-hover:text-white transition-all">
+                        <IoArrowBack size={24} />
                     </div>
-                    <h1 className='text-2xl font-bold text-start'>Đơn hàng</h1>
+                    <h1 className='text-2xl font-bold text-gray-800'>Đơn hàng</h1>
                 </div>
                 <div className='space-y-6'>
                     {myOrders?.map((order, index) => (

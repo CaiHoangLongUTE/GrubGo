@@ -25,11 +25,28 @@ function TrackOrder() {
     return (
         <div className="min-h-screen bg-[#fff9f6] py-6">
             <div className="max-w-4xl mx-auto px-4 flex flex-col gap-6">
-                <div className='flex items-center gap-4 cursor-pointer hover:opacity-80 transition-opacity'
-                    onClick={() => navigate("/my-orders")}>
-                    <IoArrowBack size={32} className='text-[#ff4d2d]' />
-                    <h1 className="text-2xl font-bold text-gray-800">Theo dõi đơn hàng</h1>
+                <div className='flex items-center gap-4 mb-6 cursor-pointer group w-fit' onClick={() => navigate(-1)}>
+                    <div className="p-2 bg-white rounded-full shadow-sm text-[#ff4d2d] group-hover:bg-[#ff4d2d] group-hover:text-white transition-all">
+                        <IoArrowBack size={24} />
+                    </div>
+                    <h1 className='text-2xl font-bold text-gray-800'>Theo dõi đơn hàng</h1>
                 </div>
+
+                {/* Delivery Address - Show once for entire order */}
+                {currentOrder?.deliveryAddress && (
+                    <div className="bg-white p-5 rounded-2xl shadow-lg border border-gray-100">
+                        <p className="font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                            <span className="text-[#ff4d2d]">📍</span> Địa chỉ giao hàng
+                        </p>
+                        <p className="text-gray-700 font-medium">{currentOrder.deliveryAddress.address}</p>
+                        {currentOrder.deliveryAddress.city && currentOrder.deliveryAddress.state && (
+                            <p className="text-gray-500 text-sm mt-1">
+                                {currentOrder.deliveryAddress.city}, {currentOrder.deliveryAddress.state}
+                            </p>
+                        )}
+                    </div>
+                )}
+
                 {currentOrder?.shopOrders?.map((shopOrder, index) => (
                     <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 space-y-5" key={index}>
                         {/* Shop Info */}
@@ -40,17 +57,9 @@ function TrackOrder() {
                                     <span className="text-gray-600">{shopOrder.shopOrderItems?.map(i => i.name).join(", ")}</span>
                                 </p>
                                 <p><span className="font-semibold text-gray-700">Tổng tiền: </span>
-                                    <span className="text-[#ff4d2d] font-bold">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(shopOrder.subTotal)}</span>
+                                    <span className="text-[#ff4d2d] font-bold">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(shopOrder.subTotal + shopOrder.deliveryFee)}</span>
                                 </p>
                             </div>
-                        </div>
-
-                        {/* Delivery Address */}
-                        <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
-                            <p className="font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                                <span className="text-[#ff4d2d]">📍</span> Địa chỉ giao hàng
-                            </p>
-                            <p className="text-gray-600 text-sm">{currentOrder.deliveryAddress.text}</p>
                         </div>
 
                         {/* Status */}
@@ -59,14 +68,29 @@ function TrackOrder() {
                                 <h2 className="text-lg font-bold text-gray-800">Người giao hàng</h2>
                                 {shopOrder.assignedDeliveryPerson ? (
                                     <div className="bg-orange-50 p-4 rounded-xl border border-orange-100 space-y-2">
-                                        <p className="flex items-center gap-2">
-                                            <span className="font-semibold text-gray-700">Tên:</span>
-                                            <span className="text-gray-800">{shopOrder.assignedDeliveryPerson.fullName}</span>
-                                        </p>
-                                        <p className="flex items-center gap-2">
-                                            <span className="font-semibold text-gray-700">SĐT:</span>
-                                            <span className="text-gray-800">{shopOrder.assignedDeliveryPerson.mobile}</span>
-                                        </p>
+                                        <div className="flex justify-between items-start">
+                                            <div className="space-y-2">
+                                                <p className="flex items-center gap-2">
+                                                    <span className="font-semibold text-gray-700">Tên:</span>
+                                                    <span className="text-gray-800">{shopOrder.assignedDeliveryPerson.fullName}</span>
+                                                </p>
+                                                <p className="flex items-center gap-2">
+                                                    <span className="font-semibold text-gray-700">SĐT:</span>
+                                                    <span className="text-gray-800">{shopOrder.assignedDeliveryPerson.mobile}</span>
+                                                </p>
+                                            </div>
+                                            {shopOrder.deliveryOtp && (
+                                                <div className="bg-white px-3 py-2 rounded-lg border border-orange-200 flex flex-col items-center shadow-sm">
+                                                    <span className="text-xs text-gray-500 font-medium uppercase">Mã OTP</span>
+                                                    <span className="text-xl font-bold text-[#ff4d2d] tracking-widest">{shopOrder.deliveryOtp}</span>
+                                                </div>
+                                            )}
+                                        </div>
+                                        {shopOrder.deliveryOtp && (
+                                            <p className="text-xs text-gray-500 italic border-t border-orange-200/50 pt-2 mt-2">
+                                                * Đọc mã này cho tài xế khi nhận hàng để xác nhận
+                                            </p>
+                                        )}
                                     </div>
                                 ) : (
                                     <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-xl">
@@ -93,8 +117,8 @@ function TrackOrder() {
                                             lon: shopOrder.assignedDeliveryPerson.location.coordinates[0]
                                         },
                                         customerLocation: {
-                                            lat: currentOrder.deliveryAddress.latitude,
-                                            lon: currentOrder.deliveryAddress.longitude
+                                            lat: currentOrder.deliveryAddress.lat,
+                                            lon: currentOrder.deliveryAddress.lon
                                         }
                                     }} />
                                 </div>
@@ -107,4 +131,4 @@ function TrackOrder() {
     )
 }
 
-export default TrackOrder
+export default TrackOrder;

@@ -30,8 +30,8 @@ function OwnerOrderCard({ data }) {
           </div>
         </div>
         <div className="text-right">
-          <div className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${data.payment ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
-            {data.paymentMethod === "online" ? (data.payment ? "Đã thanh toán" : "Chưa thanh toán") : "COD"}
+          <div className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${data.shopOrders.payment ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+            {data.paymentMethod === "online" ? (data.shopOrders.payment ? "Đã thanh toán" : "Chưa thanh toán") : "COD"}
           </div>
           <p className="text-xs text-gray-400 mt-1">{data.paymentMethod === "online" ? "Online Payment" : "Cash on Delivery"}</p>
         </div>
@@ -39,7 +39,7 @@ function OwnerOrderCard({ data }) {
 
       <div className="bg-gray-50 rounded-xl p-3 text-sm text-gray-600 flex items-start gap-2 border border-gray-100">
         <div className="mt-0.5 text-[#ff4d2d]">📍</div>
-        <p>{data.deliveryAddress?.text}</p>
+        <p>{data.deliveryAddress?.address}</p>
       </div>
 
       <div className='flex space-x-3 overflow-x-auto pb-2 scrollbar-hide'>
@@ -51,6 +51,7 @@ function OwnerOrderCard({ data }) {
             <div className="p-2">
               <p className='text-sm font-semibold text-gray-800 truncate'>{item.name}</p>
               <p className='text-xs text-gray-500 mt-1'>{item.quantity} x {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.price)}</p>
+              {item.note && <p className="text-[10px] text-orange-500 mt-1 italic line-clamp-2">" {item.note} "</p>}
             </div>
           </div>
         ))}

@@ -16,20 +16,27 @@ function UserOrderCard({ data }) {
           <p className='text-xs text-gray-500 mt-1'>Đặt ngày: {formateDate(data.createdAt)}</p>
         </div>
         <div className='text-right'>
-          <div className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${data.payment ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
-            {data.paymentMethod === "cod" ? "COD" : (data.payment ? "Đã thanh toán" : "Chưa thanh toán")}
-          </div>
-          <p className='font-semibold text-[#ff4d2d] text-sm mt-1 capitalize'>{data.shopOrders?.[0].status}</p>
+          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${data.paymentMethod === 'online' && data.shopOrders?.[0]?.payment ? 'bg-green-50 text-green-700 border-green-200' : 'bg-yellow-50 text-yellow-700 border-yellow-200'}`}>
+            {data.paymentMethod === "cod" ? "Thanh toán khi nhận (COD)" : (data.shopOrders?.[0]?.payment ? "Đã thanh toán Online" : "Chưa thanh toán")}
+          </span>
         </div>
       </div>
 
       {data.shopOrders.map((shopOrder, index) => (
         <div className='bg-gray-50 rounded-xl p-4 space-y-3' key={index}>
-          <div className="flex items-center justify-center gap-2 mb-5">
-            <div className="w-8 h-8 bg-[#ff4d2d] rounded-lg flex items-center justify-center text-white shadow-sm shadow-orange-200">
-              <FaStore size={16} />
+          <div className="flex items-center justify-between mb-4 border-b border-gray-100 pb-2">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-[#ff4d2d] rounded-lg flex items-center justify-center text-white shadow-sm shadow-orange-200">
+                <FaStore size={16} />
+              </div>
+              <p className="font-bold text-gray-800 text-base">{shopOrder.shop.name}</p>
             </div>
-            <p className="font-bold text-gray-800 text-base">{shopOrder.shop.name}</p>
+            <span className={`px-2 py-1 rounded-full text-xs font-medium capitalize ${shopOrder.status === 'delivered' ? 'bg-green-100 text-green-700' :
+              shopOrder.status === 'cancelled' ? 'bg-red-100 text-red-700' :
+                'bg-orange-100 text-orange-700'
+              }`}>
+              {shopOrder.status}
+            </span>
           </div>
 
           <div className='flex space-x-3 overflow-x-auto pb-2 scrollbar-hide'>
@@ -41,13 +48,21 @@ function UserOrderCard({ data }) {
                 <div className="p-2">
                   <p className='text-sm font-semibold text-gray-800 truncate'>{item.name}</p>
                   <p className='text-xs text-gray-500 mt-1'>{item.quantity} x {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.price)}</p>
+                  {item.note && <p className="text-[10px] text-orange-500 mt-1 italic line-clamp-2">" {item.note} "</p>}
                 </div>
               </div>
             ))}
           </div>
 
-          <div className='flex justify-between items-center pt-2 border-t border-gray-200/50'>
-            <p className='text-sm text-gray-500'>Tạm tính: <span className="font-medium text-gray-800">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(shopOrder.subTotal)}</span></p>
+          <div className='pt-2 border-t border-gray-200/50 space-y-1'>
+            <div className='flex justify-between items-center'>
+              <p className='text-sm text-gray-500'>Tiền hàng:</p>
+              <span className="font-medium text-gray-800 text-sm">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(shopOrder.subTotal)}</span>
+            </div>
+            <div className='flex justify-between items-center'>
+              <p className='text-sm text-gray-500'>Phí giao hàng:</p>
+              <span className="font-medium text-gray-800 text-sm">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(shopOrder.deliveryFee || 0)}</span>
+            </div>
           </div>
         </div>
       ))}
