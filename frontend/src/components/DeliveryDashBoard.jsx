@@ -5,13 +5,27 @@ import { serverUrl } from '../App';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import DeliveryPersonTracking from './DeliveryPersonTracking';
+import { toast } from 'react-hot-toast';
 
 function DeliveryDashBoard() {
-  const { userData } = useSelector(state => state.user);
+  const { userData, socket } = useSelector(state => state.user);
   const [currentOrder, setCurrentOrder] = useState();
   const [showOtpBox, setShowOtpBox] = useState(false);
   const [availableAssignments, setAvailableAssignments] = useState([]);
   const [otp, setOtp] = useState("");
+
+  useEffect(() => {
+    if (socket) {
+      socket.on("newDeliveryAvailable", (newOrder) => {
+        setAvailableAssignments(prev => [newOrder, ...prev]);
+        toast.success("Có đơn hàng mới!");
+      });
+
+      return () => {
+        socket.off("newDeliveryAvailable");
+      }
+    }
+  }, [socket]);
   const getAvailableOrders = async () => {
     try {
       const result = await axios.get(`${serverUrl}/api/order/available-orders`, { withCredentials: true });
@@ -38,9 +52,10 @@ function DeliveryDashBoard() {
       console.log(result.data);
       await getCurrentOrders();
       await getAvailableOrders(); // Refresh available orders
+      toast.success("Đã nhận đơn hàng thành công!");
     } catch (error) {
       console.log(error);
-      alert(error.response?.data?.message || "Failed to claim order");
+      toast.error(error.response?.data?.message || "Nhận đơn thất bại");
     }
   }
 
@@ -50,14 +65,14 @@ function DeliveryDashBoard() {
         orderId: currentOrder._id, shopOrderId: currentOrder.shopOrder._id, otp
       }, { withCredentials: true });
 
-      alert(result.data.message); // Show success message
+      toast.success(result.data.message); // Show success message
       setShowOtpBox(false);
       setOtp("");
       await getCurrentOrders(); // Check if there are more orders or clear current
       await getAvailableOrders(); // Refresh pool
     } catch (error) {
       console.log(error);
-      alert(error.response?.data?.message || "Verification failed");
+      toast.error(error.response?.data?.message || "Xác thực thất bại");
     }
   }
 
@@ -72,51 +87,131 @@ function DeliveryDashBoard() {
       <div className='w-full max-w-[800px] flex flex-col gap-5 items-center'>
         <div className='bg-white rounded-2xl shadow-md p-5 flex flex-col justify-start items-center w-[90%] border border-orange-100
         text-center gap-2'>
-          <h1 className='text-xl font-bold text-[#ff4d2d]'>Welcome, {userData.fullName}</h1>
+          <h1 className='text-xl font-bold text-[#ff4d2d]'>Xin chào, {userData.fullName}</h1>
           <p className='text-[#ff4d2d]'>
-            <span className='font-semibold'>Latitude: </span>{userData.location.coordinates[1]},
-            <span className='font-semibold'>Longitude: </span>{userData.location.coordinates[0]}
+            <span className='font-semibold'>Vĩ độ: </span>{userData.location.coordinates[1]},
+            <span className='font-semibold'>Kinh độ: </span>{userData.location.coordinates[0]}
           </p>
         </div>
         {!currentOrder && <div className=' bg-white rounded-2xl p-5 shadow:md w-[90%] border border-orange-100'>
-          <h1 className='text-xl font-bold mb-4 flex items-center gap-2'>Available Assignments</h1>
+          <h1 className='text-xl font-bold mb-4 flex items-center gap-2'>Đơn hàng khả dụng</h1>
           <div className='space-y-4'>
             {availableAssignments.length > 0
               ? (
                 availableAssignments.map((a, index) => (
-                  <div className='border rounded-lg p-4 flex justify-between items-center' key={index}>
-                    <div>
-                      <p className='text-sm font-semibold'>{a.shopName}</p>
-                      <p className='text-sm text-gray-500'><span className='font-semibold'>Delivery Address: </span> {a.deliveryAddress.address}</p>
-                      <p className='text-xs text-gray-400'>{a.items.length} items | {a.subTotal} VND</p>
-                      {a.deliveryFee && <p className='text-xs text-orange-600 font-semibold'>Delivery Fee: {a.deliveryFee.toLocaleString()} VND</p>}
+                  <div className='border rounded-lg p-4 flex flex-col gap-3' key={index}>
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <p className='text-lg font-bold text-gray-800'>{a.shop?.name}</p>
+                        {a.shop?.address && <p className='text-xs text-gray-500 mb-2'><span className='font-semibold'>Địa chỉ quán: </span> {a.shop.address}</p>}
+                        <p className='text-sm text-gray-700 mt-1'><span className='font-semibold'>Giao đến: </span> {a.deliveryAddress.address}
+                          {a.deliveryAddress.city && a.deliveryAddress.state &&
+                            <span className='block text-xs text-gray-500 mt-0.5'>{a.deliveryAddress.city}, {a.deliveryAddress.state}</span>
+                          }
+                        </p>
+                      </div>
+                      <button className='bg-orange-500 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-orange-600 shadow-sm'
+                        onClick={() => claimOrder(a.orderId, a.shopOrderId)}>Nhận đơn</button>
                     </div>
-                    <button className='bg-orange-500 text-white px-4 py-1 rounded-lg text-sm hover:bg-orange-600'
-                      onClick={() => claimOrder(a.orderId, a.shopOrderId)}>Accept</button>
+
+                    <div className="bg-gray-50 p-3 rounded-lg border border-gray-100">
+                      <p className="text-xs font-semibold text-gray-500 mb-2 uppercase">Chi tiết đơn hàng:</p>
+                      <div className="space-y-1">
+                        {a.items?.map((item, idx) => (
+                          <div key={idx} className="flex justify-between text-sm">
+                            <span className="text-gray-700">{item.quantity} x {item.name}</span>
+                            <span className="text-gray-500">{item.price.toLocaleString()} đ</span>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="border-t border-gray-200 mt-2 pt-2 flex justify-between items-center">
+                        <span className="text-sm font-semibold text-gray-600">Tổng tiền:</span>
+                        <span className="text-sm font-bold text-gray-800">{a.subTotal?.toLocaleString()} đ</span>
+                      </div>
+                      <div className="border-t border-gray-200 mt-2 pt-2 flex justify-between items-center">
+                        <span className="text-sm font-semibold text-gray-600">Phí giao hàng:</span>
+                        <span className="text-sm font-bold text-gray-800">{a.deliveryFee?.toLocaleString()} đ</span>
+                      </div>
+                      <div className="border-t border-gray-200 flex justify-between items-center mt-1">
+                        <span className="text-sm font-semibold text-orange-600">Tổng thu:</span>
+                        <span className="text-sm font-bold text-orange-600">{(a.subTotal + a.deliveryFee)?.toLocaleString()} đ</span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 bg-orange-50 px-3 py-2 rounded-lg w-fit">
+                      <span className="text-xs font-semibold text-orange-700">Khách hàng:</span>
+                      <span className="text-sm font-bold text-gray-800">{a.customer?.name}</span>
+                      <span className="text-xs text-gray-500">({a.customer?.mobile})</span>
+                    </div>
                   </div>))
               )
-              : <p className='text-gray-400 text-sm'>No available assignments</p>}
+              : <p className='text-gray-400 text-sm italic text-center py-4'>Hiện chưa có đơn hàng nào...</p>}
           </div>
         </div>}
 
         {currentOrder && <div className='bg-white rounded-2xl p-5 shadow:md w-[90%] border border-orange-100'>
-          <h2 className='text-lg font-bold mb-3'>Current Order</h2>
-          <div className='border rounded-lg p-4 mb-3'>
-            <p className='font-bold text-sm'>Shop: {currentOrder?.shopOrder.shop.name}</p>
-            <p className='text-sm text-gray-500'>{currentOrder?.deliveryAddress.address}</p>
-            <p className='text-sx text-gray-400'>{currentOrder.shopOrder.shopOrderItems.length} items | {currentOrder.shopOrder.subTotal} VND</p>
+          <h2 className='text-lg font-bold mb-3'>Đơn hàng hiện tại</h2>
+          <div className='border rounded-lg p-4 mb-3 bg-gray-50'>
+            <div className="flex justify-between items-start mb-2">
+              <div>
+                <p className='font-bold text-lg text-gray-800'>{currentOrder?.shopOrder.shop.name}</p>
+                {currentOrder?.shopOrder?.shop && <p className='text-xs text-gray-500'><span className='font-semibold'>Địa chỉ quán: </span> {`${currentOrder.shopOrder.shop.address}, ${currentOrder.shopOrder.shop.city}, ${currentOrder.shopOrder.shop.state}`}</p>}
+              </div>
+              <span className="bg-orange-100 text-orange-600 text-xs px-2 py-1 rounded-full font-bold whitespace-nowrap ml-2">Đang giao</span>
+            </div>
+            <div className='text-sm text-gray-700 mb-3 p-3 bg-white rounded border border-gray-200'>
+              <div className="flex justify-between items-start mb-2 border-b border-gray-100 pb-2">
+                <div>
+                  <p className="font-semibold text-gray-800 text-base">{currentOrder?.user?.fullName}</p>
+                  <p className="text-gray-500">{currentOrder?.user?.mobile}</p>
+                </div>
+                <div className="bg-green-50 text-green-700 text-xs px-2 py-1 rounded font-semibold border border-green-100">
+                  Khách hàng
+                </div>
+              </div>
+              <p><span className="font-semibold text-gray-800">Giao đến:</span> {currentOrder?.deliveryAddress.address}</p>
+              {currentOrder?.deliveryAddress.city && currentOrder?.deliveryAddress.state && (
+                <p className='text-xs text-gray-500 mt-1'>{currentOrder.deliveryAddress.city}, {currentOrder.deliveryAddress.state}</p>
+              )}
+            </div>
+
+            <div className="bg-white p-3 rounded border border-gray-200">
+              <p className="text-xs font-semibold text-gray-500 mb-2 uppercase">Chi tiết đơn hàng:</p>
+              <div className="space-y-1">
+                {currentOrder.shopOrder.shopOrderItems.map((item, i) => (
+                  <div key={i} className="text-sm text-gray-700 flex justify-between">
+                    <span>{item.quantity} x {item.name}</span>
+                    <span className="text-gray-500">{item.price.toLocaleString()} đ</span>
+                  </div>
+                ))}
+              </div>
+              <div className="border-t border-gray-100 mt-2 pt-2 flex justify-between text-sm">
+                <span className="font-semibold text-gray-600">Tổng tiền:</span>
+                <span className="font-bold text-gray-800">{currentOrder.shopOrder.subTotal?.toLocaleString()} đ</span>
+              </div>
+              {currentOrder.shopOrder.deliveryFee && (
+                <div className="flex justify-between items-center mt-1 text-sm">
+                  <span className="font-semibold text-gray-600">Phí giao hàng:</span>
+                  <span className="font-bold text-gray-800">{currentOrder.shopOrder.deliveryFee.toLocaleString()} đ</span>
+                </div>
+              )}
+              <div className="border-t border-gray-100 mt-2 pt-2 flex justify-between font-bold text-sm">
+                <span className="text-orange-600">Tổng thu:</span>
+                <span className="text-[#ff4d2d]">{(currentOrder.shopOrder.subTotal + (currentOrder.shopOrder.deliveryFee || 0)).toLocaleString()} đ</span>
+              </div>
+            </div>
           </div>
           <DeliveryPersonTracking data={currentOrder} />
           {!showOtpBox ?
-            <button className='mt-4 w-full bg-green-500 text-white font-semibold py-2 px-4 rounded-xl shadow-md
-          hover:bg-green-600 active:scale-95 transition-all duration-200' onClick={() => setShowOtpBox(true)}>Mark as delivered</button>
+            <button className='mt-4 w-full bg-green-500 text-white font-semibold py-3 px-4 rounded-xl shadow-md
+          hover:bg-green-600 active:scale-95 transition-all duration-200 text-lg' onClick={() => setShowOtpBox(true)}>Xác nhận đã giao hàng</button>
             : <div className='mt-4 p-4 border rounded-xl bg-gray-50'>
-              <p className='text-sm font-semibold mb-2'>Enter OTP to confirm delivery
+              <p className='text-sm font-semibold mb-2 text-center text-gray-700'>Nhập mã OTP để hoàn tất đơn hàng
               </p>
-              <input type="text" className='w-full border px-3 py-2 rounded-lg mb-3 focus:outline-none focus:ring-2
-              focus:ring-orange-400'placeholder='Enter OTP' onChange={(e) => setOtp(e.target.value)} value={otp} />
+              <input type="text" className='w-full border px-4 py-3 rounded-lg mb-3 focus:outline-none focus:ring-2
+              focus:ring-orange-400 text-center text-lg tracking-widest' placeholder='Nhập mã OTP' onChange={(e) => setOtp(e.target.value)} value={otp} />
               <button className='w-full bg-orange-500 text-white py-2 rounded-lg font-semibold
-              hover:ng-orange-600 transition-all' onClick={verifyOtp}>Submit</button>
+              hover:ng-orange-600 transition-all' onClick={verifyOtp}>Xác nhận</button>
             </div>}
         </div>}
 

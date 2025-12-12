@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import UserOrderCard from '../components/UserOrderCard';
 import OwnerOrderCard from '../components/OwnerOrderCard';
 import { useEffect } from 'react';
-import { setMyOrders, updatePaymentStatus, updateUserOrderStatus } from '../redux/userSlice';
+import { setMyOrders, updatePaymentStatus, updateUserOrderStatus, assignDeliveryPerson, updateOwnerOrderStatus } from '../redux/userSlice';
 
 function MyOrders() {
     const { userData, myOrders, socket } = useSelector(state => state.user);
@@ -23,17 +23,27 @@ function MyOrders() {
             dispatch(updatePaymentStatus(data));
         })
 
-        // Listen for status updates (for users)
+        // Listen for delivery assignment
+        socket?.on("deliveryAssigned", (data) => {
+            dispatch(assignDeliveryPerson(data));
+        })
+
+        // Listen for status updates (for users and owners)
         socket?.on("statusUpdate", (data) => {
-            dispatch(updateUserOrderStatus(data));
+            if (userData.role === 'owner') {
+                dispatch(updateOwnerOrderStatus(data));
+            } else {
+                dispatch(updateUserOrderStatus(data));
+            }
         })
 
         return () => {
             socket?.off("newOrder")
             socket?.off("paymentUpdate")
             socket?.off("statusUpdate")
+            socket?.off("deliveryAssigned")
         }
-    }, [socket, myOrders, userData._id, dispatch]);
+    }, [socket, myOrders, userData._id, dispatch, userData.role]);
     return (
         <div className='w-full min-h-screen bg-[#fff9f6] flex justify-center px-4'>
             <div className='w-full max-w-[800px] p-4'>

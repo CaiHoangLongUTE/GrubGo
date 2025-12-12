@@ -5,10 +5,16 @@ import { useEffect, useState } from "react";
 import { IoArrowBack } from "react-icons/io5";
 import DeliveryPersonTracking from "../components/DeliveryPersonTracking";
 
+import { useSelector, useDispatch } from "react-redux";
+import { assignDeliveryPerson, updateUserOrderStatus } from "../redux/userSlice";
+
 function TrackOrder() {
     const navigate = useNavigate();
     const { orderId } = useParams();
     const [currentOrder, setCurrentOrder] = useState();
+    const { socket } = useSelector(state => state.user);
+    const dispatch = useDispatch();
+
     const handleGetOrder = async () => {
         try {
             const result = await axios.get(`${serverUrl}/api/order/get-order-by-id/${orderId}`, { withCredentials: true });
@@ -22,10 +28,59 @@ function TrackOrder() {
     useEffect(() => {
         handleGetOrder();
     }, [orderId])
+
+    useEffect(() => {
+        if (!socket || !currentOrder) return;
+
+        socket.on("deliveryAssigned", (data) => {
+            if (data.orderId === orderId) {
+                // Update local state
+                setCurrentOrder(prev => {
+                    const updatedShopOrders = prev.shopOrders.map(so => {
+                        if (so._id === data.shopOrderId) {
+                            return {
+                                ...so,
+                                assignedDeliveryPerson: data.deliveryPerson,
+                                status: data.status
+                            }
+                        }
+                        return so;
+                    })
+                    return { ...prev, shopOrders: updatedShopOrders };
+                })
+                // Update Redux state
+                dispatch(assignDeliveryPerson(data));
+            }
+        })
+
+        socket.on("statusUpdate", (data) => {
+            if (data.orderId === orderId) {
+                // Update local state
+                setCurrentOrder(prev => {
+                    const updatedShopOrders = prev.shopOrders.map(so => {
+                        // data.shopId might be string or object
+                        if (so.shop._id === data.shopId || so.shop === data.shopId) {
+                            return { ...so, status: data.status };
+                        }
+                        return so;
+                    })
+                    return { ...prev, shopOrders: updatedShopOrders };
+                })
+                // Update Redux state
+                dispatch(updateUserOrderStatus(data));
+            }
+        })
+
+        return () => {
+            socket.off("deliveryAssigned");
+            socket.off("statusUpdate");
+        }
+    }, [socket, orderId, currentOrder, dispatch])
+
     return (
         <div className="min-h-screen bg-[#fff9f6] py-6">
             <div className="max-w-4xl mx-auto px-4 flex flex-col gap-6">
-                <div className='flex items-center gap-4 mb-6 cursor-pointer group w-fit' onClick={() => navigate(-1)}>
+                <div className='flex items-center gap-4 mb-6 cursor-pointer group w-fit' onClick={() => navigate("/my-orders")}>
                     <div className="p-2 bg-white rounded-full shadow-sm text-[#ff4d2d] group-hover:bg-[#ff4d2d] group-hover:text-white transition-all">
                         <IoArrowBack size={24} />
                     </div>

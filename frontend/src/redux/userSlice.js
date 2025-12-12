@@ -101,11 +101,31 @@ const userSlice = createSlice({
         },
         setCategories: (state, action) => {
             state.categories = action.payload;
+        },
+        assignDeliveryPerson: (state, action) => {
+            const { orderId, shopOrderId, deliveryPerson, status } = action.payload;
+            const order = state.myOrders.find(o => o._id == orderId);
+            if (order) {
+                if (Array.isArray(order.shopOrders)) {
+                    // User view
+                    const shopOrder = order.shopOrders.find(so => so._id == shopOrderId);
+                    if (shopOrder) {
+                        shopOrder.assignedDeliveryPerson = deliveryPerson;
+                        shopOrder.status = status;
+                    }
+                } else {
+                    // Owner view
+                    if (order.shopOrders._id == shopOrderId) {
+                        order.shopOrders.assignedDeliveryPerson = deliveryPerson;
+                        order.shopOrders.status = status;
+                    }
+                }
+            }
         }
     }
 })
 
 export const { setUserData, setCurrentCity, setCurrentState, setCurrentAddress, setShopsInMyCity, setItemsInMyCity,
     addToCart, updateQuantity, removeCartItem, setMyOrders, addMyOrder, updateOwnerOrderStatus, updateUserOrderStatus,
-    updatePaymentStatus, setSearchItems, setSocket, setCategories } = userSlice.actions;
+    updatePaymentStatus, setSearchItems, setSocket, setCategories, assignDeliveryPerson } = userSlice.actions;
 export default userSlice.reducer;

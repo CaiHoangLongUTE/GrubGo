@@ -8,3 +8,9 @@
 ::-webkit-scrollbar{
     display: none;
 }
+
+/* Hide default password toggle in Edge/IE */
+input::-ms-reveal,
+input::-ms-clear {
+  display: none;
+}

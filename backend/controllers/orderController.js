@@ -232,13 +232,26 @@ export const updateOrderStatus = async (req, res) => {
             // Emit socket event to available delivery persons
             const io = req.app.get("io");
             if (io) {
+                // Populate user to get details for socket payload
+                await order.populate("user", "fullName mobile");
+
                 availableDeliveryPerson.forEach(person => {
                     if (person.socketId) {
                         io.to(person.socketId).emit("newDeliveryAvailable", {
                             orderId: order._id,
                             shopOrderId: shopOrder._id,
-                            shopName: shopOrder.shop?.name,
-                            deliveryAddress: order.deliveryAddress
+                            shop: {
+                                name: shopOrder.shop?.name,
+                                address: `${shopOrder.shop?.address}, ${shopOrder.shop?.city}, ${shopOrder.shop?.state}`
+                            },
+                            deliveryAddress: order.deliveryAddress,
+                            items: shopOrder.shopOrderItems || [],
+                            subTotal: shopOrder.subTotal,
+                            deliveryFee: shopOrder.deliveryFee,
+                            customer: {
+                                name: order.user?.fullName,
+                                mobile: order.user?.mobile
+                            }
                         });
                     }
                 });
@@ -247,7 +260,7 @@ export const updateOrderStatus = async (req, res) => {
 
         await order.save();
         const updatedShopOrder = order.shopOrders.find(o => o.shop == shopId);
-        await order.populate("shopOrders.shop", "name");
+        await order.populate("shopOrders.shop", "name address city state");
         await order.populate("shopOrders.assignedDeliveryPerson", "fullName email mobile");
 
         await order.populate("user", "socketId");
@@ -291,7 +304,7 @@ export const getAvailableOrders = async (req, res) => {
             "shopOrders.status": "out of delivery",
             "shopOrders.assignedDeliveryPerson": null
         })
-            .populate("shopOrders.shop", "name")
+            .populate("shopOrders.shop", "name address city state")
             .populate("shopOrders.shopOrderItems.item", "name image price")
             .populate("user", "fullName mobile")
             .populate("deliveryAddress");
@@ -311,7 +324,10 @@ export const getAvailableOrders = async (req, res) => {
                         availableOrders.push({
                             orderId: order._id,
                             shopOrderId: shopOrder._id,
-                            shopName: shopOrder.shop?.name,
+                            shop: {
+                                name: shopOrder.shop?.name,
+                                address: `${shopOrder.shop?.address}, ${shopOrder.shop?.city}, ${shopOrder.shop?.state}`,
+                            },
                             deliveryAddress: order.deliveryAddress,
                             items: shopOrder.shopOrderItems || [],
                             subTotal: shopOrder.subTotal,
@@ -365,6 +381,49 @@ export const claimOrder = async (req, res) => {
             return res.status(404).json({ message: "Order not found or already claimed" });
         }
 
+        // Emit socket event to User and Shop Owner
+        const io = req.app.get("io");
+        if (io) {
+            // Need to populate user first to get socketId
+            await order.populate("user");
+
+            // Notify User
+            if (order.user?.socketId) {
+                // Determine shopOrder index or ID to help frontend
+                const shopOrder = order.shopOrders.id(shopOrderId);
+                const deliveryPersonData = await User.findById(deliveryPersonId).select("fullName mobile email location");
+
+                io.to(order.user.socketId).emit("deliveryAssigned", {
+                    orderId: order._id, // This is an ObjectId
+                    shopOrderId: shopOrderId,
+                    deliveryPerson: deliveryPersonData,
+                    status: "out of delivery"
+                });
+            }
+
+            // Notify Shop Owner
+            const shopOrder = order.shopOrders.id(shopOrderId);
+            if (shopOrder) {
+                // We need to populate owner to get socketId if not already populated? 
+                // shopOrder.owner is an ObjectId in the schema, let's populate it to be safe or find it.
+                // Actually in the schema shopOrders.owner is ref to User.
+                // The query `findOneAndUpdate` returns the document *before* population if not specified, 
+                // but we use `new: true`. However, `owner` field might just be ID if not populated.
+                // Let's refetch or stick to ID if we have a way to get socket.
+                // Best to simple fetch owner user to get socketId.
+                const ownerUser = await User.findById(shopOrder.owner);
+                if (ownerUser && ownerUser.socketId) {
+                    const deliveryPersonData = await User.findById(deliveryPersonId).select("fullName mobile email location");
+                    io.to(ownerUser.socketId).emit("deliveryAssigned", {
+                        orderId: order._id,
+                        shopOrderId: shopOrderId,
+                        deliveryPerson: deliveryPersonData,
+                        status: "out of delivery"
+                    });
+                }
+            }
+        }
+
         return res.status(200).json({ message: "Order claimed successfully", order });
     } catch (error) {
         return res.status(500).json({ message: `Claim order failed. Error: ${error.message}` });
@@ -382,7 +441,7 @@ export const getCurrentOrder = async (req, res) => {
             "shopOrders.status": "out of delivery"
         })
             .populate("user", "fullName email mobile")
-            .populate("shopOrders.shop", "name")
+            .populate("shopOrders.shop", "name address city state")
             .populate("shopOrders.shopOrderItems.item", "name image price")
             .populate("deliveryAddress");
 
@@ -475,6 +534,29 @@ export const verifyDeliveryOtp = async (req, res) => {
         shopOrder.status = "delivered";
         shopOrder.deliveryAt = Date.now();
         await order.save();
+
+        // Emit socket event for status update
+        const io = req.app.get("io");
+        if (io) {
+            // Notify User
+            if (order.user?.socketId) {
+                io.to(order.user.socketId).emit("statusUpdate", {
+                    orderId: order._id,
+                    shopId: shopOrder.shop, // shopOrder.shop is ObjectId
+                    status: "delivered"
+                });
+            }
+
+            // Notify Shop Owner
+            const ownerUser = await User.findById(shopOrder.owner);
+            if (ownerUser && ownerUser.socketId) {
+                io.to(ownerUser.socketId).emit("statusUpdate", {
+                    orderId: order._id,
+                    shopId: shopOrder.shop,
+                    status: "delivered"
+                });
+            }
+        }
 
         return res.status(200).json({ message: "Order delivered successfully" });
     } catch (error) {
