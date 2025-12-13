@@ -165,18 +165,18 @@ function TrackOrder() {
                         {shopOrder.assignedDeliveryPerson && shopOrder.status != "delivered" && (
                             <div className="mt-4">
                                 <h3 className="text-lg font-bold text-gray-800 mb-3">Theo dõi vị trí</h3>
-                                <div className="rounded-xl overflow-hidden border border-gray-200 shadow-sm">
-                                    <DeliveryPersonTracking data={{
-                                        deliveryPersonLocation: {
-                                            lat: shopOrder.assignedDeliveryPerson.location.coordinates[1],
-                                            lon: shopOrder.assignedDeliveryPerson.location.coordinates[0]
-                                        },
-                                        customerLocation: {
-                                            lat: currentOrder.deliveryAddress.lat,
-                                            lon: currentOrder.deliveryAddress.lon
-                                        }
-                                    }} />
-                                </div>
+
+                                <DeliveryPersonTracking data={{
+                                    deliveryPersonLocation: {
+                                        lat: shopOrder.assignedDeliveryPerson.location.coordinates[1],
+                                        lon: shopOrder.assignedDeliveryPerson.location.coordinates[0]
+                                    },
+                                    customerLocation: {
+                                        lat: currentOrder.deliveryAddress.lat,
+                                        lon: currentOrder.deliveryAddress.lon
+                                    }
+                                }} />
+
                             </div>
                         )}
                     </div>

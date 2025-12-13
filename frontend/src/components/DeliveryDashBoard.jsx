@@ -13,6 +13,7 @@ function DeliveryDashBoard() {
   const [showOtpBox, setShowOtpBox] = useState(false);
   const [availableAssignments, setAvailableAssignments] = useState([]);
   const [otp, setOtp] = useState("");
+  const [isClaimingOrder, setIsClaimingOrder] = useState(false);
 
   useEffect(() => {
     if (socket) {
@@ -47,6 +48,9 @@ function DeliveryDashBoard() {
   }
 
   const claimOrder = async (orderId, shopOrderId) => {
+    if (isClaimingOrder) return; // Prevent double-click
+
+    setIsClaimingOrder(true);
     try {
       const result = await axios.post(`${serverUrl}/api/order/claim/${orderId}/${shopOrderId}`, {}, { withCredentials: true });
       console.log(result.data);
@@ -56,6 +60,8 @@ function DeliveryDashBoard() {
     } catch (error) {
       console.log(error);
       toast.error(error.response?.data?.message || "Nhận đơn thất bại");
+    } finally {
+      setIsClaimingOrder(false);
     }
   }
 
@@ -72,7 +78,7 @@ function DeliveryDashBoard() {
       await getAvailableOrders(); // Refresh pool
     } catch (error) {
       console.log(error);
-      toast.error(error.response?.data?.message || "Xác thực thất bại");
+      toast.error(error.response?.data?.message || "Xác thực thất bại", { duration: 2000 });
     }
   }
 
@@ -102,16 +108,21 @@ function DeliveryDashBoard() {
                   <div className='border rounded-lg p-4 flex flex-col gap-3' key={index}>
                     <div className="flex justify-between items-start">
                       <div>
-                        <p className='text-lg font-bold text-gray-800'>{a.shop?.name}</p>
-                        {a.shop?.address && <p className='text-xs text-gray-500 mb-2'><span className='font-semibold'>Địa chỉ quán: </span> {a.shop.address}</p>}
+                        <p className='text-lg font-bold text-gray-800'>{a.shop.name}</p>
+                        {a.shop?.address && <p className='text-xs text-gray-500 mb-2'><span className='font-semibold'>Địa chỉ quán: </span> {a.shop.address} - {a.shop.state}, {a.shop.city}</p>}
                         <p className='text-sm text-gray-700 mt-1'><span className='font-semibold'>Giao đến: </span> {a.deliveryAddress.address}
                           {a.deliveryAddress.city && a.deliveryAddress.state &&
                             <span className='block text-xs text-gray-500 mt-0.5'>{a.deliveryAddress.city}, {a.deliveryAddress.state}</span>
                           }
                         </p>
                       </div>
-                      <button className='bg-orange-500 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-orange-600 shadow-sm'
-                        onClick={() => claimOrder(a.orderId, a.shopOrderId)}>Nhận đơn</button>
+                      <button
+                        className='bg-orange-500 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-orange-600 shadow-sm disabled:bg-gray-400 disabled:cursor-not-allowed'
+                        onClick={() => claimOrder(a.orderId, a.shopOrderId)}
+                        disabled={isClaimingOrder}
+                      >
+                        {isClaimingOrder ? "Đang xử lý..." : "Nhận đơn"}
+                      </button>
                     </div>
 
                     <div className="bg-gray-50 p-3 rounded-lg border border-gray-100">
@@ -155,7 +166,7 @@ function DeliveryDashBoard() {
             <div className="flex justify-between items-start mb-2">
               <div>
                 <p className='font-bold text-lg text-gray-800'>{currentOrder?.shopOrder.shop.name}</p>
-                {currentOrder?.shopOrder?.shop && <p className='text-xs text-gray-500'><span className='font-semibold'>Địa chỉ quán: </span> {`${currentOrder.shopOrder.shop.address}, ${currentOrder.shopOrder.shop.city}, ${currentOrder.shopOrder.shop.state}`}</p>}
+                {currentOrder?.shopOrder?.shop && <p className='text-xs text-gray-500'><span className='font-semibold'>Địa chỉ quán: </span> {currentOrder.shopOrder.shop.address}</p>}
               </div>
               <span className="bg-orange-100 text-orange-600 text-xs px-2 py-1 rounded-full font-bold whitespace-nowrap ml-2">Đang giao</span>
             </div>

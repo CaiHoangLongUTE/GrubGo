@@ -234,6 +234,7 @@ export const updateOrderStatus = async (req, res) => {
             if (io) {
                 // Populate user to get details for socket payload
                 await order.populate("user", "fullName mobile");
+                await order.populate("shopOrders.shop", "name address city state");
 
                 availableDeliveryPerson.forEach(person => {
                     if (person.socketId) {
@@ -242,7 +243,9 @@ export const updateOrderStatus = async (req, res) => {
                             shopOrderId: shopOrder._id,
                             shop: {
                                 name: shopOrder.shop?.name,
-                                address: `${shopOrder.shop?.address}, ${shopOrder.shop?.city}, ${shopOrder.shop?.state}`
+                                address: shopOrder.shop?.address,
+                                city: shopOrder.shop?.city,
+                                state: shopOrder.shop?.state
                             },
                             deliveryAddress: order.deliveryAddress,
                             items: shopOrder.shopOrderItems || [],
@@ -321,12 +324,15 @@ export const getAvailableOrders = async (req, res) => {
             if (lonDiff <= 0.05 && latDiff <= 0.05) {
                 order.shopOrders.forEach(shopOrder => {
                     if (shopOrder.status === "out of delivery" && !shopOrder.assignedDeliveryPerson) {
+                        const shop = shopOrder.shop || {};
                         availableOrders.push({
                             orderId: order._id,
                             shopOrderId: shopOrder._id,
                             shop: {
-                                name: shopOrder.shop?.name,
-                                address: `${shopOrder.shop?.address}, ${shopOrder.shop?.city}, ${shopOrder.shop?.state}`,
+                                name: shop.name,
+                                address: shop.address,
+                                city: shop.city,
+                                state: shop.state,
                             },
                             deliveryAddress: order.deliveryAddress,
                             items: shopOrder.shopOrderItems || [],
