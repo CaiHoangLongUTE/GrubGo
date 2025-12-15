@@ -3,8 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { FaStore } from "react-icons/fa";
 import ReviewForm from './ReviewForm';
 
+import { useDispatch } from 'react-redux';
+import { updateUserOrderReview } from '../redux/userSlice';
+
 function UserOrderCard({ data }) {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [selectedShopOrder, setSelectedShopOrder] = useState(null);
 
@@ -119,7 +123,10 @@ function UserOrderCard({ data }) {
             setSelectedShopOrder(null);
           }}
           onSuccess={() => {
-            // Optional: refresh orders or show success indicator
+            dispatch(updateUserOrderReview({
+              orderId: data._id,
+              shopOrderId: selectedShopOrder._id
+            }));
           }}
         />
       )}
