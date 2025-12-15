@@ -14,6 +14,7 @@ import PaymentRouter from "./routes/paymentRoute.js";
 import addressRoute from "./routes/addressRoute.js";
 import adminRouter from "./routes/adminRoute.js";
 import categoryRouter from "./routes/categoryRoute.js";
+import reviewRouter from "./routes/reviewRoute.js";
 import http from "http";
 import { Server } from "socket.io";
 import { socketHandler } from "./socket.js";
@@ -52,6 +53,7 @@ app.use("/api/order", orderRouter);
 app.use("/api/payment", PaymentRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/category", categoryRouter);
+app.use("/api/review", reviewRouter);
 socketHandler(io);
 console.log("MONGODB_URL:", process.env.MONGODB_URL);
 const startServer = async () => {

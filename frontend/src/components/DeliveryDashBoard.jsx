@@ -56,7 +56,7 @@ function DeliveryDashBoard() {
       console.log(result.data);
       await getCurrentOrders();
       await getAvailableOrders(); // Refresh available orders
-      toast.success("Đã nhận đơn hàng thành công!");
+      toast.success("Đã nhận đơn hàng thành công!", { duration: 2000 });
     } catch (error) {
       console.log(error);
       toast.error(error.response?.data?.message || "Nhận đơn thất bại");

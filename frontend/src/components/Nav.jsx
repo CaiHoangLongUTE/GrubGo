@@ -129,17 +129,18 @@ function Nav() {
                         <>
                             <div className='fixed inset-0 z-[9998]' onClick={() => setShowInfo(false)}></div>
                             <div className='absolute top-[55px] right-0 w-[220px] bg-white shadow-2xl shadow-gray-200/50
-                        rounded-2xl p-2 flex flex-col gap-1 z-[9999] border border-gray-100'>
+                            rounded-2xl p-2 flex flex-col gap-1 z-[9999] border border-gray-100'>
                                 <div className='px-4 py-3 border-b border-gray-100 mb-1'>
                                     <p className='text-sm text-gray-500'>Xin chào,</p>
                                     <p className='text-base font-bold text-gray-800 truncate'>{userData?.fullName || 'Guest'}</p>
                                 </div>
 
-                                {userData?.role == "user" &&
+                                {userData?.role == "user" && <>
                                     <div className='px-4 py-2.5 text-gray-700 hover:bg-gray-50 rounded-xl cursor-pointer flex items-center gap-3 transition-colors font-medium'
                                         onClick={() => navigate("/my-orders")}>
                                         <TbReceipt size={18} className="text-gray-400" /> Đơn hàng
-                                    </div>}
+                                    </div>
+                                </>}
                                 <div className='px-4 py-2.5 text-red-500 hover:bg-red-50 rounded-xl cursor-pointer flex items-center gap-3 transition-colors font-medium' onClick={handleLogOut}>
                                     <FaLongArrowAltLeft size={18} /> Đăng xuất
                                 </div>

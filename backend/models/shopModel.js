@@ -13,6 +13,10 @@ const shopSchema = new mongoose.Schema({
     openTime: { type: String },
     closeTime: { type: String },
     status: { type: String, enum: ["active", "disabled"], default: "active" },
+    ratings: {
+        average: { type: Number, default: 0 },
+        count: { type: Number, default: 0 }
+    },
 }, { timestamps: true });
 
 const Shop = mongoose.model("Shop", shopSchema);

@@ -6,12 +6,15 @@ import { FaStore, FaPhone, FaClock } from "react-icons/fa6";
 import { FaLocationDot } from "react-icons/fa6";
 import { FaUtensils } from "react-icons/fa";
 import FoodCard from '../components/FoodCard';
-import { FaBackward } from "react-icons/fa";
+import ReviewCard from '../components/ReviewCard';
+import { FaBackward, FaStar } from "react-icons/fa";
 
 function Shop() {
   const { shopId } = useParams();
   const [items, setItems] = useState([]);
   const [shop, setShop] = useState({});
+  const [reviews, setReviews] = useState([]);
+  const [activeTab, setActiveTab] = useState('menu');
   const navigate = useNavigate();
 
   // Format phone number with dots
@@ -42,10 +45,15 @@ function Shop() {
 
   const handleShop = async () => {
     try {
-      const result = await axios.get(`${serverUrl}/api/item/get-by-shop/${shopId}`, { withCredentials: true });
-      console.log(result.data);
-      setShop(result.data.shop);
-      setItems(result.data.items);
+      const [shopResult, reviewsResult] = await Promise.all([
+        axios.get(`${serverUrl}/api/item/get-by-shop/${shopId}`, { withCredentials: true }),
+        axios.get(`${serverUrl}/api/review/shop/${shopId}`)
+      ]);
+
+      console.log(shopResult.data);
+      setShop(shopResult.data.shop);
+      setItems(shopResult.data.items);
+      setReviews(reviewsResult.data);
     } catch (error) {
       console.log(error)
     }
@@ -128,6 +136,29 @@ function Shop() {
             <FoodCard key={item._id} data={item} />
           ))}
         </div>) : <p className='text-center text-gray-500 text-lg'>Không có món ăn</p>}
+
+        {/* Reviews Section */}
+        <div className="mt-20">
+          <h2 className='flex items-center justify-center gap-3 text-3xl font-bold mb-10 text-gray-800'>
+            <FaStar className="text-yellow-400" /> Đánh giá từ khách hàng
+          </h2>
+
+          {reviews.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {reviews.map((review) => (
+                <ReviewCard key={review._id} review={review} />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center bg-white p-8 rounded-2xl shadow-sm border border-gray-100 max-w-2xl mx-auto">
+              <div className="bg-orange-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                <FaStar size={30} className="text-orange-300" />
+              </div>
+              <p className="text-gray-500 text-lg">Chưa có đánh giá nào cho quán ăn này.</p>
+              <p className="text-gray-400 text-sm mt-2">Hãy là người đầu tiên thưởng thức và đánh giá!</p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )

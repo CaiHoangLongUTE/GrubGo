@@ -8,10 +8,6 @@ const itemSchema = new mongoose.Schema({
     category: { type: mongoose.Schema.Types.ObjectId, ref: "Category", required: true },
     price: { type: Number, min: 0, required: true },
     foodType: { type: String, enum: ["food", "drink"], required: true },
-    ratings: {
-        average: { type: Number, default: 0 },
-        count: { type: Number, default: 0 }
-    },
 }, { timestamps: true });
 
 const Item = mongoose.model("Item", itemSchema);

@@ -20,6 +20,7 @@ const shopOrderSchema = new mongoose.Schema({
     assignedDeliveryPerson: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     deliveryOtp: { type: String, default: null },
     deliveryAt: { type: Date, default: null },
+    isReviewed: { type: Boolean, default: false },
 }, { timestamps: true });
 
 const orderSchema = new mongoose.Schema({

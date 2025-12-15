@@ -3,7 +3,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import { serverUrl } from "../App";
 import { useEffect, useState } from "react";
 import { IoArrowBack } from "react-icons/io5";
+import { FaStar } from "react-icons/fa";
 import DeliveryPersonTracking from "../components/DeliveryPersonTracking";
+import ReviewForm from "../components/ReviewForm";
+import ShopOrderReview from "../components/ShopOrderReview";
 
 import { useSelector, useDispatch } from "react-redux";
 import { assignDeliveryPerson, updateUserOrderStatus } from "../redux/userSlice";
@@ -158,6 +161,13 @@ function TrackOrder() {
                                 <p className="text-green-700 font-bold text-lg flex items-center gap-2">
                                     ✅ Đã giao hàng thành công
                                 </p>
+                                {/*review*/}
+                                {shopOrder.isReviewed ? (
+                                    <ShopOrderReview shopOrderId={shopOrder._id} />
+                                ) : (
+                                    <p className="text-green-700 font-bold text-lg flex items-center gap-2">
+                                        Nhớ đánh giá đơn hàng, chúc bạn một ngày tốt lành!</p>
+                                )}
                             </div>
                         )}
 

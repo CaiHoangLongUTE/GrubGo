@@ -91,9 +91,13 @@ function CreateEditShop() {
             }
             const result = await axios.post(`${serverUrl}/api/shop/create-edit`, formData, { withCredentials: true });
             toast.success("Shop details saved successfully", { duration: 2000 });
+
+            // Re-fetch complete shop data including items to ensure UI consistency
+            const shopData = await axios.get(`${serverUrl}/api/shop/get-my`, { withCredentials: true });
+            dispatch(setMyShopData(shopData.data));
+
             navigate("/");
-            dispatch(setMyShopData(result.data));
-            console.log(result.data);
+            console.log(shopData.data);
         } catch (error) {
             console.log(error);
         }

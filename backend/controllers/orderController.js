@@ -538,6 +538,7 @@ export const verifyDeliveryOtp = async (req, res) => {
         }
 
         shopOrder.status = "delivered";
+        shopOrder.payment = true;
         shopOrder.deliveryAt = Date.now();
         await order.save();
 
