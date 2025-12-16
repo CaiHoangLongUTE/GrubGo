@@ -74,9 +74,25 @@ function TrackOrder() {
             }
         })
 
+        socket.on("reviewSubmitted", (data) => {
+            if (data.orderId === orderId) {
+                // Update local state to reflect review submission
+                setCurrentOrder(prev => {
+                    const updatedShopOrders = prev.shopOrders.map(so => {
+                        if (so._id === data.shopOrderId) {
+                            return { ...so, isReviewed: data.isReviewed };
+                        }
+                        return so;
+                    })
+                    return { ...prev, shopOrders: updatedShopOrders };
+                })
+            }
+        })
+
         return () => {
             socket.off("deliveryAssigned");
             socket.off("statusUpdate");
+            socket.off("reviewSubmitted");
         }
     }, [socket, orderId, currentOrder, dispatch])
 

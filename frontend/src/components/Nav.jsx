@@ -6,6 +6,7 @@ import { RxCross1 } from "react-icons/rx";
 import { FaPlus } from "react-icons/fa6";
 import { FaLongArrowAltLeft } from "react-icons/fa";
 import { TbReceipt } from "react-icons/tb";
+import { ImProfile } from "react-icons/im";
 import { useDispatch, useSelector } from 'react-redux';
 import { serverUrl } from '../App';
 import { setSearchItems, setUserData } from '../redux/userSlice';
@@ -121,10 +122,19 @@ function Nav() {
                 </>)}
 
                 <div className='relative'>
-                    <div className='w-[42px] h-[42px] rounded-full bg-gradient-to-br from-[#ff4d2d] to-[#ff7e5f] text-white text-[18px] flex items-center justify-center 
-                    font-bold shadow-md shadow-orange-200 cursor-pointer hover:shadow-lg transition-all active:scale-95 border-2 border-white' onClick={() => setShowInfo(prev => !prev)}>
-                        {userData?.fullName?.slice(0, 1).toUpperCase() || 'U'}
-                    </div>
+                    {userData?.avatar ? (
+                        <img
+                            src={userData.avatar}
+                            alt="Avatar"
+                            className='w-[42px] h-[42px] rounded-full object-cover shadow-md shadow-orange-200 cursor-pointer hover:shadow-lg transition-all active:scale-95 border-2 border-white'
+                            onClick={() => setShowInfo(prev => !prev)}
+                        />
+                    ) : (
+                        <div className='w-[42px] h-[42px] rounded-full bg-gradient-to-br from-[#ff4d2d] to-[#ff7e5f] text-white text-[18px] flex items-center justify-center 
+                        font-bold shadow-md shadow-orange-200 cursor-pointer hover:shadow-lg transition-all active:scale-95 border-2 border-white' onClick={() => setShowInfo(prev => !prev)}>
+                            {userData?.fullName?.slice(0, 1).toUpperCase() || 'U'}
+                        </div>
+                    )}
                     {showInfo &&
                         <>
                             <div className='fixed inset-0 z-[9998]' onClick={() => setShowInfo(false)}></div>
@@ -141,6 +151,10 @@ function Nav() {
                                         <TbReceipt size={18} className="text-gray-400" /> Đơn hàng
                                     </div>
                                 </>}
+                                <div className='px-4 py-2.5 text-gray-700 hover:bg-gray-50 rounded-xl cursor-pointer flex items-center gap-3 transition-colors font-medium'
+                                    onClick={() => navigate("/my-profile")}>
+                                    <ImProfile size={16} className="text-gray-400" /> Tài khoản
+                                </div>
                                 <div className='px-4 py-2.5 text-red-500 hover:bg-red-50 rounded-xl cursor-pointer flex items-center gap-3 transition-colors font-medium' onClick={handleLogOut}>
                                     <FaLongArrowAltLeft size={18} /> Đăng xuất
                                 </div>

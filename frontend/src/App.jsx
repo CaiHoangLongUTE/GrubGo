@@ -19,6 +19,7 @@ import Cart from './pages/Cart'
 import CheckOut from './pages/CheckOut'
 import OrderPlaced from './pages/OrderPlaced'
 import MyOrders from './pages/MyOrders'
+import MyProfile from './pages/MyProfile'
 import useGetMyOrders from './hooks/useGetMyOrders.jsx'
 import useUpdateLocation from './hooks/useUpdateLocation.jsx'
 import TrackOrder from './pages/TrackOrder.jsx'
@@ -76,6 +77,7 @@ function App() {
         <Route path="checkout" element={userData ? <CheckOut /> : <Navigate to="/signin" />} />
         <Route path="order-placed" element={userData ? <OrderPlaced /> : <Navigate to="/signin" />} />
         <Route path="my-orders" element={userData ? <MyOrders /> : <Navigate to="/signin" />} />
+        <Route path="my-profile" element={userData ? <MyProfile /> : <Navigate to="/signin" />} />
         <Route path="my-addresses" element={userData ? <MyAddresses /> : <Navigate to="/signin" />} />
         <Route path="add-address" element={userData ? <AddAddress /> : <Navigate to="/signin" />} />
         <Route path="update-address/:id" element={userData ? <UpdateAddress /> : <Navigate to="/signin" />} />

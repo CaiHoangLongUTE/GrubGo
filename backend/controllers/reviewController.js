@@ -87,6 +87,15 @@ export const createReview = async (req, res) => {
             { "$set": { "shopOrders.$.isReviewed": true } }
         );
 
+        // Emit socket event to notify user (real-time update on TrackOrder page)
+        const io = req.app.get("io");
+        const userRoom = `user_${userId}`;
+        io.to(userRoom).emit("reviewSubmitted", {
+            orderId,
+            shopOrderId,
+            isReviewed: true
+        });
+
         await review.populate('user', 'fullName');
         return res.status(201).json(review);
     } catch (error) {

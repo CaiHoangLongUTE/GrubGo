@@ -6,9 +6,13 @@ const userSchema = new mongoose.Schema({
     password: { type: String },
     mobile: { type: String, required: true },
     role: { type: String, enum: ["user", "owner", "delivery", "admin"], required: true },
+    avatar: { type: String },
+    gender: { type: Number, default: 1 }, // 1: Male, 2: Female, 3: Other
+
     resetOtp: { type: String },
     isOtpVerified: { type: Boolean, default: false },
     otpExpiresAt: { type: Date },
+
     location: {
         type: { type: String, enum: ["Point"], default: "Point" },
         coordinates: { type: [Number], default: [0, 0] }
