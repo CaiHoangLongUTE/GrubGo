@@ -43,13 +43,15 @@ function FoodCard({ data }) {
                 <img src={data.image} alt={data.name} className='w-full h-full object-cover transition-transform duration-500 group-hover:scale-110' />
             </div>
             <div className='flex-1 flex flex-col p-4'>
-                <h1 className='font-semibold text-gray-900 text-base truncate'>{data.name}</h1>
+                {/* <h1 className='font-semibold text-gray-900 text-base truncate'>{data.name}</h1>
                 <div className='flex items-center gap-1 mt-1'>
                     {renderStars(data.rating?.average || 0)}
                     <span className='text-xs text-gray-500'>
                         {data.rating?.count || 0} Đánh giá
                     </span>
-                </div>
+                </div> */
+                <p className='font-semibold text-gray-900 text-base truncate'>{data.name}</p>
+                }
             </div>
             <div className='flex items-center justify-between mt-auto p-4 border-t border-gray-50'>
                 <span className='font-bold text-gray-900 text-lg'>

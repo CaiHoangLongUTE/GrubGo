@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { serverUrl } from '../App';
 import toast from 'react-hot-toast';
+import { translateOrderStatus, getStatusColor } from '../utils/statusTranslator';
 
 const AdminOrders = () => {
     const [orders, setOrders] = useState([]);
@@ -22,15 +23,7 @@ const AdminOrders = () => {
         }
     };
 
-    const getStatusBadge = (status) => {
-        const colors = {
-            Pending: 'bg-yellow-100 text-yellow-800',
-            Preparing: 'bg-blue-100 text-blue-800',
-            'Out of delivery': 'bg-purple-100 text-purple-800',
-            Delivered: 'bg-green-100 text-green-800'
-        };
-        return colors[status] || 'bg-gray-100 text-gray-800';
-    };
+
 
     if (loading) {
         return <div className="p-8"><div className="animate-pulse text-gray-500">Đang tải...</div></div>;
@@ -72,8 +65,8 @@ const AdminOrders = () => {
                                     <div className="text-sm font-medium text-gray-900">{order.totalAmount?.toLocaleString()}₫</div>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
-                                    <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadge(order.shopOrders?.[0]?.status)}`}>
-                                        {order.shopOrders?.[0]?.status || 'Pending'}
+                                    <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full border ${getStatusColor(order.shopOrders?.[0]?.status)}`}>
+                                        {translateOrderStatus(order.shopOrders?.[0]?.status) || 'Chờ xác nhận'}
                                     </span>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">

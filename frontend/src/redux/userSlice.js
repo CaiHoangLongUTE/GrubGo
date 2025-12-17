@@ -58,6 +58,14 @@ const userSlice = createSlice({
             state.cartItems = state.cartItems.filter(i => i.id !== action.payload);
             state.totalAmount = state.cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
         },
+        clearCart: (state) => {
+            state.cartItems = [];
+            state.totalAmount = 0;
+        },
+        clearCart: (state) => {
+            state.cartItems = [];
+            state.totalAmount = 0;
+        },
         setMyOrders: (state, action) => {
             state.myOrders = action.payload;
         },
@@ -65,20 +73,22 @@ const userSlice = createSlice({
             state.myOrders = [action.payload, ...state.myOrders];
         },
         updateOwnerOrderStatus: (state, action) => {
-            const { orderId, shopId, status } = action.payload;
+            const { orderId, shopId, status, reason } = action.payload;
             const order = state.myOrders.find(o => o._id == orderId);
-            if (order.shopOrders && order.shopOrders.shop._id == shopId) {
+            if (order && order.shopOrders && order.shopOrders.shop._id == shopId) {
                 order.shopOrders.status = status;
+                if (reason) order.shopOrders.cancelReason = reason;
             }
         },
 
         updateUserOrderStatus: (state, action) => {
-            const { orderId, shopId, status } = action.payload;
+            const { orderId, shopId, status, reason } = action.payload;
             const order = state.myOrders.find(o => o._id == orderId);
             if (order) {
-                const shopOrder = order.shopOrders?.find(so => so.shop?._id == shopId);
+                const shopOrder = order.shopOrders?.find(so => so.shop?._id == shopId || so.shop === shopId);
                 if (shopOrder) {
                     shopOrder.status = status;
+                    if (reason) shopOrder.cancelReason = reason;
                 }
             }
         },
@@ -136,6 +146,6 @@ const userSlice = createSlice({
 })
 
 export const { setUserData, setCurrentCity, setCurrentState, setCurrentAddress, setShopsInMyCity, setItemsInMyCity,
-    addToCart, updateQuantity, removeCartItem, setMyOrders, addMyOrder, updateOwnerOrderStatus, updateUserOrderStatus,
+    addToCart, updateQuantity, removeCartItem, clearCart, setMyOrders, addMyOrder, updateOwnerOrderStatus, updateUserOrderStatus,
     updatePaymentStatus, updateUserOrderReview, setSearchItems, setSocket, setCategories, assignDeliveryPerson } = userSlice.actions;
 export default userSlice.reducer;

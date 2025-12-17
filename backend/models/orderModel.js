@@ -16,11 +16,12 @@ const shopOrderSchema = new mongoose.Schema({
     payment: { type: Boolean, default: false },
     paymentAt: { type: Date, default: null },
     shopOrderItems: [shopOrderItemSchema],
-    status: { type: String, enum: ["pending", "preparing", "out of delivery", "delivered"], default: "pending" },
+    status: { type: String, enum: ["pending", "preparing", "out of delivery", "delivered", "cancelled"], default: "pending" },
     assignedDeliveryPerson: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     deliveryOtp: { type: String, default: null },
     deliveryAt: { type: Date, default: null },
     isReviewed: { type: Boolean, default: false },
+    cancelReason: { type: String, default: "" },
 }, { timestamps: true });
 
 const orderSchema = new mongoose.Schema({

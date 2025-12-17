@@ -570,3 +570,79 @@ export const verifyDeliveryOtp = async (req, res) => {
         return res.status(500).json({ message: `Otp verification failed. Error: ${error.message}` });
     }
 }
+
+export const cancelShopOrder = async (req, res) => {
+    try {
+        const { orderId, shopOrderId } = req.params;
+        const userId = req.userId;
+
+        // Find order and verify ownership
+        const order = await Order.findOne({ _id: orderId, user: userId });
+        if (!order) {
+            return res.status(404).json({ message: "Order not found" });
+        }
+
+        // Find the specific shopOrder
+        const shopOrder = order.shopOrders.id(shopOrderId);
+        if (!shopOrder) {
+            return res.status(404).json({ message: "Shop order not found" });
+        }
+
+        // Check if order can be cancelled
+        if (shopOrder.status === 'delivered') {
+            return res.status(400).json({ message: "Không thể hủy đơn hàng đã giao" });
+        }
+        if (shopOrder.status === 'out of delivery') {
+            return res.status(400).json({ message: "Không thể hủy đơn hàng đang giao" });
+        }
+        if (shopOrder.status === 'cancelled') {
+            return res.status(400).json({ message: "Đơn hàng đã được hủy trước đó" });
+        }
+
+        // Update status to cancelled
+        shopOrder.status = 'cancelled';
+        const { reason } = req.body;
+        if (reason) {
+            shopOrder.cancelReason = reason;
+        }
+        await order.save();
+
+        // Emit socket event for real-time update
+        // Emit socket event for real-time update
+        const io = req.app.get("io");
+
+        // Notify User: Fetch user to get current socketId
+        const user = await User.findById(userId);
+        if (user && user.socketId) {
+            io.to(user.socketId).emit("statusUpdate", {
+                orderId,
+                shopOrderId,
+                shopId: shopOrder.shop,
+                status: 'cancelled',
+                reason: shopOrder.cancelReason
+            });
+        }
+
+        // Notify Shop Owner: Fetch owner to get socketId
+        const shop = await Shop.findById(shopOrder.shop);
+        if (shop && shop.owner) {
+            const owner = await User.findById(shop.owner);
+            if (owner && owner.socketId) {
+                io.to(owner.socketId).emit("statusUpdate", {
+                    orderId,
+                    shopOrderId,
+                    shopId: shopOrder.shop,
+                    status: 'cancelled',
+                    reason: shopOrder.cancelReason
+                });
+            }
+        }
+
+        return res.status(200).json({
+            message: "Đã hủy đơn hàng thành công",
+            shopOrder
+        });
+    } catch (error) {
+        return res.status(500).json({ message: `Cancel order failed. Error: ${error.message}` });
+    }
+}

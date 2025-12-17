@@ -5,11 +5,12 @@ import { useEffect, useState } from "react";
 import { IoArrowBack } from "react-icons/io5";
 import { FaStar } from "react-icons/fa";
 import DeliveryPersonTracking from "../components/DeliveryPersonTracking";
-import ReviewForm from "../components/ReviewForm";
 import ShopOrderReview from "../components/ShopOrderReview";
+import CancelOrderModal from "../components/CancelOrderModal";
 
 import { useSelector, useDispatch } from "react-redux";
 import { assignDeliveryPerson, updateUserOrderStatus } from "../redux/userSlice";
+import toast from "react-hot-toast";
 
 function TrackOrder() {
     const navigate = useNavigate();
@@ -17,6 +18,8 @@ function TrackOrder() {
     const [currentOrder, setCurrentOrder] = useState();
     const { socket } = useSelector(state => state.user);
     const dispatch = useDispatch();
+    const [showCancelModal, setShowCancelModal] = useState(false);
+    const [selectedShopOrder, setSelectedShopOrder] = useState(null);
 
     const handleGetOrder = async () => {
         try {
@@ -24,6 +27,17 @@ function TrackOrder() {
             console.log(result.data);
             setCurrentOrder(result.data);
         } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const handleCancelOrder = async (shopOrderId, reason) => {
+        try {
+            const result = await axios.post(`${serverUrl}/api/order/cancel/${orderId}/${shopOrderId}`, { reason }, { withCredentials: true });
+            toast.success(result.data.message);
+            handleGetOrder(); // Refresh order data
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Hủy đơn thất bại");
             console.log(error);
         }
     }
@@ -63,7 +77,11 @@ function TrackOrder() {
                     const updatedShopOrders = prev.shopOrders.map(so => {
                         // data.shopId might be string or object
                         if (so.shop._id === data.shopId || so.shop === data.shopId) {
-                            return { ...so, status: data.status };
+                            return {
+                                ...so,
+                                status: data.status,
+                                cancelReason: data.reason // Update cancelReason if present
+                            };
                         }
                         return so;
                     })
@@ -134,6 +152,19 @@ function TrackOrder() {
                                     <span className="text-[#ff4d2d] font-bold">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(shopOrder.subTotal + shopOrder.deliveryFee)}</span>
                                 </p>
                             </div>
+
+                            {/* Cancel Button - Only show for pending/preparing orders */}
+                            {(shopOrder.status === 'pending' || shopOrder.status === 'preparing') && (
+                                <button
+                                    onClick={() => {
+                                        setSelectedShopOrder(shopOrder);
+                                        setShowCancelModal(true);
+                                    }}
+                                    className="mt-3 px-4 py-2 bg-red-50 text-red-600 border border-red-200 rounded-lg font-semibold text-sm hover:bg-red-100 hover:border-red-300 transition-all"
+                                >
+                                    Hủy đơn hàng
+                                </button>
+                            )}
                         </div>
 
                         {/* Status */}
@@ -172,6 +203,15 @@ function TrackOrder() {
                                     </div>
                                 )}
                             </div>
+                        ) : shopOrder.status === 'cancelled' ? (
+                            <div className="bg-red-50 border border-red-200 p-4 rounded-xl">
+                                <p className="text-red-700 font-bold text-lg flex items-center gap-2">
+                                    ❌ Đã hủy đơn hàng thành công
+                                </p>
+                                {shopOrder.cancelReason && (
+                                    <p className="text-red-600 text-sm mt-1">Lý do: {shopOrder.cancelReason}</p>
+                                )}
+                            </div>
                         ) : (
                             <div className="bg-green-50 border border-green-200 p-4 rounded-xl">
                                 <p className="text-green-700 font-bold text-lg flex items-center gap-2">
@@ -208,6 +248,17 @@ function TrackOrder() {
                     </div>
                 ))}
             </div>
+
+            {/* Cancel Order Modal */}
+            <CancelOrderModal
+                isOpen={showCancelModal}
+                onClose={() => {
+                    setShowCancelModal(false);
+                    setSelectedShopOrder(null);
+                }}
+                onConfirm={(reason) => handleCancelOrder(selectedShopOrder?._id, reason)}
+                shopName={selectedShopOrder?.shop?.name || ""}
+            />
         </div>
     )
 }
