@@ -70,8 +70,8 @@ export const signUp = async (req, res) => {
 export const signOut = async (req, res) => {
     try {
         res.clearCookie("token", {
-            secure: false,
-            sameSite: "strict",
+            secure: true,
+            sameSite: "none",
             httpOnly: true
         });
         return res.status(200).json({ message: "Đăng xuất thành công" });
