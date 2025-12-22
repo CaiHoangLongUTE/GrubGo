@@ -36,6 +36,7 @@ import AdminShops from './pages/AdminShops.jsx'
 import AdminOrders from './pages/AdminOrders.jsx'
 import AdminCategories from './pages/AdminCategories.jsx'
 import useGetCategories from './hooks/useGetCategories.jsx'
+import Chatbox from './components/Chatbox.jsx'
 
 export const serverUrl = "http://localhost:8000"
 
@@ -93,6 +94,9 @@ function App() {
           <Route path="categories" element={<AdminCategories />} />
         </Route>
       </Routes>
+
+      {/* Chatbox - Show on all pages except admin */}
+      {userData?.role !== 'admin' && <Chatbox />}
     </>
   )
 }
