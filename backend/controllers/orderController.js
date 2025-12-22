@@ -7,16 +7,16 @@ export const placeOrder = async (req, res) => {
     try {
         const { cartItems, paymentMethod, deliveryAddressId, totalAmount } = req.body;
         if (!cartItems || cartItems.length === 0) {
-            return res.status(400).json({ message: "Cart is empty" });
+            return res.status(400).json({ message: "Giỏ hàng trống" });
         }
         if (!deliveryAddressId) {
-            return res.status(400).json({ message: "Delivery address ID is required" });
+            return res.status(400).json({ message: "ID địa chỉ giao hàng là bắt buộc" });
         }
 
         // Verify address exists and belongs to user
         const address = await Address.findOne({ _id: deliveryAddressId, user: req.userId });
         if (!address) {
-            return res.status(404).json({ message: "Address not found or does not belong to you" });
+            return res.status(404).json({ message: "Không tìm thấy địa chỉ hoặc địa chỉ không thuộc về bạn" });
         }
         const groupItemsByShop = {}
         cartItems.forEach(item => {
@@ -47,7 +47,7 @@ export const placeOrder = async (req, res) => {
         const shopOrders = await Promise.all(
             Object.keys(groupItemsByShop).map(async (shopId) => {
                 const shop = await Shop.findById(shopId).populate("owner");
-                if (!shop) throw new Error(`Shop with id ${shopId} not found`);
+                if (!shop) throw new Error(`Không tìm thấy quán ăn với id ${shopId}`);
 
                 const items = groupItemsByShop[shopId];
                 const subTotal = items.reduce(
@@ -127,7 +127,7 @@ export const placeOrder = async (req, res) => {
 
         return res.status(201).json(newOrder);
     } catch (error) {
-        return res.status(500).json({ message: `Place order failed. Error: ${error.message}` });
+        return res.status(500).json({ message: `Đặt hàng thất bại. Lỗi: ${error.message}` });
     }
 }
 
@@ -163,7 +163,7 @@ export const getMyOrders = async (req, res) => {
             return res.status(200).json(filteredOrders);
         }
     } catch (error) {
-        return res.status(500).json({ message: `Get user orders failed. Error: ${error.message}` });
+        return res.status(500).json({ message: `Lấy đơn hàng của người dùng thất bại. Lỗi: ${error.message}` });
     }
 }
 
@@ -174,7 +174,7 @@ export const updateOrderStatus = async (req, res) => {
         const order = await Order.findById(orderId).populate('deliveryAddress');
         const shopOrder = order.shopOrders.find(o => o.shop == shopId);
         if (!shopOrder) {
-            return res.status(404).json({ message: "Shop order not found" });
+            return res.status(404).json({ message: "Không tìm thấy đơn hàng của quán" });
         }
         shopOrder.status = status;
         let deliveryPersonPayload = [];
@@ -218,7 +218,7 @@ export const updateOrderStatus = async (req, res) => {
 
             if (availableDeliveryPerson.length == 0) {
                 await order.save();
-                return res.status(200).json({ message: "No delivery person available" });
+                return res.status(200).json({ message: "Không có nhân viên giao hàng khả dụng" });
             }
 
             deliveryPersonPayload = availableDeliveryPerson.map(p => ({
@@ -286,7 +286,7 @@ export const updateOrderStatus = async (req, res) => {
             availableDeliveryPerson: deliveryPersonPayload,
         })
     } catch (error) {
-        return res.status(500).json({ message: `Update order status failed. Error: ${error.message}` });
+        return res.status(500).json({ message: `Cập nhật trạng thái đơn hàng thất bại. Lỗi: ${error.message}` });
     }
 }
 
@@ -297,7 +297,7 @@ export const getAvailableOrders = async (req, res) => {
         // Get delivery person's location
         const deliveryPerson = await User.findById(deliveryPersonId);
         if (!deliveryPerson || !deliveryPerson.location) {
-            return res.status(400).json({ message: "Delivery person location not found" });
+            return res.status(400).json({ message: "Không tìm thấy vị trí của nhân viên giao hàng" });
         }
 
         const [longitude, latitude] = deliveryPerson.location.coordinates;
@@ -353,7 +353,7 @@ export const getAvailableOrders = async (req, res) => {
 
         return res.status(200).json(availableOrders);
     } catch (error) {
-        return res.status(500).json({ message: `Get available orders failed. Error: ${error.message}` });
+        return res.status(500).json({ message: `Lấy danh sách đơn hàng khả dụng thất bại. Lỗi: ${error.message}` });
     }
 }
 
@@ -369,7 +369,7 @@ export const claimOrder = async (req, res) => {
         });
 
         if (activeDelivery) {
-            return res.status(400).json({ message: "You already have an active delivery" });
+            return res.status(400).json({ message: "Bạn đang có một đơn hàng đang giao" });
         }
 
         // Use findOneAndUpdate with atomic operation to prevent race condition
@@ -387,7 +387,7 @@ export const claimOrder = async (req, res) => {
         );
 
         if (!order) {
-            return res.status(404).json({ message: "Order not found or already claimed" });
+            return res.status(404).json({ message: "Đơn hàng không tìm thấy hoặc đã được người khác nhận" });
         }
 
         // Emit socket event to User and Shop Owner
@@ -433,9 +433,9 @@ export const claimOrder = async (req, res) => {
             }
         }
 
-        return res.status(200).json({ message: "Order claimed successfully", order });
+        return res.status(200).json({ message: "Nhận đơn hàng thành công", order });
     } catch (error) {
-        return res.status(500).json({ message: `Claim order failed. Error: ${error.message}` });
+        return res.status(500).json({ message: `Nhận đơn hàng thất bại. Lỗi: ${error.message}` });
     }
 }
 
@@ -455,7 +455,7 @@ export const getCurrentOrder = async (req, res) => {
             .populate("deliveryAddress");
 
         if (!order) {
-            return res.status(404).json({ message: "No active delivery found" });
+            return res.status(404).json({ message: "Không tìm thấy đơn hàng đang giao" });
         }
 
         // Find the specific shopOrder assigned to this delivery person
@@ -466,7 +466,7 @@ export const getCurrentOrder = async (req, res) => {
         );
 
         if (!shopOrder) {
-            return res.status(404).json({ message: "Shop order not found" });
+            return res.status(404).json({ message: "Không tìm thấy đơn hàng của quán" });
         }
 
         // Get delivery person's location
@@ -493,7 +493,7 @@ export const getCurrentOrder = async (req, res) => {
         });
 
     } catch (error) {
-        return res.status(500).json({ message: `Get current order failed. Error: ${error.message}` });
+        return res.status(500).json({ message: `Lấy đơn hàng hiện tại thất bại. Lỗi: ${error.message}` });
     }
 }
 
@@ -518,11 +518,11 @@ export const getOrderById = async (req, res) => {
             .lean()
 
         if (!order) {
-            return res.status(400).json({ message: "Order not found" });
+            return res.status(400).json({ message: "Không tìm thấy đơn hàng" });
         }
         return res.status(200).json(order);
     } catch (error) {
-        return res.status(500).json({ message: `Get order failed. Error: ${error.message}` });
+        return res.status(500).json({ message: `Lấy thông tin đơn hàng thất bại. Lỗi: ${error.message}` });
     }
 }
 
@@ -534,10 +534,10 @@ export const verifyDeliveryOtp = async (req, res) => {
         const order = await Order.findById(orderId).populate("user");
         const shopOrder = order.shopOrders.id(shopOrderId);
         if (!order || !shopOrder) {
-            return res.status(400).json({ message: "Enter valid order/shop order id" });
+            return res.status(400).json({ message: "Vui lòng nhập ID đơn hàng/đơn hàng của quán hợp lệ" });
         }
         if (shopOrder.deliveryOtp != otp) {
-            return res.status(400).json({ message: "Invalid OTP" });
+            return res.status(400).json({ message: "Mã OTP không hợp lệ" });
         }
 
         shopOrder.status = "delivered";
@@ -568,9 +568,9 @@ export const verifyDeliveryOtp = async (req, res) => {
             }
         }
 
-        return res.status(200).json({ message: "Order delivered successfully" });
+        return res.status(200).json({ message: "Đơn hàng đã được giao thành công" });
     } catch (error) {
-        return res.status(500).json({ message: `Otp verification failed. Error: ${error.message}` });
+        return res.status(500).json({ message: `Xác thực OTP thất bại. Lỗi: ${error.message}` });
     }
 }
 
@@ -582,13 +582,13 @@ export const cancelShopOrder = async (req, res) => {
         // Find order and verify ownership
         const order = await Order.findOne({ _id: orderId, user: userId });
         if (!order) {
-            return res.status(404).json({ message: "Order not found" });
+            return res.status(404).json({ message: "Không tìm thấy đơn hàng" });
         }
 
         // Find the specific shopOrder
         const shopOrder = order.shopOrders.id(shopOrderId);
         if (!shopOrder) {
-            return res.status(404).json({ message: "Shop order not found" });
+            return res.status(404).json({ message: "Không tìm thấy đơn hàng của quán" });
         }
 
         // Check if order can be cancelled
@@ -646,7 +646,7 @@ export const cancelShopOrder = async (req, res) => {
             shopOrder
         });
     } catch (error) {
-        return res.status(500).json({ message: `Cancel order failed. Error: ${error.message}` });
+        return res.status(500).json({ message: `Hủy đơn hàng thất bại. Lỗi: ${error.message}` });
     }
 }
 
@@ -693,6 +693,6 @@ export const getDeliveredOrders = async (req, res) => {
 
         return res.status(200).json(deliveredOrders);
     } catch (error) {
-        return res.status(500).json({ message: `Get delivered orders failed. Error: ${error.message}` });
+        return res.status(500).json({ message: `Lấy đơn hàng đã giao thất bại. Lỗi: ${error.message}` });
     }
 }

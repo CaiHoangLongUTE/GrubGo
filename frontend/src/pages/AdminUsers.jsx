@@ -22,7 +22,7 @@ const AdminUsers = () => {
             const res = await axios.get(`${serverUrl}/api/admin/users?${params}`, { withCredentials: true });
             setUsers(res.data);
         } catch (error) {
-            toast.error(error.response?.data?.message || "Không thể tải users");
+            toast.error(error.response?.data?.message || "Không thể tải danh sách người dùng");
         } finally {
             setLoading(false);
         }
@@ -81,11 +81,11 @@ const AdminUsers = () => {
                         onChange={(e) => setRoleFilter(e.target.value)}
                         className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff4d2d]"
                     >
-                        <option value="">Tất cả Role</option>
-                        <option value="user">User</option>
-                        <option value="owner">Owner</option>
-                        <option value="delivery">Delivery</option>
-                        <option value="admin">Admin</option>
+                        <option value="">Tất cả</option>
+                        <option value="user">Khách hàng</option>
+                        <option value="owner">Chủ quán</option>
+                        <option value="delivery">Người giao hàng</option>
+                        <option value="admin">Quản trị viên</option>
                     </select>
                 </div>
             </div>
@@ -97,10 +97,10 @@ const AdminUsers = () => {
                         <tr>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tên</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Số điện thoại</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vai trò</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trạng thái</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hành động</th>
                         </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
@@ -117,12 +117,15 @@ const AdminUsers = () => {
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getRoleBadge(user.role)}`}>
-                                        {user.role}
+                                        {user.role === 'user' ? 'Khách hàng' :
+                                            user.role === 'owner' ? 'Chủ quán' :
+                                                user.role === 'delivery' ? 'Người giao hàng' :
+                                                    user.role === 'admin' ? 'Quản trị viên' : user.role}
                                     </span>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${user.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                                        {user.status || 'active'}
+                                        {user.status === 'active' ? 'Đang hoạt động' : 'Đã khóa'}
                                     </span>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm">
@@ -131,14 +134,14 @@ const AdminUsers = () => {
                                             onClick={() => handleUpdateStatus(user._id, 'banned')}
                                             className="text-red-600 hover:text-red-900"
                                         >
-                                            Ban
+                                            Khóa
                                         </button>
                                     ) : (
                                         <button
                                             onClick={() => handleUpdateStatus(user._id, 'active')}
                                             className="text-green-600 hover:text-green-900"
                                         >
-                                            Unban
+                                            Mở khóa
                                         </button>
                                     )}
                                 </td>

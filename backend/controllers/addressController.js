@@ -31,7 +31,7 @@ export const addAddress = async (req, res) => {
 
         return res.status(201).json(newAddress);
     } catch (error) {
-        return res.status(500).json({ message: `Add address failed: ${error.message}` });
+        return res.status(500).json({ message: `Thêm địa chỉ thất bại: ${error.message}` });
     }
 };
 
@@ -41,7 +41,7 @@ export const getAllAddresses = async (req, res) => {
         const addresses = await Address.find({ user: req.userId }).sort({ isDefault: -1, createdAt: -1 });
         return res.status(200).json(addresses);
     } catch (error) {
-        return res.status(500).json({ message: `Get addresses failed: ${error.message}` });
+        return res.status(500).json({ message: `Lấy danh sách địa chỉ thất bại: ${error.message}` });
     }
 };
 
@@ -63,12 +63,12 @@ export const updateAddress = async (req, res) => {
         );
 
         if (!updatedAddress) {
-            return res.status(404).json({ message: "Address not found" });
+            return res.status(404).json({ message: "Không tìm thấy địa chỉ" });
         }
 
         return res.status(200).json(updatedAddress);
     } catch (error) {
-        return res.status(500).json({ message: `Update address failed: ${error.message}` });
+        return res.status(500).json({ message: `Cập nhật địa chỉ thất bại: ${error.message}` });
     }
 };
 
@@ -79,12 +79,12 @@ export const deleteAddress = async (req, res) => {
         const deletedAddress = await Address.findOneAndDelete({ _id: id, user: req.userId });
 
         if (!deletedAddress) {
-            return res.status(404).json({ message: "Address not found" });
+            return res.status(404).json({ message: "Không tìm thấy địa chỉ" });
         }
 
-        return res.status(200).json({ message: "Address deleted successfully" });
+        return res.status(200).json({ message: "Xóa địa chỉ thành công" });
     } catch (error) {
-        return res.status(500).json({ message: `Delete address failed: ${error.message}` });
+        return res.status(500).json({ message: `Xóa địa chỉ thất bại: ${error.message}` });
     }
 };
 
@@ -103,11 +103,11 @@ export const setDefaultAddress = async (req, res) => {
         );
 
         if (!updatedAddress) {
-            return res.status(404).json({ message: "Address not found" });
+            return res.status(404).json({ message: "Không tìm thấy địa chỉ" });
         }
 
         return res.status(200).json(updatedAddress);
     } catch (error) {
-        return res.status(500).json({ message: `Set default address failed: ${error.message}` });
+        return res.status(500).json({ message: `Đặt địa chỉ mặc định thất bại: ${error.message}` });
     }
 };

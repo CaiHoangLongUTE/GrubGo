@@ -115,7 +115,7 @@ const AdminDashboard = () => {
                                 data={[
                                     { name: 'Khách hàng', value: (stats?.users?.total || 0) - (stats?.users?.owners || 0) - (stats?.users?.delivery || 0), fill: '#3b82f6' },
                                     { name: 'Chủ quán', value: stats?.users?.owners || 0, fill: '#10b981' },
-                                    { name: 'Giao hàng', value: stats?.users?.delivery || 0, fill: '#f59e0b' }
+                                    { name: 'Người giao hàng', value: stats?.users?.delivery || 0, fill: '#f59e0b' }
                                 ]}
                                 cx="50%"
                                 cy="50%"
@@ -139,7 +139,7 @@ const AdminDashboard = () => {
                         </div>
                         <div className="flex items-center gap-2">
                             <div className="w-3 h-3 bg-amber-500 rounded"></div>
-                            <span className="text-gray-600">Giao hàng</span>
+                            <span className="text-gray-600">Người giao hàng</span>
                         </div>
                     </div>
                 </div>

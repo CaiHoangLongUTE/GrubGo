@@ -5,9 +5,14 @@ import Order from '../models/orderModel.js';
 // Dashboard Statistics
 export const getDashboardStats = async (req, res) => {
     try {
-        const totalUsers = await User.countDocuments({ role: "user" });
+        // Count users by role
+        const totalCustomers = await User.countDocuments({ role: "user" });
         const totalOwners = await User.countDocuments({ role: "owner" });
         const totalDelivery = await User.countDocuments({ role: "delivery" });
+
+        // Total users = all non-admin users
+        const totalUsers = totalCustomers + totalOwners + totalDelivery;
+
         const totalShops = await Shop.countDocuments();
         const totalOrders = await Order.countDocuments();
 
@@ -29,13 +34,18 @@ export const getDashboardStats = async (req, res) => {
         ]);
 
         return res.status(200).json({
-            users: { total: totalUsers, owners: totalOwners, delivery: totalDelivery },
+            users: {
+                total: totalUsers,
+                customers: totalCustomers,
+                owners: totalOwners,
+                delivery: totalDelivery
+            },
             shops: totalShops,
             orders: { total: totalOrders, today: ordersToday, thisWeek: ordersThisWeek, thisMonth: ordersThisMonth },
             revenue: totalRevenue[0]?.total || 0
         });
     } catch (error) {
-        return res.status(500).json({ message: `Get stats failed. Error: ${error.message}` });
+        return res.status(500).json({ message: `Lấy thống kê thất bại. Lỗi: ${error.message}` });
     }
 }
 
@@ -57,7 +67,7 @@ export const getAllUsers = async (req, res) => {
         const users = await User.find(query).select('-password').sort({ createdAt: -1 });
         return res.status(200).json(users);
     } catch (error) {
-        return res.status(500).json({ message: `Get users failed. Error: ${error.message}` });
+        return res.status(500).json({ message: `Lấy danh sách người dùng thất bại. Lỗi: ${error.message}` });
     }
 }
 
@@ -66,11 +76,11 @@ export const getUserById = async (req, res) => {
         const { userId } = req.params;
         const user = await User.findById(userId).select('-password');
         if (!user) {
-            return res.status(404).json({ message: "User not found" });
+            return res.status(404).json({ message: "Không tìm thấy người dùng" });
         }
         return res.status(200).json(user);
     } catch (error) {
-        return res.status(500).json({ message: `Get user failed. Error: ${error.message}` });
+        return res.status(500).json({ message: `Lấy thông tin người dùng thất bại. Lỗi: ${error.message}` });
     }
 }
 
@@ -80,7 +90,7 @@ export const updateUserStatus = async (req, res) => {
         const { status } = req.body;
 
         if (!['active', 'banned'].includes(status)) {
-            return res.status(400).json({ message: "Invalid status" });
+            return res.status(400).json({ message: "Trạng thái không hợp lệ" });
         }
 
         const user = await User.findByIdAndUpdate(
@@ -90,12 +100,12 @@ export const updateUserStatus = async (req, res) => {
         ).select('-password');
 
         if (!user) {
-            return res.status(404).json({ message: "User not found" });
+            return res.status(404).json({ message: "Không tìm thấy người dùng" });
         }
 
         return res.status(200).json(user);
     } catch (error) {
-        return res.status(500).json({ message: `Update user status failed. Error: ${error.message}` });
+        return res.status(500).json({ message: `Cập nhật trạng thái người dùng thất bại. Lỗi: ${error.message}` });
     }
 }
 
@@ -105,7 +115,7 @@ export const updateUserRole = async (req, res) => {
         const { role } = req.body;
 
         if (!['user', 'owner', 'delivery', 'admin'].includes(role)) {
-            return res.status(400).json({ message: "Invalid role" });
+            return res.status(400).json({ message: "Vai trò không hợp lệ" });
         }
 
         const user = await User.findByIdAndUpdate(
@@ -115,12 +125,12 @@ export const updateUserRole = async (req, res) => {
         ).select('-password');
 
         if (!user) {
-            return res.status(404).json({ message: "User not found" });
+            return res.status(404).json({ message: "Không tìm thấy người dùng" });
         }
 
         return res.status(200).json(user);
     } catch (error) {
-        return res.status(500).json({ message: `Update user role failed. Error: ${error.message}` });
+        return res.status(500).json({ message: `Cập nhật vai trò người dùng thất bại. Lỗi: ${error.message}` });
     }
 }
 
@@ -141,7 +151,7 @@ export const getAllShops = async (req, res) => {
 
         return res.status(200).json(shops);
     } catch (error) {
-        return res.status(500).json({ message: `Get shops failed. Error: ${error.message}` });
+        return res.status(500).json({ message: `Lấy danh sách quán ăn thất bại. Lỗi: ${error.message}` });
     }
 }
 
@@ -151,7 +161,7 @@ export const updateShopStatus = async (req, res) => {
         const { status } = req.body;
 
         if (!['active', 'disabled'].includes(status)) {
-            return res.status(400).json({ message: "Invalid status" });
+            return res.status(400).json({ message: "Trạng thái không hợp lệ" });
         }
 
         const shop = await Shop.findByIdAndUpdate(
@@ -161,12 +171,12 @@ export const updateShopStatus = async (req, res) => {
         ).populate('owner', 'fullName email');
 
         if (!shop) {
-            return res.status(404).json({ message: "Shop not found" });
+            return res.status(404).json({ message: "Không tìm thấy quán ăn" });
         }
 
         return res.status(200).json(shop);
     } catch (error) {
-        return res.status(500).json({ message: `Update shop status failed. Error: ${error.message}` });
+        return res.status(500).json({ message: `Cập nhật trạng thái quán ăn thất bại. Lỗi: ${error.message}` });
     }
 }
 
@@ -191,6 +201,6 @@ export const getAllOrders = async (req, res) => {
 
         return res.status(200).json(orders);
     } catch (error) {
-        return res.status(500).json({ message: `Get orders failed. Error: ${error.message}` });
+        return res.status(500).json({ message: `Lấy danh sách đơn hàng thất bại. Lỗi: ${error.message}` });
     }
 }

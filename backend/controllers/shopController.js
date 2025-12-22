@@ -20,7 +20,7 @@ export const createEditShop = async (req, res) => {
         await shop.populate("owner");
         return res.status(201).json(shop);
     } catch (error) {
-        return res.status(500).json({ message: `Create shop failed. Error: ${error.message}` });
+        return res.status(500).json({ message: `Tạo/Chỉnh sửa quán ăn thất bại. Lỗi: ${error.message}` });
     }
 };
 
@@ -56,7 +56,7 @@ export const getMyShop = async (req, res) => {
             items: items
         });
     } catch (error) {
-        return res.status(500).json({ message: `Get my shop failed. Error: ${error.message}` });
+        return res.status(500).json({ message: `Lấy thông tin quán ăn thất bại. Lỗi: ${error.message}` });
     }
 };
 
@@ -67,10 +67,10 @@ export const getShopByCity = async (req, res) => {
             city: { $regex: new RegExp(`^${city}$`, "i") }
         });
         if (!shops) {
-            return res.status(404).json({ message: "Shop not found" });
+            return res.status(404).json({ message: "Không tìm thấy quán ăn" });
         }
         return res.status(200).json(shops);
     } catch (error) {
-        return res.status(500).json({ message: `Get shop by city failed. Error: ${error.message}` });
+        return res.status(500).json({ message: `Lấy quán ăn theo thành phố thất bại. Lỗi: ${error.message}` });
     }
 }

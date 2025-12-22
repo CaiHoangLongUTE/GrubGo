@@ -8,12 +8,12 @@ export const signIn = async (req, res) => {
         const { email, password } = req.body;
         const user = await User.findOne({ email });
         if (!user) {
-            return res.status(400).json({ message: "User does not exists" });
+            return res.status(400).json({ message: "Người dùng không tồn tại" });
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            return res.status(400).json({ message: "Incorrect password" });
+            return res.status(400).json({ message: "Mật khẩu không chính xác" });
         }
 
         const token = await genToken(user._id);
@@ -26,7 +26,7 @@ export const signIn = async (req, res) => {
 
         return res.status(200).json(user);
     } catch (error) {
-        return res.status(500).json(`Sign in failed. Error: ${error.message}`);
+        return res.status(500).json({ message: `Đăng nhập thất bại. Lỗi: ${error.message}` });
     }
 };
 
@@ -35,13 +35,13 @@ export const signUp = async (req, res) => {
         const { fullName, email, password, mobile, role } = req.body;
         let user = await User.findOne({ email });
         if (user) {
-            return res.status(400).json({ message: "User already exists" });
+            return res.status(400).json({ message: "Người dùng đã tồn tại" });
         }
         if (password.length < 6) {
-            return res.status(400).json({ message: "Password must be at least 6 characters" });
+            return res.status(400).json({ message: "Mật khẩu phải có ít nhất 6 ký tự" });
         }
         if (mobile.length < 10) {
-            return res.status(400).json({ message: "Mobile number must be at least 10 characters" });
+            return res.status(400).json({ message: "Số điện thoại phải có ít nhất 10 số" });
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -63,7 +63,7 @@ export const signUp = async (req, res) => {
 
         return res.status(200).json(user);
     } catch (error) {
-        return res.status(500).json(`Sign up failed. Error: ${error.message}`);
+        return res.status(500).json({ message: `Đăng ký thất bại. Lỗi: ${error.message}` });
     }
 };
 
@@ -76,7 +76,7 @@ export const signOut = async (req, res) => {
         });
         return res.status(200).json({ message: "Đăng xuất thành công" });
     } catch (error) {
-        return res.status(500).json(`Đăng xuất thất bại. Error: ${error.message}`);
+        return res.status(500).json({ message: `Đăng xuất thất bại. Lỗi: ${error.message}` });
     }
 };
 
@@ -85,7 +85,7 @@ export const sendOtp = async (req, res) => {
         const { email } = req.body;
         const user = await User.findOne({ email });
         if (!user) {
-            return res.status(400).json({ message: "User does not exists" });
+            return res.status(400).json({ message: "Người dùng không tồn tại" });
         }
         const otp = Math.floor(1000 + Math.random() * 9000).toString();
         user.resetOtp = otp;
@@ -93,9 +93,9 @@ export const sendOtp = async (req, res) => {
         user.isOtpVerified = false;
         await user.save();
         await sendOtpEmail({ to: email, otp });
-        return res.status(200).json({ message: "OTP sent to email successfully" });
+        return res.status(200).json({ message: "Mã OTP đã được gửi đến email của bạn" });
     } catch (error) {
-        return res.status(500).json(`Sending OTP failed. Error: ${error.message}`);
+        return res.status(500).json({ message: `Gửi mã OTP thất bại. Lỗi: ${error.message}` });
     }
 };
 
@@ -104,23 +104,23 @@ export const verifyOtp = async (req, res) => {
         const { email, otp } = req.body;
         const user = await User.findOne({ email });
         if (!user) {
-            return res.status(400).json({ message: "User not found" });
+            return res.status(404).json({ message: "Không tìm thấy người dùng" });
         }
 
         // Kiểm tra OTP và hạn dùng
         if (user.resetOtp !== otp) {
-            return res.status(400).json({ message: "Invalid OTP" });
+            return res.status(400).json({ message: "Mã OTP không hợp lệ" });
         }
         if (user.otpExpiresAt < Date.now()) {
-            return res.status(400).json({ message: "OTP expired" });
+            return res.status(400).json({ message: "Mã OTP đã hết hạn" });
         }
         user.isOtpVerified = true;
         user.resetOtp = undefined;
         user.otpExpiresAt = undefined;
         await user.save();
-        return res.status(200).json({ message: "OTP verified successfully" });
+        return res.status(200).json({ message: "Xác thực OTP thành công" });
     } catch (error) {
-        return res.status(500).json(`Verifying OTP failed. Error: ${error.message}`);
+        return res.status(500).json({ message: `Xác thực OTP thất bại. Lỗi: ${error.message}` });
     }
 }
 
@@ -129,15 +129,15 @@ export const resetPassword = async (req, res) => {
         const { email, newPassword } = req.body;
         const user = await User.findOne({ email });
         if (!user || !user.isOtpVerified) {
-            return res.status(400).json({ message: "OTP not verified" });
+            return res.status(400).json({ message: "OTP chưa được xác thực" });
         }
         const hanhedPassword = await bcrypt.hash(newPassword, 10);
         user.password = hanhedPassword;
         user.isOtpVerified = false;
         await user.save();
-        return res.status(200).json({ message: "Password reset successfully" });
+        return res.status(200).json({ message: "Đặt lại mật khẩu thành công" });
     } catch (error) {
-        return res.status(500).json(`Resetting password failed. Error: ${error.message}`);
+        return res.status(500).json({ message: `Đặt lại mật khẩu thất bại. Lỗi: ${error.message}` });
     }
 }
 
@@ -157,7 +157,7 @@ export const googleAuth = async (req, res) => {
         });
         return res.status(200).json(user);
     } catch (error) {
-        return res.status(500).json(`Google authentication failed. Error: ${error.message}`);
+        return res.status(500).json({ message: `Đăng nhập bằng Google thất bại. Lỗi: ${error.message}` });
     }
 }
 

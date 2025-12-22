@@ -12,24 +12,24 @@ export const createReview = async (req, res) => {
         // Verify order exists and belongs to user
         const order = await Order.findById(orderId);
         if (!order || order.user.toString() !== userId) {
-            return res.status(404).json({ message: "Order not found or unauthorized" });
+            return res.status(404).json({ message: "Không tìm thấy đơn hàng hoặc bạn không có quyền truy cập" });
         }
 
         // Get shopOrder details
         const shopOrder = order.shopOrders.id(shopOrderId);
         if (!shopOrder) {
-            return res.status(404).json({ message: "Shop order not found" });
+            return res.status(404).json({ message: "Không tìm thấy đơn hàng của quán" });
         }
 
         // Verify order is delivered
         if (shopOrder.status !== "delivered") {
-            return res.status(400).json({ message: "Can only review delivered orders" });
+            return res.status(400).json({ message: "Chỉ có thể đánh giá đơn hàng đã được giao" });
         }
 
         // Check if review already exists
         const existingReview = await Review.findOne({ user: userId, order: orderId });
         if (existingReview) {
-            return res.status(400).json({ message: "You have already reviewed this order" });
+            return res.status(400).json({ message: "Bạn đã đánh giá đơn hàng này rồi" });
         }
 
         // Handle image uploads (max 2)
@@ -99,7 +99,7 @@ export const createReview = async (req, res) => {
         await review.populate('user', 'fullName');
         return res.status(201).json(review);
     } catch (error) {
-        return res.status(500).json({ message: `Create review failed. Error: ${error.message}` });
+        return res.status(500).json({ message: `Tạo đánh giá thất bại. Lỗi: ${error.message}` });
     }
 };
 
@@ -113,7 +113,7 @@ export const getShopReviews = async (req, res) => {
 
         return res.status(200).json(reviews);
     } catch (error) {
-        return res.status(500).json({ message: `Get shop reviews failed. Error: ${error.message}` });
+        return res.status(500).json({ message: `Lấy đánh giá của quán thất bại. Lỗi: ${error.message}` });
     }
 };
 
@@ -126,7 +126,7 @@ export const getUserReviews = async (req, res) => {
 
         return res.status(200).json(reviews);
     } catch (error) {
-        return res.status(500).json({ message: `Get user reviews failed. Error: ${error.message}` });
+        return res.status(500).json({ message: `Lấy đánh giá của người dùng thất bại. Lỗi: ${error.message}` });
     }
 };
 
@@ -143,7 +143,7 @@ export const getDeliveryPersonReviews = async (req, res) => {
 
         return res.status(200).json(reviews);
     } catch (error) {
-        return res.status(500).json({ message: `Get delivery person reviews failed. Error: ${error.message}` });
+        return res.status(500).json({ message: `Lấy đánh giá của nhân viên giao hàng thất bại. Lỗi: ${error.message}` });
     }
 };
 
@@ -155,12 +155,12 @@ export const getReviewByShopOrderId = async (req, res) => {
             .populate('shop', 'name image');
 
         if (!review) {
-            return res.status(404).json({ message: "Review not found" });
+            return res.status(404).json({ message: "Không tìm thấy đánh giá" });
         }
 
         res.status(200).json(review);
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: "Internal server error" });
+        res.status(500).json({ message: "Lỗi máy chủ nội bộ" });
     }
 };
