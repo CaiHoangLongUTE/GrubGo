@@ -192,7 +192,7 @@ export const updateOrderStatus = async (req, res) => {
                             type: "Point",
                             coordinates: [lon, lat]
                         },
-                        $maxDistance: 5000,
+                        $maxDistance: 10000,
                     }
                 }
             })
@@ -312,7 +312,7 @@ export const getAvailableOrders = async (req, res) => {
             .populate("user", "fullName mobile")
             .populate("deliveryAddress");
 
-        // Filter orders by distance (within ~5km)
+
         const availableOrders = [];
         orders.forEach(order => {
             if (!order.deliveryAddress || !order.deliveryAddress.lon || !order.deliveryAddress.lat) return;
@@ -320,8 +320,11 @@ export const getAvailableOrders = async (req, res) => {
             const lonDiff = Math.abs(order.deliveryAddress.lon - longitude);
             const latDiff = Math.abs(order.deliveryAddress.lat - latitude);
 
-            // Rough distance check (0.05 degrees ~ 5km)
-            if (lonDiff <= 0.05 && latDiff <= 0.05) {
+            console.log(`[DEBUG_COORDS] DP: (${longitude}, ${latitude}) | Order: (${order.deliveryAddress.lon}, ${order.deliveryAddress.lat})`);
+            console.log(`[DEBUG_DIFF] LonDiff: ${lonDiff}, LatDiff: ${latDiff} (Must be <= 0.1 for 10km)`);
+
+            // Rough distance check
+            if (lonDiff <= 0.2 && latDiff <= 0.2) {
                 order.shopOrders.forEach(shopOrder => {
                     if (shopOrder.status === "out of delivery" && !shopOrder.assignedDeliveryPerson) {
                         const shop = shopOrder.shop || {};
@@ -644,5 +647,52 @@ export const cancelShopOrder = async (req, res) => {
         });
     } catch (error) {
         return res.status(500).json({ message: `Cancel order failed. Error: ${error.message}` });
+    }
+}
+
+export const getDeliveredOrders = async (req, res) => {
+    try {
+        const userId = req.userId;
+
+        // Find orders where any shopOrder is assigned to this delivery person and status is 'delivered'
+        const orders = await Order.find({
+            "shopOrders": {
+                $elemMatch: {
+                    assignedDeliveryPerson: userId,
+                    status: "delivered"
+                }
+            }
+        })
+            .populate("shopOrders.shop")
+            .populate("shopOrders.assignedDeliveryPerson")
+            .populate("user")
+            .sort({ createdAt: -1 });
+
+        // Filter and map to structure similar to available orders
+        const deliveredOrders = [];
+
+        orders.forEach(order => {
+            order.shopOrders.forEach(shopOrder => {
+                if (shopOrder.assignedDeliveryPerson?._id.toString() === userId && shopOrder.status === 'delivered') {
+                    deliveredOrders.push({
+                        orderId: order._id,
+                        shopOrderId: shopOrder._id,
+                        shop: shopOrder.shop,
+                        user: order.user,
+                        deliveryAddress: order.deliveryAddress,
+                        items: shopOrder.shopOrderItems,
+                        subTotal: shopOrder.subTotal,
+                        deliveryFee: shopOrder.deliveryFee,
+                        createdAt: order.createdAt,
+                        deliveryAt: shopOrder.deliveryAt,
+                        status: shopOrder.status
+                    });
+                }
+            });
+        });
+
+        return res.status(200).json(deliveredOrders);
+    } catch (error) {
+        return res.status(500).json({ message: `Get delivered orders failed. Error: ${error.message}` });
     }
 }

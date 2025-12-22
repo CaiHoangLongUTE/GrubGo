@@ -221,3 +221,23 @@ export const searchItems = async (req, res) => {
         return res.status(500).json({ message: `Search failed. Error: ${error.message}` })
     }
 }
+
+export const getFeaturedItems = async (req, res) => {
+    try {
+        // Get 6 random featured items from all items
+        const items = await Item.aggregate([
+            { $sample: { size: 6 } }
+        ]);
+
+        // Populate shop and category details
+        const populatedItems = await Item.populate(items, [
+            { path: 'shop', select: 'name image' },
+            { path: 'category', select: 'name' }
+        ]);
+
+        return res.status(200).json(populatedItems);
+    } catch (error) {
+        console.error('Get featured items error:', error);
+        return res.status(500).json({ message: `Get featured items failed. Error: ${error.message}` });
+    }
+}

@@ -59,7 +59,7 @@ const AdminUsers = () => {
 
     return (
         <div className="p-8">
-            <h1 className="text-3xl font-bold text-gray-800 mb-6">Quản lý Users</h1>
+            <h1 className="text-3xl font-bold text-gray-800 mb-6">Quản lý người dùng</h1>
 
             {/* Search and Filter */}
             <div className="bg-white rounded-lg shadow p-4 mb-6">

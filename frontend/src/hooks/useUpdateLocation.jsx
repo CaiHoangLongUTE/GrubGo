@@ -19,4 +19,3 @@ function useUpdateLocation() {
 }
 
 export default useUpdateLocation
-    

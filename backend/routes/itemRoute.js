@@ -1,6 +1,6 @@
 import express from "express";
 import isAuth from "../middlewares/isAuth.js";
-import { addItem, deleteItem, editItem, getItemByCity, getItemById, getItemsByShop, searchItems } from "../controllers/itemController.js";
+import { addItem, deleteItem, editItem, getItemByCity, getItemById, getItemsByShop, searchItems, getFeaturedItems } from "../controllers/itemController.js";
 import { upload } from "../middlewares/multer.js";
 
 const itemRouter = express.Router();
@@ -12,5 +12,8 @@ itemRouter.get("/delete-item/:itemId", isAuth, deleteItem);
 itemRouter.get("/get-by-city/:city", isAuth, getItemByCity);
 itemRouter.get("/get-by-shop/:shopId", isAuth, getItemsByShop);
 itemRouter.get("/search-items", isAuth, searchItems);
+
+// Public endpoint for featured items (Landing page)
+itemRouter.get("/featured-items", getFeaturedItems);
 
 export default itemRouter;

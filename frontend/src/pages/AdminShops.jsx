@@ -47,14 +47,14 @@ const AdminShops = () => {
 
     return (
         <div className="p-8">
-            <h1 className="text-3xl font-bold text-gray-800 mb-6">Quản lý Shops</h1>
+            <h1 className="text-3xl font-bold text-gray-800 mb-6">Quản lý quán ăn</h1>
 
             {/* Search */}
             <div className="bg-white rounded-lg shadow p-4 mb-6">
                 <form onSubmit={handleSearch} className="flex gap-2">
                     <input
                         type="text"
-                        placeholder="Tìm kiếm shop..."
+                        placeholder="Tìm kiếm quán ăn..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                         className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff4d2d]"

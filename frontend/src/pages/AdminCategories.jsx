@@ -117,12 +117,12 @@ const AdminCategories = () => {
     return (
         <div className="p-8">
             <div className="flex justify-between items-center mb-6">
-                <h1 className="text-3xl font-bold text-gray-800">Quản lý Categories</h1>
+                <h1 className="text-3xl font-bold text-gray-800">Quản lý danh mục</h1>
                 <button
                     onClick={openCreateModal}
                     className="px-6 py-3 bg-[#ff4d2d] text-white rounded-lg hover:bg-[#e63c1d] flex items-center gap-2 shadow-lg"
                 >
-                    <FaPlus /> Thêm Category
+                    <FaPlus /> Thêm danh mục
                 </button>
             </div>
 

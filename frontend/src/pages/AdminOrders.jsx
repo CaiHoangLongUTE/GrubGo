@@ -31,7 +31,7 @@ const AdminOrders = () => {
 
     return (
         <div className="p-8">
-            <h1 className="text-3xl font-bold text-gray-800 mb-6">Quản lý Orders</h1>
+            <h1 className="text-3xl font-bold text-gray-800 mb-6">Quản lý đơn hàng</h1>
 
             {/* Orders Table */}
             <div className="bg-white rounded-lg shadow overflow-hidden">
