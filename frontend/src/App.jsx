@@ -38,7 +38,7 @@ import AdminCategories from './pages/AdminCategories.jsx'
 import useGetCategories from './hooks/useGetCategories.jsx'
 import Chatbox from './components/Chatbox.jsx'
 
-export const serverUrl = "http://localhost:8000"
+export const serverUrl = "https://grubgo-tqdy.onrender.com"
 
 function App() {
   const { userData } = useSelector((state) => state.user);
