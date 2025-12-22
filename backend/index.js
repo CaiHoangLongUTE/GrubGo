@@ -35,7 +35,7 @@ app.set("io", io);
 const port = process.env.PORT || 8000;
 
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: "https://grubgo-frontend-9qsk.onrender.com",
   credentials: true
 }));
 
