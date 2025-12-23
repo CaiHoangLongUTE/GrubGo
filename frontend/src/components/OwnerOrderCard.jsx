@@ -90,16 +90,18 @@ function OwnerOrderCard({ data }) {
               )}
 
               {/* Status Updater */}
-              <select
-                className="w-full md:w-auto mt-1 rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#ff4d2d]/20 focus:border-[#ff4d2d] bg-white shadow-sm transition-all cursor-pointer hover:border-gray-300"
-                onChange={(e) => handleUpdateStatus(data._id, data.shopOrders.shop._id, e.target.value)}
-                defaultValue=""
-              >
-                <option value="" disabled>-- Cập nhật trạng thái --</option>
-                <option value="pending">Đang chờ</option>
-                <option value="preparing">Đang chuẩn bị</option>
-                <option value="out of delivery">Đang giao hàng</option>
-              </select>
+              {data.shopOrders.status !== 'delivered' && data.shopOrders.status !== 'cancelled' && (
+                <select
+                  className="w-auto mt-1 rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#ff4d2d]/20 focus:border-[#ff4d2d] bg-white shadow-sm transition-all cursor-pointer hover:border-gray-300"
+                  onChange={(e) => handleUpdateStatus(data._id, data.shopOrders.shop._id, e.target.value)}
+                  defaultValue=""
+                >
+                  <option value="" disabled>-- Cập nhật trạng thái --</option>
+                  <option value="pending">Đang chờ</option>
+                  <option value="preparing">Đang chuẩn bị</option>
+                  <option value="out of delivery">Đang giao hàng</option>
+                </select>
+              )}
             </div>
           </div>
 

@@ -37,6 +37,7 @@ import AdminOrders from './pages/AdminOrders.jsx'
 import AdminCategories from './pages/AdminCategories.jsx'
 import useGetCategories from './hooks/useGetCategories.jsx'
 import Chatbox from './components/Chatbox.jsx'
+import ShopRevenue from './pages/ShopRevenue.jsx'
 
 export const serverUrl = "http://localhost:8000"
 
@@ -84,6 +85,7 @@ function App() {
         <Route path="update-address/:id" element={userData ? <UpdateAddress /> : <Navigate to="/signin" />} />
         <Route path="track-order/:orderId" element={userData ? <TrackOrder /> : <Navigate to="/signin" />} />
         <Route path="shop/:shopId" element={userData ? <Shop /> : <Navigate to="/signin" />} />
+        <Route path="shop-revenue" element={userData ? <ShopRevenue /> : <Navigate to="/signin" />} />
 
         {/* Admin Routes */}
         <Route path="/admin" element={userData?.role === "admin" ? <AdminLayout /> : <Navigate to="/" />}>
@@ -96,7 +98,7 @@ function App() {
       </Routes>
 
       {/* Chatbox - Show on all pages except admin */}
-      {userData?.role !== 'admin' && <Chatbox />}
+      {userData?.role == 'user' && <Chatbox />}
     </>
   )
 }

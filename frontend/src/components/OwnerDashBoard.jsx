@@ -1,6 +1,6 @@
 import Nav from './Nav'
 import { useSelector } from 'react-redux';
-import { FaUtensils } from "react-icons/fa";
+import { FaUtensils, FaStar } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom';
 import { FaPen } from "react-icons/fa";
 import OwnerItemCard from './OwnerItemCard';
@@ -47,6 +47,12 @@ function OwnerDashBoard() {
                   <div className='flex items-center gap-1 text-yellow-400'>
                     <FaUtensils size={14} />
                     <span className='text-white text-sm font-medium'>Ẩm thực</span>
+                  </div>
+                  <div className='flex items-center gap-1 text-yellow-400 border-l border-white/30 pl-3 ml-1'>
+                    <FaStar size={14} />
+                    <span className='text-white text-sm font-medium'>
+                      {myShopData.ratings?.average || 0}/5 ({myShopData.ratings?.count || 0} đánh giá)
+                    </span>
                   </div>
                 </div>
 

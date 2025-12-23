@@ -177,7 +177,13 @@ function TrackOrder() {
                                             <div className="space-y-2">
                                                 <p className="flex items-center gap-2">
                                                     <span className="font-semibold text-gray-700">Tên:</span>
-                                                    <span className="text-gray-800">{shopOrder.assignedDeliveryPerson.fullName}</span>
+                                                    <span className="text-gray-800 flex items-center">
+                                                        {shopOrder.assignedDeliveryPerson.fullName}
+                                                        <span className="flex items-center ml-1 text-gray-600">
+                                                            ({shopOrder.assignedDeliveryPerson.ratings?.average || 0}/5
+                                                            <FaStar size={12} className="text-yellow-400 ml-0.5" />)
+                                                        </span>
+                                                    </span>
                                                 </p>
                                                 <p className="flex items-center gap-2">
                                                     <span className="font-semibold text-gray-700">SĐT:</span>

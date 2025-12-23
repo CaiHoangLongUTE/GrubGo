@@ -10,7 +10,7 @@ import userRouter from "./routes/userRoute.js";
 import shopRouter from "./routes/shopRoute.js";
 import itemRouter from './routes/itemRoute.js';
 import orderRouter from "./routes/orderRoute.js";
-import PaymentRouter from "./routes/paymentRoute.js";
+import paymentRouter from "./routes/paymentRoute.js"; 
 import addressRoute from "./routes/addressRoute.js";
 import adminRouter from "./routes/adminRoute.js";
 import categoryRouter from "./routes/categoryRoute.js";
@@ -51,7 +51,7 @@ app.use("/api/address", addressRoute);
 app.use("/api/shop", shopRouter);
 app.use("/api/item", itemRouter)
 app.use("/api/order", orderRouter);
-app.use("/api/payment", PaymentRouter);
+app.use("/api/payment", paymentRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/category", categoryRouter);
 app.use("/api/review", reviewRouter);

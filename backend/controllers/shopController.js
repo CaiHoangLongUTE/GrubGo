@@ -53,6 +53,7 @@ export const getMyShop = async (req, res) => {
             status: shop.status,
             createdAt: shop.createdAt,
             updatedAt: shop.updatedAt,
+            ratings: shop.ratings,
             items: items
         });
     } catch (error) {

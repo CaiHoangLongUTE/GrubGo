@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaMotorcycle, FaUtensils, FaCreditCard, FaArrowRight } from "react-icons/fa6";
 import axios from 'axios';
+import { serverUrl } from '../App';
 import FeaturedFoodCard from '../components/FeaturedFoodCard';
 
 const HERO_IMAGE_URL = "https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=2070&auto=format&fit=crop";
-const serverUrl = "http://localhost:8000";
 
 const Landing = () => {
     const navigate = useNavigate();
