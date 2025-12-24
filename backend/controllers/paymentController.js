@@ -18,9 +18,6 @@ function sortObject(obj) {
     return sorted;
 }
 
-
-
-
 export const createVnpayUrl = async (req, res) => {
     try {
         const { totalAmount, orderId } = req.body;

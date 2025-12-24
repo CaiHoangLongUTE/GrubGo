@@ -87,10 +87,21 @@ function Shop() {
             <div className='absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/60 to-transparent flex flex-col justify-end pb-10 px-6 md:px-16'>
               <div className='w-full max-w-7xl mx-auto animate-fade-in-up'>
                 <div className='flex items-center gap-3 mb-4'>
-                  <div className='bg-[#ff4d2d] text-white p-2 rounded-lg shadow-lg rotate-3'>
-                    <FaStore size={20} />
+                  {(shop.ratings?.average || 0) >= 4.5 && (
+                    <>
+                      <div className='bg-[#ff4d2d] text-white p-2 rounded-lg shadow-lg rotate-3'>
+                        <FaStore size={20} />
+                      </div>
+                      <span className='text-orange-200 font-medium tracking-wider uppercase text-sm'>Official Shop</span>
+                    </>
+                  )}
+
+                  <div className={`flex items-center gap-1 text-yellow-400 ${(shop.ratings?.average || 0) >= 4.5 ? 'border-l border-white/30 pl-3 ml-1' : ''}`}>
+                    <FaStar size={14} />
+                    <span className='text-white text-sm font-medium'>
+                      {shop.ratings?.average || 0}/5 ({shop.ratings?.count || 0} đánh giá)
+                    </span>
                   </div>
-                  <span className='text-orange-200 font-medium tracking-wider uppercase text-sm'>Official Store</span>
                 </div>
 
                 <h1 className='text-4xl md:text-6xl font-black text-white mb-4 tracking-tight leading-tight drop-shadow-2xl'>

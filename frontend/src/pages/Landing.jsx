@@ -7,7 +7,6 @@ import FeaturedFoodCard from '../components/FeaturedFoodCard';
 
 const HERO_IMAGE_URL = "https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=2070&auto=format&fit=crop";
 
-
 const Landing = () => {
     const navigate = useNavigate();
     const [featuredFoods, setFeaturedFoods] = useState([]);
