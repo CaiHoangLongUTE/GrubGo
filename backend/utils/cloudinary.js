@@ -8,12 +8,12 @@ const uploadOnCloudinary = async (file) => {
         api_secret: process.env.CLOUDINARY_API_SECRET
     });
     try {
-        const result = await cloudinary.uploader.upload(file);
-        fs.unlinkSync(file);
+        const result = await cloudinary.uploader.upload(file, { resource_type: "auto" });
+        if (fs.existsSync(file)) fs.unlinkSync(file);
         return result.secure_url;
     } catch (error) {
-        fs.unlinkSync(file);
-        console.log(error);
+        if (fs.existsSync(file)) fs.unlinkSync(file);
+        console.log("Cloudinary Upload Error:", error);
     }
 }
 

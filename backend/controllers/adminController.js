@@ -160,7 +160,7 @@ export const updateShopStatus = async (req, res) => {
         const { shopId } = req.params;
         const { status } = req.body;
 
-        if (!['active', 'disabled'].includes(status)) {
+        if (!['active', 'disabled', 'rejected', 'pending'].includes(status)) {
             return res.status(400).json({ message: "Trạng thái không hợp lệ" });
         }
 

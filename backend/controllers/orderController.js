@@ -234,7 +234,7 @@ export const updateOrderStatus = async (req, res) => {
             if (io) {
                 // Populate user to get details for socket payload
                 await order.populate("user", "fullName mobile");
-                await order.populate("shopOrders.shop", "name address city state");
+                await order.populate("shopOrders.shop", "name address city district commune");
 
                 availableDeliveryPerson.forEach(person => {
                     if (person.socketId) {
@@ -263,7 +263,7 @@ export const updateOrderStatus = async (req, res) => {
 
         await order.save();
         const updatedShopOrder = order.shopOrders.find(o => o.shop == shopId);
-        await order.populate("shopOrders.shop", "name address city state");
+        await order.populate("shopOrders.shop", "name address city district commune");
         await order.populate("shopOrders.assignedDeliveryPerson", "fullName email mobile");
 
         await order.populate("user", "socketId");
@@ -307,7 +307,7 @@ export const getAvailableOrders = async (req, res) => {
             "shopOrders.status": "out of delivery",
             "shopOrders.assignedDeliveryPerson": null
         })
-            .populate("shopOrders.shop", "name address city state")
+            .populate("shopOrders.shop", "name address city district commune")
             .populate("shopOrders.shopOrderItems.item", "name image price")
             .populate("user", "fullName mobile")
             .populate("deliveryAddress");
@@ -450,7 +450,7 @@ export const getCurrentOrder = async (req, res) => {
             "shopOrders.status": "out of delivery"
         })
             .populate("user", "fullName email mobile")
-            .populate("shopOrders.shop", "name address city state")
+            .populate("shopOrders.shop", "name address city district commune")
             .populate("shopOrders.shopOrderItems.item", "name image price")
             .populate("deliveryAddress");
 

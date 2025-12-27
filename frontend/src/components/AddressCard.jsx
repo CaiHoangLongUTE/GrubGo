@@ -16,7 +16,7 @@ const AddressCard = ({ address, userData, isSelectionMode, onSelect, onEdit, onD
                         <span className="text-gray-600 text-sm">{userData?.mobile}</span>
                     </div>
                     <p className="text-gray-700 text-sm mb-1 font-medium leading-relaxed">{address.address}</p>
-                    <p className="text-gray-500 text-xs mb-3">{address.city}, {address.state}</p>
+                    <p className="text-gray-500 text-xs mb-3">{address.commune}, {address.district}, {address.city}</p>
                     <div className="flex gap-2 mt-2">
                         <span className="bg-orange-50 border border-orange-200 text-[#ff4d2d] text-xs px-2 py-1 rounded-lg font-semibold">{address.tag}</span>
                         {address.isDefault && <span className="bg-gradient-to-r from-[#ff4d2d] to-[#ff6b4a] text-white text-xs px-2 py-1 rounded-lg font-semibold shadow-sm">Mặc định</span>}

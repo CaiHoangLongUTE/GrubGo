@@ -3,7 +3,7 @@ import Address from "../models/addressModel.js";
 // Add new address
 export const addAddress = async (req, res) => {
     try {
-        const { tag, city, state, address, lat, lon, isDefault } = req.body;
+        const { tag, city, district, commune, address, lat, lon, isDefault } = req.body;
         const userId = req.userId;
 
         if (isDefault) {
@@ -15,7 +15,8 @@ export const addAddress = async (req, res) => {
             user: userId,
             tag,
             city,
-            state,
+            district,
+            commune,
             address,
             lat,
             lon,
@@ -49,7 +50,7 @@ export const getAllAddresses = async (req, res) => {
 export const updateAddress = async (req, res) => {
     try {
         const { id } = req.params;
-        const { tag, city, state, address, lat, lon, isDefault } = req.body;
+        const { tag, city, district, commune, address, lat, lon, isDefault } = req.body;
         const userId = req.userId;
 
         if (isDefault) {
@@ -58,7 +59,7 @@ export const updateAddress = async (req, res) => {
 
         const updatedAddress = await Address.findOneAndUpdate(
             { _id: id, user: userId },
-            { tag, city, state, address, lat, lon, isDefault },
+            { tag, city, district, commune, address, lat, lon, isDefault },
             { new: true }
         );
 

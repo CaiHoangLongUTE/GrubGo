@@ -19,24 +19,106 @@ const AddAddress = () => {
     const navigate = useNavigate();
     const [newAddress, setNewAddress] = useState({
         tag: "Nhà riêng",
-        city: "",
-        state: "",
-        address: "",
+        city: "", // Tỉnh/Thành phố
+        district: "", // Quận/Huyện
+        commune: "", // Phường/Xã
+        address: "", // Số nhà/Tên đường
         lat: 0,
         lon: 0,
         isDefault: false
     });
 
-    const apiKey = import.meta.env.VITE_GEOAPIKEY;
+    const [cities, setCities] = useState([]);
+    const [districts, setDistricts] = useState([]);
+    const [communes, setCommunes] = useState([]);
+
+    const [selectedCityCode, setSelectedCityCode] = useState(null);
+    const [selectedDistCode, setSelectedDistCode] = useState(null);
+
+
+
+    useEffect(() => {
+        // Fetch Cities (Provinces) on Mount
+        const fetchCities = async () => {
+            try {
+                const res = await axios.get("https://provinces.open-api.vn/api/?depth=1");
+                setCities(res.data);
+            } catch (error) {
+                console.error("Error fetching cities:", error);
+            }
+        };
+        fetchCities();
+    }, []);
+
+    const handleCityChange = async (e) => {
+        const cityCode = e.target.value;
+        const cityName = e.target.options[e.target.selectedIndex].text;
+
+        setSelectedCityCode(cityCode);
+        setNewAddress(prev => ({ ...prev, city: cityName, district: "", commune: "" }));
+        setDistricts([]);
+        setCommunes([]);
+
+        if (cityCode) {
+            try {
+                // Depth 2 gives districts
+                const res = await axios.get(`https://provinces.open-api.vn/api/p/${cityCode}?depth=2`);
+                setDistricts(res.data.districts);
+            } catch (error) {
+                console.error("Error fetching districts:", error);
+            }
+        }
+    };
+
+    const handleDistrictChange = async (e) => {
+        const distCode = e.target.value;
+        const distName = e.target.options[e.target.selectedIndex].text;
+
+        setSelectedDistCode(distCode);
+        setNewAddress(prev => ({ ...prev, district: distName, commune: "" }));
+        setCommunes([]);
+
+        if (distCode) {
+            try {
+                // Depth 2 gives wards (communes)
+                const res = await axios.get(`https://provinces.open-api.vn/api/d/${distCode}?depth=2`);
+                setCommunes(res.data.wards);
+            } catch (error) {
+                console.error("Error fetching communes:", error);
+            }
+        }
+    };
+
+    const handleCommuneChange = (e) => {
+        const communeName = e.target.options[e.target.selectedIndex].text;
+        setNewAddress(prev => ({ ...prev, commune: communeName }));
+    };
 
     // Helper: Get Coordinates
-    const getCoordinates = async (addr, state, city) => {
-        const query = `${addr}, ${state}, ${city}`;
+    const getCoordinates = async (addr, commune, district, city) => {
+        const fullQuery = `${addr}, ${commune}, ${district}, ${city}`;
+        const fallbackQuery = `${addr}, ${city}`;
+
         try {
-            const result = await axios.get(`https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(query)}&format=json&apiKey=${apiKey}`);
-            if (result.data.results && result.data.results.length > 0) {
-                return result.data.results[0]; // { lat, lon, ... }
+            // Priority 1: Full Query
+            let res = await axios.get(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(fullQuery)}&format=json&addressdetails=1&limit=5&countrycodes=vn`);
+
+            if (res.data && res.data.length > 0) {
+                const bestMatch = res.data.find(item => {
+                    const addrDetails = item.address || {};
+                    const itemCity = (addrDetails.city || addrDetails.state || addrDetails.province || "").toLowerCase();
+                    const selectedCity = city.toLowerCase().replace("thành phố ", "").replace("tỉnh ", "");
+                    return itemCity.includes(selectedCity);
+                }) || res.data[0];
+                return { lat: parseFloat(bestMatch.lat), lon: parseFloat(bestMatch.lon) };
             }
+
+            // Priority 2: Fallback Query (Address + City)
+            res = await axios.get(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(fallbackQuery)}&format=json&addressdetails=1&limit=5&countrycodes=vn`);
+            if (res.data && res.data.length > 0) {
+                return { lat: parseFloat(res.data[0].lat), lon: parseFloat(res.data[0].lon) };
+            }
+
         } catch (error) {
             console.log("Geocode API error", error);
         }
@@ -46,7 +128,7 @@ const AddAddress = () => {
     // Auto-fill lat/lon from address string (Simple Geocoding)
     const handleGeocode = async () => {
         if (!newAddress.address || !newAddress.city) return;
-        const coords = await getCoordinates(newAddress.address, newAddress.state, newAddress.city);
+        const coords = await getCoordinates(newAddress.address, newAddress.commune, newAddress.district, newAddress.city);
         if (coords) {
             const { lat, lon } = coords;
             setNewAddress(prev => ({ ...prev, lat, lon }));
@@ -57,7 +139,7 @@ const AddAddress = () => {
     };
 
     const handleSaveAddress = async () => {
-        if (!newAddress.address || !newAddress.city || !newAddress.state) {
+        if (!newAddress.address || !newAddress.city || !newAddress.district || !newAddress.commune) {
             return toast.error("Vui lòng điền đầy đủ thông tin địa chỉ");
         }
 
@@ -66,7 +148,7 @@ const AddAddress = () => {
 
         // Ensure lat/lon are set if missing using the helper
         if (payload.lat === 0 && payload.lon === 0) {
-            const coords = await getCoordinates(payload.address, payload.state, payload.city);
+            const coords = await getCoordinates(payload.address, payload.commune, payload.district, payload.city);
             if (coords) {
                 payload.lat = coords.lat;
                 payload.lon = coords.lon;
@@ -129,26 +211,47 @@ const AddAddress = () => {
                             )}
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Tỉnh/Thành phố</label>
-                                <input
-                                    type="text"
-                                    value={newAddress.state}
-                                    onChange={(e) => setNewAddress(prev => ({ ...prev, state: e.target.value }))}
-                                    className="w-full border border-gray-200 bg-gray-50 rounded-xl px-4 py-3 focus:ring-2 focus:ring-orange-100 focus:border-[#ff4d2d] focus:bg-white outline-none transition-all"
-                                    placeholder="Ví dụ: Đà Nẵng"
-                                />
+                                <select
+                                    className="w-full border border-gray-200 bg-gray-50 rounded-xl px-4 py-3 focus:ring-2 focus:ring-orange-100 focus:border-[#ff4d2d] focus:bg-white outline-none transition-all appearance-none"
+                                    onChange={handleCityChange}
+                                    defaultValue=""
+                                >
+                                    <option value="" disabled>Chọn Tỉnh/Thành</option>
+                                    {cities.map(city => (
+                                        <option key={city.code} value={city.code}>{city.name}</option>
+                                    ))}
+                                </select>
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Quận/Huyện</label>
-                                <input
-                                    type="text"
-                                    value={newAddress.city}
-                                    onChange={(e) => setNewAddress(prev => ({ ...prev, city: e.target.value }))}
-                                    className="w-full border border-gray-200 bg-gray-50 rounded-xl px-4 py-3 focus:ring-2 focus:ring-orange-100 focus:border-[#ff4d2d] focus:bg-white outline-none transition-all"
-                                    placeholder="Ví dụ: Xã Bà Nà"
-                                />
+                                <select
+                                    className="w-full border border-gray-200 bg-gray-50 rounded-xl px-4 py-3 focus:ring-2 focus:ring-orange-100 focus:border-[#ff4d2d] focus:bg-white outline-none transition-all appearance-none"
+                                    onChange={handleDistrictChange}
+                                    disabled={!selectedCityCode}
+                                    value={selectedDistCode || ""}
+                                >
+                                    <option value="" disabled>Chọn Quận/Huyện</option>
+                                    {districts.map(dist => (
+                                        <option key={dist.code} value={dist.code}>{dist.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Xã/Phường</label>
+                                <select
+                                    className="w-full border border-gray-200 bg-gray-50 rounded-xl px-4 py-3 focus:ring-2 focus:ring-orange-100 focus:border-[#ff4d2d] focus:bg-white outline-none transition-all appearance-none"
+                                    onChange={handleCommuneChange}
+                                    disabled={!selectedDistCode}
+                                    defaultValue=""
+                                >
+                                    <option value="" disabled>Chọn Xã/Phường</option>
+                                    {communes.map(commune => (
+                                        <option key={commune.code} value={commune.code}>{commune.name}</option>
+                                    ))}
+                                </select>
                             </div>
                         </div>
 

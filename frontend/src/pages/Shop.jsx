@@ -111,7 +111,7 @@ function Shop() {
                 <div className='flex flex-col md:flex-row md:items-center gap-4 text-gray-200 flex-wrap'>
                   <div className='flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-xl border border-white/10'>
                     <FaLocationDot className='text-[#ff4d2d]' />
-                    <p className='text-lg font-medium'>{shop.address} - {shop.state} - {shop.city}</p>
+                    <p className='text-lg font-medium'>{shop.address} - {shop.commune} - {shop.district} - {shop.city}</p>
                   </div>
 
                   {shop.hotline && (
