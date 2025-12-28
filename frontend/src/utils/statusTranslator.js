@@ -21,3 +21,25 @@ export const getStatusColor = (status) => {
     };
     return colorMap[status] || 'bg-gray-100 text-gray-700 border-gray-300';
 };
+
+// Utility function to translate shop status
+export const translateShopStatus = (status) => {
+    const statusMap = {
+        'active': 'Đang hoạt động',
+        'pending': 'Chờ duyệt',
+        'disabled': 'Đã khóa',
+        'rejected': 'Đã từ chối'
+    };
+    return statusMap[status] || status;
+};
+
+// Utility function for shop status colors
+export const getShopStatusColor = (status) => {
+    const colorMap = {
+        'active': 'bg-green-100 text-green-800',
+        'pending': 'bg-yellow-100 text-yellow-800',
+        'disabled': 'bg-gray-100 text-gray-800',
+        'rejected': 'bg-red-100 text-red-800'
+    };
+    return colorMap[status] || 'bg-gray-100 text-gray-800';
+};

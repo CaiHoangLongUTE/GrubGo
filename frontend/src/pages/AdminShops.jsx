@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { serverUrl } from '../App';
 import toast from 'react-hot-toast';
+import { translateShopStatus, getShopStatusColor } from '../utils/statusTranslator';
 
 const AdminShops = () => {
     const [shops, setShops] = useState([]);
@@ -9,15 +10,22 @@ const AdminShops = () => {
     const [search, setSearch] = useState('');
     const [activeTab, setActiveTab] = useState('pending'); // 'pending' | 'active' | 'disabled' | 'rejected'
 
+    // Custom Confirm Modal State
+    const [confirmModal, setConfirmModal] = useState({
+        show: false,
+        shopId: null,
+        status: null,
+        message: ''
+    });
+
     useEffect(() => {
         fetchShops();
-    }, [activeTab]); // Refetch on tab change if needed, or filter locally. Let's filter server side if API supports it, or robustly locally.
+    }, [activeTab]);
 
     const fetchShops = async () => {
         try {
             const params = new URLSearchParams();
             if (search) params.append('search', search);
-            // If backend supports status filter in one go
             params.append('status', activeTab);
 
             const res = await axios.get(`${serverUrl}/api/admin/shops?${params}`, { withCredentials: true });
@@ -34,15 +42,34 @@ const AdminShops = () => {
         fetchShops();
     };
 
-    const handleUpdateStatus = async (shopId, status) => {
-        if (!window.confirm(`Bạn có chắc muốn chuyển trạng thái thành ${status}?`)) return;
+    // Trigger Notification/Modal
+    const handleUpdateStatus = (shopId, status) => {
+        setConfirmModal({
+            show: true,
+            shopId,
+            status,
+            message: `Bạn có chắc muốn chuyển trạng thái thành "${translateShopStatus(status)}"?`
+        });
+    };
+
+    // Actual Action
+    const confirmAction = async () => {
+        const { shopId, status } = confirmModal;
+        if (!shopId) return;
+
         try {
             await axios.patch(`${serverUrl}/api/admin/shops/${shopId}/status`, { status }, { withCredentials: true });
             toast.success("Cập nhật trạng thái thành công");
             fetchShops();
         } catch (error) {
             toast.error(error.response?.data?.message || "Cập nhật thất bại");
+        } finally {
+            setConfirmModal({ show: false, shopId: null, status: null, message: '' });
         }
+    };
+
+    const closeConfirmModal = () => {
+        setConfirmModal({ show: false, shopId: null, status: null, message: '' });
     };
 
     if (loading) {
@@ -60,11 +87,11 @@ const AdminShops = () => {
                         key={tab}
                         onClick={() => setActiveTab(tab)}
                         className={`px-4 py-2 font-medium capitalize transition-colors border-b-2 ${activeTab === tab
-                                ? 'border-[#ff4d2d] text-[#ff4d2d]'
-                                : 'border-transparent text-gray-500 hover:text-gray-700'
+                            ? 'border-[#ff4d2d] text-[#ff4d2d]'
+                            : 'border-transparent text-gray-500 hover:text-gray-700'
                             }`}
                     >
-                        {tab}
+                        {translateShopStatus(tab)}
                     </button>
                 ))}
             </div>
@@ -116,12 +143,8 @@ const AdminShops = () => {
                                 </div>
 
                                 <div className="mt-auto pt-4 border-t border-gray-100 flex items-center justify-between gap-2">
-                                    <span className={`px-2 py-1 text-xs font-semibold rounded-full capitalize ${shop.status === 'active' ? 'bg-green-100 text-green-800' :
-                                            shop.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                                                shop.status === 'rejected' ? 'bg-red-100 text-red-800' :
-                                                    'bg-gray-100 text-gray-800'
-                                        }`}>
-                                        {shop.status}
+                                    <span className={`px-3 py-1 text-xs font-semibold rounded-full capitalize ${getShopStatusColor(shop.status)}`}>
+                                        {translateShopStatus(shop.status)}
                                     </span>
 
                                     <div className="flex gap-2">
@@ -164,6 +187,38 @@ const AdminShops = () => {
                     ))
                 )}
             </div>
+            {/* Custom Confirmation Modal */}
+            {confirmModal.show && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all scale-100 animate-in fade-in zoom-in duration-200">
+                        <div className="p-6 text-center">
+                            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-orange-100 mb-4">
+                                <svg className="h-6 w-6 text-[#ff4d2d]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                </svg>
+                            </div>
+                            <h3 className="text-lg font-bold text-gray-900 mb-2">Xác nhận hành động</h3>
+                            <p className="text-sm text-gray-500 mb-6">
+                                {confirmModal.message}
+                            </p>
+                            <div className="flex gap-3 justify-center">
+                                <button
+                                    onClick={closeConfirmModal}
+                                    className="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors"
+                                >
+                                    Hủy
+                                </button>
+                                <button
+                                    onClick={confirmAction}
+                                    className="px-5 py-2.5 bg-[#ff4d2d] hover:bg-[#e63c1d] text-white font-medium rounded-xl shadow-lg shadow-orange-200 transition-colors"
+                                >
+                                    Đồng ý
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

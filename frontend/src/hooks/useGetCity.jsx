@@ -1,26 +1,42 @@
 import axios from 'axios';
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { setCurrentAddress, setCurrentCity, setCurrentDistrict } from '../redux/userSlice';
+import { setCurrentAddress, setCurrentCity, setCurrentDistrict, setCurrentCommune } from '../redux/userSlice';
 import { setAddress, setLocation } from '../redux/mapSlice';
 
 function useGetCity() {
     const dispatch = useDispatch();
     const { userData } = useSelector(state => state.user);
-    const apiKey = import.meta.env.VITE_GEOAPIKEY;
+
     useEffect(() => {
-        navigator.geolocation.getCurrentPosition(async (position) => {
-            console.log(position);
-            const latitude = position.coords.latitude;
-            const longitude = position.coords.longitude;
-            dispatch(setLocation({ lat: latitude, lon: longitude }));
-            const result = await axios.get(`https://api.geoapify.com/v1/geocode/reverse?lat=${latitude}&lon=${longitude}&format=json&apiKey=${apiKey}`);
-            console.log(result.data);
-            dispatch(setCurrentCity("Đà Nẵng" || result.data.results[0].city));
-            dispatch(setCurrentDistrict(result?.data?.results[0].county || result?.data?.results[0].district || result?.data?.results[0].state));
-            dispatch(setCurrentAddress(result?.data?.results[0].address_line2 || result?.data?.results[0].address_line1));
-            dispatch(setAddress(result?.data?.results[0].address_line2));
-        })
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(async (position) => {
+                const latitude = position.coords.latitude;
+                const longitude = position.coords.longitude;
+                dispatch(setLocation({ lat: latitude, lon: longitude }));
+
+                try {
+                    const result = await axios.get(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`);
+                    const address = result.data.address;
+
+                    const city = address.city || address.state || address.province || "";
+                    const district = address.district || address.county || address.suburb || "";
+                    const commune = address.ward || address.quarter || address.neighbourhood || "";
+                    // Nominatim puts road/house number in address properties
+                    const street = address.road || "";
+                    const houseNumber = address.house_number || "";
+                    const fullAddress = houseNumber ? `${houseNumber} ${street}` : street || result.data.display_name.split(',')[0];
+
+                    dispatch(setCurrentCity(city));
+                    dispatch(setCurrentDistrict(district));
+                    dispatch(setCurrentCommune(commune));
+                    dispatch(setCurrentAddress(fullAddress));
+                    dispatch(setAddress(fullAddress));
+                } catch (error) {
+                    console.error("Error fetching location name:", error);
+                }
+            })
+        }
     }, [userData])
 }
 

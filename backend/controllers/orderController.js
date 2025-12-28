@@ -245,7 +245,8 @@ export const updateOrderStatus = async (req, res) => {
                                 name: shopOrder.shop?.name,
                                 address: shopOrder.shop?.address,
                                 city: shopOrder.shop?.city,
-                                state: shopOrder.shop?.state
+                                district: shopOrder.shop?.district,
+                                commune: shopOrder.shop?.commune
                             },
                             deliveryAddress: order.deliveryAddress,
                             items: shopOrder.shopOrderItems || [],
@@ -335,7 +336,8 @@ export const getAvailableOrders = async (req, res) => {
                                 name: shop.name,
                                 address: shop.address,
                                 city: shop.city,
-                                state: shop.state,
+                                district: shop.district,
+                                commune: shop.commune,
                             },
                             deliveryAddress: order.deliveryAddress,
                             items: shopOrder.shopOrderItems || [],
@@ -666,6 +668,7 @@ export const getDeliveredOrders = async (req, res) => {
             .populate("shopOrders.shop")
             .populate("shopOrders.assignedDeliveryPerson")
             .populate("user")
+            .populate("deliveryAddress")
             .sort({ createdAt: -1 });
 
         // Filter and map to structure similar to available orders
@@ -694,5 +697,63 @@ export const getDeliveredOrders = async (req, res) => {
         return res.status(200).json(deliveredOrders);
     } catch (error) {
         return res.status(500).json({ message: `Lấy đơn hàng đã giao thất bại. Lỗi: ${error.message}` });
+    }
+}
+
+export const getDeliveryRevenue = async (req, res) => {
+    try {
+        const userId = req.userId;
+        const { startDate, endDate } = req.query;
+
+        // Construct query for Order.find
+        const query = {
+            "shopOrders": {
+                $elemMatch: {
+                    assignedDeliveryPerson: userId,
+                    status: "delivered"
+                }
+            }
+        };
+
+        const orders = await Order.find(query);
+
+        let totalRevenue = 0;
+        let todayRevenue = 0;
+        let monthRevenue = 0;
+
+        const now = new Date();
+        const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+        orders.forEach(order => {
+            order.shopOrders.forEach(shopOrder => {
+                if (shopOrder.assignedDeliveryPerson?.toString() === userId && shopOrder.status === 'delivered') {
+                    // Check date filter if provided
+                    const deliveryTime = new Date(shopOrder.deliveryAt || order.createdAt);
+
+                    if (startDate && deliveryTime < new Date(startDate)) return;
+                    if (endDate && deliveryTime > new Date(endDate)) return;
+
+                    const revenue = shopOrder.deliveryFee || 0;
+                    totalRevenue += revenue;
+
+                    if (deliveryTime >= startOfToday) {
+                        todayRevenue += revenue;
+                    }
+                    if (deliveryTime >= startOfMonth) {
+                        monthRevenue += revenue;
+                    }
+                }
+            });
+        });
+
+        return res.status(200).json({
+            total: totalRevenue,
+            today: todayRevenue,
+            thisMonth: monthRevenue
+        });
+
+    } catch (error) {
+        return res.status(500).json({ message: `Lấy thống kê doanh thu thất bại. Lỗi: ${error.message}` });
     }
 }

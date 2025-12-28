@@ -6,6 +6,10 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import DeliveryPersonTracking from './DeliveryPersonTracking';
 import { toast } from 'react-hot-toast';
+import { FaStar } from 'react-icons/fa';
+
+
+
 
 function DeliveryDashBoard() {
   const { userData, socket } = useSelector(state => state.user);
@@ -16,6 +20,16 @@ function DeliveryDashBoard() {
   const [availableAssignments, setAvailableAssignments] = useState([]);
   const [otp, setOtp] = useState("");
   const [isClaimingOrder, setIsClaimingOrder] = useState(false);
+  const [revenueStats, setRevenueStats] = useState({ total: 0, today: 0, thisMonth: 0 });
+
+  const getRevenueStats = async () => {
+    try {
+      const { data } = await axios.get(`${serverUrl}/api/order/delivery-revenue`, { withCredentials: true });
+      setRevenueStats(data);
+    } catch (error) {
+      console.error("Failed to fetch revenue stats", error);
+    }
+  }
 
   useEffect(() => {
     if (socket) {
@@ -95,6 +109,7 @@ function DeliveryDashBoard() {
       await getCurrentOrders(); // Check if there are more orders or clear current
       await getAvailableOrders(); // Refresh pool
       if (activeTab === 'delivered') getDeliveredOrders(); // Refresh history if valid
+      getRevenueStats(); // Refresh revenue stats immediately
     } catch (error) {
       console.log(error);
       toast.error(error.response?.data?.message || "Xác thực thất bại", { duration: 2000 });
@@ -110,6 +125,7 @@ function DeliveryDashBoard() {
     }
     // We also want to check for current order to ensure state is consistent
     getCurrentOrders();
+    getRevenueStats();
   }, [activeTab, userData]);
 
   console.log("Render Debug:", {
@@ -125,10 +141,17 @@ function DeliveryDashBoard() {
         <div className='bg-white rounded-2xl shadow-md p-5 flex flex-col justify-start items-center w-[90%] border border-orange-100
         text-center gap-2'>
           <h1 className='text-xl font-bold text-[#ff4d2d]'>Xin chào, {userData.fullName}</h1>
-          <p className='text-[#ff4d2d]'>
-            <span className='font-semibold'>Vĩ độ: </span>{userData.location.coordinates[1]},
-            <span className='font-semibold'>Kinh độ: </span>{userData.location.coordinates[0]}
-          </p>
+          <div className='flex flex-col items-center gap-1'>
+            <div className='flex items-center gap-2'>
+              <span className='font-bold text-xl text-gray-800'>{userData.ratings?.average?.toFixed(1) || 0}</span>
+              <FaStar className="w-5 h-5 text-yellow-400" />
+              <span className='text-sm text-gray-500'>({userData.ratings?.count || 0} đánh giá)</span>
+            </div>
+            <p className='text-xs text-gray-400'>
+              <span className='font-semibold'>Vị trí hiện tại: </span>
+              {userData.location.coordinates[1].toFixed(4)}, {userData.location.coordinates[0].toFixed(4)}
+            </p>
+          </div>
         </div>
 
         {/* Current Order Section */}
@@ -142,7 +165,7 @@ function DeliveryDashBoard() {
               <div>
                 <p className='font-bold text-gray-800 text-lg'>Đơn #{currentOrder._id.slice(-6)}</p>
                 <p className='font-bold text-lg text-gray-800'>{currentOrder?.shopOrder.shop.name}</p>
-                {currentOrder?.shopOrder?.shop && <p className='text-xs text-gray-500'><span className='font-semibold'>Địa chỉ quán: </span> {currentOrder.shopOrder.shop.address}</p>}
+                {currentOrder?.shopOrder?.shop && <p className='text-xs text-gray-500'><span className='font-semibold'>Địa chỉ quán: </span> {currentOrder?.shopOrder?.shop?.address}, {currentOrder?.shopOrder?.shop?.commune}, {currentOrder?.shopOrder?.shop?.district}, {currentOrder?.shopOrder?.shop?.city}</p>}
               </div>
               <span className="bg-orange-100 text-orange-600 text-xs px-2 py-1 rounded-full font-bold whitespace-nowrap ml-2">Đang giao</span>
             </div>
@@ -156,10 +179,7 @@ function DeliveryDashBoard() {
                   Khách hàng
                 </div>
               </div>
-              <p><span className="font-semibold text-gray-800">Giao đến:</span> {currentOrder?.deliveryAddress.address}</p>
-              {currentOrder?.deliveryAddress.city && currentOrder?.deliveryAddress.state && (
-                <p className='text-xs text-gray-500 mt-1'>{currentOrder.deliveryAddress.city}, {currentOrder.deliveryAddress.state}</p>
-              )}
+              <p><span className="font-semibold text-gray-800">Giao đến:</span> {currentOrder?.deliveryAddress?.address}, {currentOrder?.deliveryAddress?.commune}, {currentOrder?.deliveryAddress?.district}, {currentOrder?.deliveryAddress?.city}</p>
             </div>
 
             <div className="bg-white p-3 rounded border border-gray-200">
@@ -202,6 +222,24 @@ function DeliveryDashBoard() {
             </div>}
         </div>}
 
+        {/* Revenue Stats Section */}
+        {!currentOrder && (
+          <div className="flex w-[90%] gap-3">
+            <div className="flex-1 bg-white p-4 rounded-xl shadow-sm border border-orange-100 flex flex-col items-center">
+              <p className="text-xs text-gray-500 font-semibold uppercase">Hôm nay</p>
+              <p className="text-lg font-bold text-orange-600">{revenueStats.today?.toLocaleString()} đ</p>
+            </div>
+            <div className="flex-1 bg-white p-4 rounded-xl shadow-sm border border-orange-100 flex flex-col items-center">
+              <p className="text-xs text-gray-500 font-semibold uppercase">Tháng này</p>
+              <p className="text-lg font-bold text-blue-600">{revenueStats.thisMonth?.toLocaleString()} đ</p>
+            </div>
+            <div className="flex-1 bg-white p-4 rounded-xl shadow-sm border border-orange-100 flex flex-col items-center">
+              <p className="text-xs text-gray-500 font-semibold uppercase">Tổng cộng</p>
+              <p className="text-lg font-bold text-green-600">{revenueStats.total?.toLocaleString()} đ</p>
+            </div>
+          </div>
+        )}
+
         {/* List Section with Tabs - Only visible if no current order (or always visible? Keeping it simple for now) */}
         {!currentOrder && (
           <div className='bg-white rounded-2xl p-5 shadow-md w-[90%] border border-orange-100'>
@@ -233,11 +271,8 @@ function DeliveryDashBoard() {
                           <div>
                             <p className='font-bold text-gray-800 text-lg'>Đơn #{a.orderId.slice(-6)}</p>
                             <p className='text-lg font-bold text-gray-800'>{a.shop.name}</p>
-                            {a.shop?.address && <p className='text-xs text-gray-500 mb-2'><span className='font-semibold'>Địa chỉ quán: </span> {a.shop.address} - {a.shop.state}, {a.shop.city}</p>}
-                            <p className='text-sm text-gray-700 mt-1'><span className='font-semibold'>Giao đến: </span> {a.deliveryAddress.address}
-                              {a.deliveryAddress.city && a.deliveryAddress.state &&
-                                <span className='block text-xs text-gray-500 mt-0.5'>{a.deliveryAddress.city}, {a.deliveryAddress.state}</span>
-                              }
+                            {a.shop?.address && <p className='text-xs text-gray-500 mb-2'><span className='font-semibold'>Địa chỉ quán: </span> {a.shop.address}, {a.shop.commune}, {a.shop.district}, {a.shop.city}</p>}
+                            <p className='text-sm text-gray-700 mt-1'><span className='font-semibold'>Giao đến: </span> {a.deliveryAddress.address}, {a.deliveryAddress.commune}, {a.deliveryAddress.district}, {a.deliveryAddress.city}
                             </p>
                           </div>
                           <button
@@ -296,7 +331,7 @@ function DeliveryDashBoard() {
                               <span className="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-bold">HOÀN THÀNH</span>
                             </div>
                             <p className='text-xs text-gray-400 mb-1'>{new Date(order.deliveryAt).toLocaleString('vi-VN')}</p>
-                            <p className='text-sm text-gray-600'><span className='font-semibold'>Giao đến:</span> {order.deliveryAddress.address}</p>
+                            <p className='text-sm text-gray-600'><span className='font-semibold'>Giao đến:</span> {order.deliveryAddress?.address}, {order.deliveryAddress?.commune}, {order.deliveryAddress?.district}, {order.deliveryAddress?.city}</p>
                           </div>
                         </div>
 
