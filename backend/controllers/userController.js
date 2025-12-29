@@ -68,21 +68,24 @@ export const updateProfile = async (req, res) => {
 
         // Handle file uploads
         if (req.files) {
-            if (req.files['avatar']) {
-                updateData.avatar = await uploadOnCloudinary(req.files['avatar'][0].path);
-            }
-            if (req.files['citizenIdentityFront']) {
-                updateData.citizenIdentityFront = await uploadOnCloudinary(req.files['citizenIdentityFront'][0].path);
-            }
-            if (req.files['citizenIdentityBack']) {
-                updateData.citizenIdentityBack = await uploadOnCloudinary(req.files['citizenIdentityBack'][0].path);
-            }
-            if (req.files['driverLicenseFront']) {
-                updateData.driverLicenseFront = await uploadOnCloudinary(req.files['driverLicenseFront'][0].path);
-            }
-            if (req.files['driverLicenseBack']) {
-                updateData.driverLicenseBack = await uploadOnCloudinary(req.files['driverLicenseBack'][0].path);
-            }
+            const uploadPromises = [];
+
+            const uploadField = async (fieldName) => {
+                if (req.files[fieldName]) {
+                    const url = await uploadOnCloudinary(req.files[fieldName][0].path);
+                    return { [fieldName]: url };
+                }
+                return {};
+            };
+
+            if (req.files['avatar']) uploadPromises.push(uploadField('avatar'));
+            if (req.files['citizenIdentityFront']) uploadPromises.push(uploadField('citizenIdentityFront'));
+            if (req.files['citizenIdentityBack']) uploadPromises.push(uploadField('citizenIdentityBack'));
+            if (req.files['driverLicenseFront']) uploadPromises.push(uploadField('driverLicenseFront'));
+            if (req.files['driverLicenseBack']) uploadPromises.push(uploadField('driverLicenseBack'));
+
+            const results = await Promise.all(uploadPromises);
+            results.forEach(result => Object.assign(updateData, result));
         }
 
         const user = await User.findByIdAndUpdate(userId, updateData, { new: true });

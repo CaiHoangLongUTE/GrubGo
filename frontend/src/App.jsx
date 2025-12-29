@@ -23,6 +23,7 @@ import MyProfile from './pages/MyProfile'
 import useGetMyOrders from './hooks/useGetMyOrders.jsx'
 import useUpdateLocation from './hooks/useUpdateLocation.jsx'
 import TrackOrder from './pages/TrackOrder.jsx'
+import DeliveryOnboarding from './pages/DeliveryOnboarding.jsx'
 import Shop from './pages/Shop.jsx'
 import { io } from 'socket.io-client'
 import { setSocket } from './redux/userSlice.js'
@@ -71,7 +72,7 @@ function App() {
         <Route path="/signin" element={!userData ? <SignIn /> : <Navigate to="/" />} />
         <Route path="/signup" element={!userData ? <SignUp /> : <Navigate to="/" />} />
         <Route path="/forgotpassword" element={!userData ? <ForgotPassword /> : <Navigate to="/" />} />
-        <Route path="/" element={userData ? <Home /> : <Landing />} />
+        <Route path="/" element={userData ? (userData.role === 'delivery' && userData.status !== 'active' ? <Navigate to="/delivery-onboarding" /> : <Home />) : <Landing />} />
         <Route path="/create-edit-shop" element={userData ? <CreateEditShop /> : <Navigate to="/signin" />} />
         <Route path="/add-item" element={userData ? <AddItem /> : <Navigate to="/signin" />} />
         <Route path="/edit-item/:itemId" element={userData ? <EditItem /> : <Navigate to="/signin" />} />
@@ -79,6 +80,7 @@ function App() {
         <Route path="checkout" element={userData ? <CheckOut /> : <Navigate to="/signin" />} />
         <Route path="order-placed" element={userData ? <OrderPlaced /> : <Navigate to="/signin" />} />
         <Route path="my-orders" element={userData ? <MyOrders /> : <Navigate to="/signin" />} />
+        <Route path="delivery-onboarding" element={userData ? <DeliveryOnboarding /> : <Navigate to="/signin" />} />
         <Route path="my-profile" element={userData ? <MyProfile /> : <Navigate to="/signin" />} />
         <Route path="my-addresses" element={userData ? <MyAddresses /> : <Navigate to="/signin" />} />
         <Route path="add-address" element={userData ? <AddAddress /> : <Navigate to="/signin" />} />

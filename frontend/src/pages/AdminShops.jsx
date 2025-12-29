@@ -18,6 +18,15 @@ const AdminShops = () => {
         message: ''
     });
 
+    // Detail Modal State
+    const [selectedShop, setSelectedShop] = useState(null);
+    const [isDetailOpen, setIsDetailOpen] = useState(false);
+
+    const openDetailModal = (shop) => {
+        setSelectedShop(shop);
+        setIsDetailOpen(true);
+    };
+
     useEffect(() => {
         fetchShops();
     }, [activeTab]);
@@ -118,10 +127,20 @@ const AdminShops = () => {
                     <div className="col-span-full text-center text-gray-500 py-10">Không có quán ăn nào.</div>
                 ) : (
                     shops.map((shop) => (
-                        <div key={shop._id} className="bg-white rounded-lg shadow overflow-hidden flex flex-col">
-                            <img src={shop.image} alt={shop.name} className="w-full h-48 object-cover" />
+                        <div key={shop._id} className="bg-white rounded-lg shadow overflow-hidden flex flex-col group hover:shadow-lg transition-all">
+                            <div className="relative h-48">
+                                <img src={shop.image} alt={shop.name} className="w-full h-full object-cover" />
+                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                    <button
+                                        onClick={() => openDetailModal(shop)}
+                                        className="bg-white text-blue-600 px-4 py-2 rounded-full font-bold shadow-lg hover:bg-gray-100 transform translate-y-2 group-hover:translate-y-0 transition-all"
+                                    >
+                                        Xem chi tiết
+                                    </button>
+                                </div>
+                            </div>
                             <div className="p-4 flex-1 flex flex-col">
-                                <h3 className="text-lg font-semibold text-gray-800 mb-2">{shop.name}</h3>
+                                <h3 className="text-lg font-semibold text-gray-800 mb-2 truncate" title={shop.name}>{shop.name}</h3>
                                 <p className="text-sm text-gray-500 mb-1"><span className="font-medium">Chủ quán:</span> {shop.owner?.fullName}</p>
                                 <p className="text-sm text-gray-500 mb-1"><span className="font-medium">Thành phố:</span> {shop.state || shop.city}</p>
 
@@ -187,6 +206,129 @@ const AdminShops = () => {
                     ))
                 )}
             </div>
+            {/* Shop Detail Modal */}
+            {isDetailOpen && selectedShop && (
+                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+                    <div className="bg-white rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl animate-in zoom-in-95 duration-200">
+                        <div className="sticky top-0 bg-white z-10 px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+                            <h3 className="text-xl font-bold text-gray-900">Chi tiết quán ăn</h3>
+                            <button onClick={() => setIsDetailOpen(false)} className="p-2 hover:bg-gray-100 rounded-full text-gray-500 transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        <div className="p-6">
+                            {/* Header Info */}
+                            <div className="flex flex-col md:flex-row gap-6 mb-8">
+                                <img src={selectedShop.image} alt={selectedShop.name} className="w-full md:w-48 h-48 object-cover rounded-xl shadow-sm border border-gray-100" />
+                                <div className="flex-1 space-y-3">
+                                    <div>
+                                        <h2 className="text-2xl font-bold text-gray-800">{selectedShop.name}</h2>
+                                        <p className="text-gray-500">{selectedShop.address}, {selectedShop.commune}, {selectedShop.district}, {selectedShop.city}</p>
+                                    </div>
+                                    <div className="flex flex-wrap gap-4 text-sm mt-4">
+                                        <div className="bg-gray-50 px-4 py-2 rounded-lg border border-gray-100">
+                                            <span className="block text-xs text-gray-400 uppercase font-semibold">Chủ quán</span>
+                                            <span className="font-semibold text-gray-800">{selectedShop.owner?.fullName}</span>
+                                        </div>
+                                        <div className="bg-gray-50 px-4 py-2 rounded-lg border border-gray-100">
+                                            <span className="block text-xs text-gray-400 uppercase font-semibold">Liên hệ</span>
+                                            <span className="font-semibold text-gray-800">{selectedShop.owner?.mobile || selectedShop.owner?.email}</span>
+                                        </div>
+                                        <div className="bg-gray-50 px-4 py-2 rounded-lg border border-gray-100">
+                                            <span className="block text-xs text-gray-400 uppercase font-semibold">Trạng thái</span>
+                                            <span className={`inline-block px-2 py-0.5 rounded text-xs font-semibold ${getShopStatusColor(selectedShop.status)}`}>
+                                                {translateShopStatus(selectedShop.status)}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Documents Section */}
+                            <div>
+                                <h4 className="font-bold text-gray-800 mb-4 border-l-4 border-[#ff4d2d] pl-3">Hồ sơ pháp lý</h4>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                    {[
+                                        { label: 'Giấy phép kinh doanh', file: selectedShop.businessLicense },
+                                        { label: 'Chứng nhận ATTP', file: selectedShop.foodSafetyLicense },
+                                        { label: 'PCCC', file: selectedShop.firePreventionLicense }
+                                    ].map((doc, idx) => (
+                                        <div key={idx} className="space-y-2">
+                                            <p className="text-sm font-semibold text-gray-700">{doc.label}</p>
+                                            <div className="relative group rounded-xl overflow-hidden border border-gray-200 bg-gray-50 aspect-[4/3] flex items-center justify-center">
+                                                {doc.file ? (
+                                                    (typeof doc.file === 'string' && doc.file.endsWith('.pdf')) ? (
+                                                        <a href={doc.file} target="_blank" rel="noreferrer" className="flex flex-col items-center p-4 text-gray-600 hover:text-[#ff4d2d] transition-colors">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                                            </svg>
+                                                            <span className="text-xs font-bold">Xem PDF</span>
+                                                        </a>
+                                                    ) : (
+                                                        <>
+                                                            <img src={doc.file} alt={doc.label} className="w-full h-full object-contain" />
+                                                            <a href={doc.file} target="_blank" rel="noreferrer" className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                                                <span className="text-white font-bold bg-black/50 px-3 py-1 rounded-full text-sm">Xem phóng to</span>
+                                                            </a>
+                                                        </>
+                                                    )
+                                                ) : (
+                                                    <span className="text-xs text-gray-400 italic">Chưa cập nhật</span>
+                                                )}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="p-6 bg-gray-50 border-t border-gray-100 flex justify-end gap-3 rounded-b-2xl">
+                            <button
+                                onClick={() => setIsDetailOpen(false)}
+                                className="px-5 py-2.5 bg-white border border-gray-200 text-gray-700 font-medium rounded-xl hover:bg-gray-50 transition-colors"
+                            >
+                                Đóng
+                            </button>
+                            {selectedShop.status === 'pending' && (
+                                <>
+                                    <button
+                                        onClick={() => { handleUpdateStatus(selectedShop._id, 'rejected'); setIsDetailOpen(false); }}
+                                        className="px-5 py-2.5 bg-red-500 text-white font-bold rounded-xl hover:bg-red-600 shadow-lg shadow-red-200 transition-colors"
+                                    >
+                                        Từ chối
+                                    </button>
+                                    <button
+                                        onClick={() => { handleUpdateStatus(selectedShop._id, 'active'); setIsDetailOpen(false); }}
+                                        className="px-5 py-2.5 bg-green-500 text-white font-bold rounded-xl hover:bg-green-600 shadow-lg shadow-green-200 transition-colors"
+                                    >
+                                        Duyệt ngay
+                                    </button>
+                                </>
+                            )}
+                            {(selectedShop.status === 'disabled' || selectedShop.status === 'rejected') && (
+                                <button
+                                    onClick={() => { handleUpdateStatus(selectedShop._id, 'active'); setIsDetailOpen(false); }}
+                                    className="px-5 py-2.5 bg-green-500 text-white font-bold rounded-xl hover:bg-green-600 shadow-lg shadow-green-200 transition-colors"
+                                >
+                                    Mở lại hoạt động
+                                </button>
+                            )}
+                            {selectedShop.status === 'active' && (
+                                <button
+                                    onClick={() => { handleUpdateStatus(selectedShop._id, 'disabled'); setIsDetailOpen(false); }}
+                                    className="px-5 py-2.5 bg-gray-600 text-white font-bold rounded-xl hover:bg-gray-700 shadow-lg shadow-gray-200 transition-colors"
+                                >
+                                    Khóa quán
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Custom Confirmation Modal */}
             {confirmModal.show && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">

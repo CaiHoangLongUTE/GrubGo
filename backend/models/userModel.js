@@ -28,7 +28,7 @@ const userSchema = new mongoose.Schema({
     },
     socketId: { type: String },
     isOnline: { type: Boolean, default: false },
-    status: { type: String, enum: ["active", "banned"], default: "active" },
+    status: { type: String, enum: ["active", "banned", "pending", "rejected"], default: "active" },
     ratings: {
         average: { type: Number, default: 0 },
         count: { type: Number, default: 0 }
