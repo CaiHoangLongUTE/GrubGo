@@ -6,6 +6,7 @@ import { IoArrowBack, IoSearchOutline } from "react-icons/io5";
 import { MapContainer, Marker, TileLayer, useMap } from 'react-leaflet';
 import "leaflet/dist/leaflet.css";
 import { serverUrl } from '../App';
+import { useEffect } from 'react';
 
 function RecenterMap({ location }) {
     if (location.lat && location.lon) {
@@ -304,7 +305,7 @@ const AddAddress = () => {
 
                         <div className="flex gap-3 pt-6">
                             <button onClick={handleSaveAddress} className="flex-1 bg-gradient-to-r from-[#ff4d2d] to-[#ff6b4a] text-white py-3.5 rounded-2xl font-bold hover:from-[#e64323] hover:to-[#ff5a39] transition-all shadow-lg shadow-orange-200 hover:shadow-orange-300 active:scale-[0.98]">
-                                ✓ Hoàn tất
+                                Hoàn tất
                             </button>
                             <button onClick={() => navigate(-1)} className="flex-1 bg-white border-2 border-gray-200 text-gray-700 py-3.5 rounded-2xl font-bold hover:bg-gray-50 hover:border-gray-300 transition-all active:scale-[0.98]">
                                 Hủy

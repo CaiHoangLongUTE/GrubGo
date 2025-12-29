@@ -10,6 +10,7 @@ import useGetCategories from '../hooks/useGetCategories';
 function UserDashBoard() {
   const { currentCity, shopsInMyCity, itemsInMyCity, searchItems, categories } = useSelector((state) => state.user);
   const [updatedItemsList, setUpdatedItemsList] = React.useState([]);
+  const [selectedCategory, setSelectedCategory] = React.useState("All");
   const navigate = useNavigate();
   const cateScrollRef = useRef(null);
   const shopScrollRef = useRef(null);
@@ -17,14 +18,16 @@ function UserDashBoard() {
   useGetCategories();
 
   const handleFilterByCategory = (category) => {
-    if (category == "All") {
+    if (selectedCategory === category || category === "All") {
       setUpdatedItemsList(itemsInMyCity);
+      setSelectedCategory("All");
     }
     else {
       const filteredItems = itemsInMyCity.filter((item) =>
         item?.category?._id === category || item?.category?.name === category
       );
       setUpdatedItemsList(filteredItems);
+      setSelectedCategory(category);
     }
   }
 

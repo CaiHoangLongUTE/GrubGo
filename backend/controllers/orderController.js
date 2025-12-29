@@ -415,13 +415,6 @@ export const claimOrder = async (req, res) => {
             // Notify Shop Owner
             const shopOrder = order.shopOrders.id(shopOrderId);
             if (shopOrder) {
-                // We need to populate owner to get socketId if not already populated? 
-                // shopOrder.owner is an ObjectId in the schema, let's populate it to be safe or find it.
-                // Actually in the schema shopOrders.owner is ref to User.
-                // The query `findOneAndUpdate` returns the document *before* population if not specified, 
-                // but we use `new: true`. However, `owner` field might just be ID if not populated.
-                // Let's refetch or stick to ID if we have a way to get socket.
-                // Best to simple fetch owner user to get socketId.
                 const ownerUser = await User.findById(shopOrder.owner);
                 if (ownerUser && ownerUser.socketId) {
                     const deliveryPersonData = await User.findById(deliveryPersonId).select("fullName mobile email location");
@@ -433,6 +426,12 @@ export const claimOrder = async (req, res) => {
                     });
                 }
             }
+
+            //Remove this order from all delivery person list
+            io.emit("deliveryTaken", {
+                orderId: order._id,
+                shopOrderId: shopOrderId
+            });
         }
 
         return res.status(200).json({ message: "Nhận đơn hàng thành công", order });

@@ -38,8 +38,15 @@ function DeliveryDashBoard() {
         toast.success("Có đơn hàng mới!");
       });
 
+      socket.on("deliveryTaken", ({ orderId, shopOrderId }) => {
+        setAvailableAssignments(prev => prev.filter(order =>
+          !(order.orderId === orderId && order.shopOrderId === shopOrderId)
+        ));
+      });
+
       return () => {
         socket.off("newDeliveryAvailable");
+        socket.off("deliveryTaken");
       }
     }
   }, [socket]);
