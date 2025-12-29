@@ -7,12 +7,21 @@ const userSchema = new mongoose.Schema({
     mobile: { type: String, required: true },
     role: { type: String, enum: ["user", "owner", "delivery", "admin"], required: true },
     avatar: { type: String },
-    gender: { type: Number, default: 1 }, // 1: Male, 2: Female, 3: Other
+    gender: { type: Number, default: 1 },
+    birthDay: { type: Date },
 
     resetOtp: { type: String },
     isOtpVerified: { type: Boolean, default: false },
     otpExpiresAt: { type: Date },
 
+    //for delivery person and owner
+    citizenIdentityFront: { type: String },
+    citizenIdentityBack: { type: String },
+    //for delivery person
+    driverLicenseFront: { type: String },
+    driverLicenseBack: { type: String },
+    typeOfVehicle: { type: String },
+    licensePlate: { type: String },
     location: {
         type: { type: String, enum: ["Point"], default: "Point" },
         coordinates: { type: [Number], default: [0, 0] }

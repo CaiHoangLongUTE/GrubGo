@@ -52,7 +52,7 @@ export const updateUserLocation = async (req, res) => {
 export const updateProfile = async (req, res) => {
     try {
         const userId = req.userId;
-        const { fullName, mobile, gender, avatar } = req.body;
+        const { fullName, mobile, gender, birthDay, typeOfVehicle, licensePlate } = req.body;
 
         if (!userId) {
             return res.status(401).json({ message: "Chưa xác thực" });
@@ -62,7 +62,28 @@ export const updateProfile = async (req, res) => {
         if (fullName) updateData.fullName = fullName;
         if (mobile) updateData.mobile = mobile;
         if (gender) updateData.gender = gender;
-        if (avatar) updateData.avatar = avatar;
+        if (birthDay) updateData.birthDay = birthDay;
+        if (typeOfVehicle) updateData.typeOfVehicle = typeOfVehicle;
+        if (licensePlate) updateData.licensePlate = licensePlate;
+
+        // Handle file uploads
+        if (req.files) {
+            if (req.files['avatar']) {
+                updateData.avatar = await uploadOnCloudinary(req.files['avatar'][0].path);
+            }
+            if (req.files['citizenIdentityFront']) {
+                updateData.citizenIdentityFront = await uploadOnCloudinary(req.files['citizenIdentityFront'][0].path);
+            }
+            if (req.files['citizenIdentityBack']) {
+                updateData.citizenIdentityBack = await uploadOnCloudinary(req.files['citizenIdentityBack'][0].path);
+            }
+            if (req.files['driverLicenseFront']) {
+                updateData.driverLicenseFront = await uploadOnCloudinary(req.files['driverLicenseFront'][0].path);
+            }
+            if (req.files['driverLicenseBack']) {
+                updateData.driverLicenseBack = await uploadOnCloudinary(req.files['driverLicenseBack'][0].path);
+            }
+        }
 
         const user = await User.findByIdAndUpdate(userId, updateData, { new: true });
 
@@ -77,17 +98,3 @@ export const updateProfile = async (req, res) => {
     }
 }
 
-export const uploadAvatar = async (req, res) => {
-    try {
-        if (!req.file) {
-            return res.status(400).json({ message: "Không có tệp hình ảnh nào được cung cấp" });
-        }
-
-        const imageUrl = await uploadOnCloudinary(req.file.path);
-
-        return res.status(200).json({ message: "Tải ảnh đại diện lên thành công", url: imageUrl });
-    } catch (error) {
-        console.error("Lỗi tải ảnh đại diện:", error);
-        return res.status(500).json({ message: `Tải lên thất bại. Lỗi: ${error.message}` });
-    }
-}
