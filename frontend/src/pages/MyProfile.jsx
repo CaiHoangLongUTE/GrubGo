@@ -13,6 +13,7 @@ function MyProfile() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const userData = useSelector(state => state.user.userData);
+    const isUser = userData?.role === 'user';
 
     const [formData, setFormData] = useState({
         fullName: '',
@@ -172,14 +173,14 @@ function MyProfile() {
 
                 <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                     {/* Left Column: General Info */}
-                    <div className="lg:col-span-4 space-y-6">
-                        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                            <h2 className="text-lg font-semibold text-gray-800 mb-6 flex items-center gap-2 border-b pb-2">
+                    <div className={`space-y-6 ${isUser ? 'lg:col-span-12 lg:px-20' : 'lg:col-span-4'}`}>
+                        <div className={`bg-white p-6 rounded-2xl shadow-sm border border-gray-100 ${isUser ? 'lg:grid lg:grid-cols-3 lg:gap-8' : ''}`}>
+                            <h2 className={`text-lg font-semibold text-gray-800 mb-6 flex items-center justify-center gap-2 border-b pb-2 ${isUser ? 'lg:col-span-3' : ''}`}>
                                 <FaUser className="text-[#ff4d2d]" />
                                 Thông tin chung
                             </h2>
 
-                            <div className="flex flex-col items-center mb-8">
+                            <div className={`flex flex-col items-center ${isUser ? 'mb-0 lg:col-span-1 border-r border-gray-100' : 'mb-8'}`}>
                                 <div className="relative group">
                                     <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-lg bg-gray-100 ring-2 ring-gray-100">
                                         {avatarPreview ? (
@@ -198,7 +199,7 @@ function MyProfile() {
                                 <p className="mt-3 text-sm text-gray-500 font-medium">Ảnh đại diện</p>
                             </div>
 
-                            <div className="space-y-4">
+                            <div className={`space-y-4 ${isUser ? 'lg:col-span-2' : ''}`}>
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1.5">Họ và tên</label>
                                     <input
@@ -269,11 +270,11 @@ function MyProfile() {
                                     </div>
                                 </div>
                             </div>
-                            <div className="mt-8 pt-6 border-t border-gray-100 lg:block hidden">
+                            <div className={`mt-8 pt-6 border-t border-gray-100 hidden ${isUser ? 'lg:col-span-3 lg:flex lg:justify-center' : 'lg:block'}`}>
                                 <button
                                     type="submit"
                                     disabled={loading}
-                                    className="w-full bg-[#ff4d2d] text-white py-3.5 rounded-xl font-bold text-base hover:shadow-lg hover:bg-[#e64323] transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed shadow-orange-200"
+                                    className={`${isUser ? 'w-fit px-12' : 'w-full'} bg-[#ff4d2d] text-white py-2.5 rounded-xl font-bold text-base hover:shadow-lg hover:bg-[#e64323] transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed shadow-orange-200`}
                                 >
                                     <FaSave />
                                     {loading ? 'Đang lưu...' : 'Lưu thay đổi'}
@@ -283,7 +284,7 @@ function MyProfile() {
                     </div>
 
                     {/* Right Column: Identity & Vehicle Info */}
-                    <div className="lg:col-span-8 space-y-6">
+                    <div className={`space-y-6 ${isUser ? 'lg:hidden' : 'lg:col-span-8'}`}>
                         {/* Identity Card Section - For Owner & Delivery */}
                         {(userData?.role === 'owner' || userData?.role === 'delivery') && (
                             <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">

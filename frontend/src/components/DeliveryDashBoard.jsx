@@ -297,7 +297,7 @@ function DeliveryDashBoard() {
                             {a.items?.map((item, idx) => (
                               <div key={idx} className="flex justify-between text-sm">
                                 <span className="text-gray-700">{item.quantity} x {item.name}</span>
-                                <span className="text-gray-500">{item.price.toLocaleString()} đ</span>
+                                <span className="text-gray-500">{item.quantity} x {item.price.toLocaleString()} đ</span>
                               </div>
                             ))}
                           </div>
@@ -347,7 +347,7 @@ function DeliveryDashBoard() {
                             {order.items?.map((item, idx) => (
                               <div key={idx} className="flex justify-between text-sm">
                                 <span className="text-gray-700">{item.quantity} x {item.name}</span>
-                                <span className="text-gray-500">{item.price.toLocaleString()} đ</span>
+                                <span className="text-gray-500">{item.quantity} x {item.price.toLocaleString()} đ</span>
                               </div>
                             ))}
                           </div>

@@ -22,6 +22,8 @@ function AddItem() {
     const [backendImage, setBackendImage] = useState(null);
     const dispatch = useDispatch();
 
+    const [loading, setLoading] = useState(false);
+
     const categoryOptions = categories.map(cate => ({ value: cate._id, label: cate.name }));
 
     const handleImage = (e) => {
@@ -31,12 +33,14 @@ function AddItem() {
     }
     const handleSubmit = async (e) => {
         e.preventDefault();
-        try {
-            if (!name || !category || !foodType || !price || !backendImage) {
-                toast.error("Vui lòng điền đầy đủ thông tin và chọn hình ảnh");
-                return;
-            }
 
+        if (!name || !category || !foodType || !price || !backendImage) {
+            toast.error("Vui lòng điền đầy đủ thông tin và chọn hình ảnh");
+            return;
+        }
+
+        setLoading(true);
+        try {
             const formData = new FormData();
             formData.append("name", name);
             formData.append("desc", desc);
@@ -53,6 +57,9 @@ function AddItem() {
             console.log(result.data);
         } catch (error) {
             console.log(error);
+            toast.error(error.response?.data?.message || "Có lỗi xảy ra");
+        } finally {
+            setLoading(false);
         }
     }
     return (
@@ -145,8 +152,18 @@ function AddItem() {
                             </div>
                         </div>
 
-                        <button className="w-full bg-[#ff4d2d] text-white py-4 px-6 rounded-xl hover:bg-[#e64323] font-bold text-lg shadow-lg shadow-orange-200 hover:shadow-orange-300 transition-all duration-200 cursor-pointer active:scale-[0.98]">
-                            Thêm món ăn
+                        <button
+                            disabled={loading}
+                            className={`w-full bg-[#ff4d2d] text-white py-4 px-6 rounded-xl font-bold text-lg shadow-lg shadow-orange-200 transition-all duration-200 cursor-pointer active:scale-[0.98] flex items-center justify-center gap-2 ${loading ? 'opacity-70 cursor-not-allowed' : 'hover:bg-[#e64323] hover:shadow-orange-300'}`}
+                        >
+                            {loading ? (
+                                <>
+                                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                    Đang thêm...
+                                </>
+                            ) : (
+                                "Thêm món ăn"
+                            )}
                         </button>
                     </div>
                 </form>

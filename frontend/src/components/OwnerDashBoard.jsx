@@ -126,7 +126,7 @@ function OwnerDashBoard() {
 
                     <div className='flex flex-col gap-1'>
                       <p className='text-lg font-medium text-gray-100 flex items-center gap-2'>
-                        {myShopData.city}, {myShopData.state}
+                        {myShopData.commune}, {myShopData.district}, {myShopData.city}
                       </p>
                       <p className='text-sm text-gray-300 opacity-90 font-light'>
                         {myShopData.address}

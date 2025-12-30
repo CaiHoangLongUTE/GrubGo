@@ -19,9 +19,14 @@ function ReviewCard({ review }) {
     return (
         <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
             <div className="flex items-start gap-3 mb-3">
-                <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center font-bold text-orange-600">
-                    {review.user?.fullName?.charAt(0).toUpperCase() || 'U'}
+                <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center font-bold text-orange-600 overflow-hidden">
+                    {review.user?.avatar ? (
+                        <img src={review.user.avatar} alt="Avatar" className="w-full h-full object-cover" />
+                    ) : (
+                        review.user?.fullName?.charAt(0).toUpperCase() || 'U'
+                    )}
                 </div>
+
                 <div className="flex-1">
                     <p className="font-semibold text-gray-900">{review.user?.fullName || 'Người dùng'}</p>
                     <p className="text-xs text-gray-500">

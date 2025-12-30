@@ -25,6 +25,8 @@ function EditItem() {
     const [backendImage, setBackendImage] = useState(null);
     const dispatch = useDispatch();
 
+    const [loading, setLoading] = useState(false);
+
     const categoryOptions = categories.map(cate => ({ value: cate._id, label: cate.name }));
 
     const handleImage = (e) => {
@@ -34,6 +36,13 @@ function EditItem() {
     }
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // Basic Validation
+        if (!name || !category || !foodType || !price) {
+            return toast.error("Vui lòng điền đầy đủ thông tin");
+        }
+
+        setLoading(true);
         try {
             const formData = new FormData();
             formData.append("name", name);
@@ -45,12 +54,15 @@ function EditItem() {
                 formData.append("image", backendImage);
             }
             const result = await axios.post(`${serverUrl}/api/item/edit-item/${itemId}`, formData, { withCredentials: true });
-            toast.success("Item edit successfully", { duration: 2000 });
+            toast.success("Cập nhật món ăn thành công", { duration: 2000 });
             navigate("/");
             dispatch(setMyShopData(result.data));
             console.log(result.data);
         } catch (error) {
-            console.log(error);
+            console.error(error);
+            toast.error(error.response?.data?.message || "Có lỗi xảy ra khi cập nhật");
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -163,8 +175,18 @@ function EditItem() {
                             </div>
                         </div>
 
-                        <button className="w-full bg-[#ff4d2d] text-white py-4 px-6 rounded-xl hover:bg-[#e64323] font-bold text-lg shadow-lg shadow-orange-200 hover:shadow-orange-300 transition-all duration-200 cursor-pointer active:scale-[0.98]">
-                            Lưu cập nhật
+                        <button
+                            disabled={loading}
+                            className={`w-full bg-[#ff4d2d] text-white py-4 px-6 rounded-xl font-bold text-lg shadow-lg shadow-orange-200 transition-all duration-200 cursor-pointer active:scale-[0.98] flex items-center justify-center gap-2 ${loading ? 'opacity-70 cursor-not-allowed' : 'hover:bg-[#e64323] hover:shadow-orange-300'}`}
+                        >
+                            {loading ? (
+                                <>
+                                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                    Đang lưu...
+                                </>
+                            ) : (
+                                "Lưu cập nhật"
+                            )}
                         </button>
                     </div>
                 </form>

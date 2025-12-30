@@ -24,13 +24,14 @@ export const addItem = async (req, res) => {
             .populate("category", "name")
             .sort({ updatedAt: -1 });
 
-        return res.status(201).json({
+        return res.status(200).json({
             _id: shop._id,
             name: shop.name,
             image: shop.image,
             owner: shop.owner,
             city: shop.city,
-            state: shop.state,
+            district: shop.district,
+            commune: shop.commune,
             address: shop.address,
             hotline: shop.hotline,
             openTime: shop.openTime,
@@ -68,7 +69,8 @@ export const editItem = async (req, res) => {
             image: shop.image,
             owner: shop.owner,
             city: shop.city,
-            state: shop.state,
+            district: shop.district,
+            commune: shop.commune,
             address: shop.address,
             hotline: shop.hotline,
             openTime: shop.openTime,
@@ -123,7 +125,8 @@ export const deleteItem = async (req, res) => {
             image: shop.image,
             owner: shop.owner,
             city: shop.city,
-            state: shop.state,
+            district: shop.district,
+            commune: shop.commune,
             address: shop.address,
             status: shop.status,
             createdAt: shop.createdAt,

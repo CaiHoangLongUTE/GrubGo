@@ -4,6 +4,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import { setCurrentAddress, setCurrentCity, setCurrentDistrict, setCurrentCommune } from '../redux/userSlice';
 import { setAddress, setLocation } from '../redux/mapSlice';
 
+import { serverUrl } from '../App';
+
 function useGetCity() {
     const dispatch = useDispatch();
     const { userData } = useSelector(state => state.user);
@@ -16,7 +18,7 @@ function useGetCity() {
                 dispatch(setLocation({ lat: latitude, lon: longitude }));
 
                 try {
-                    const result = await axios.get(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`);
+                    const result = await axios.get(`${serverUrl}/api/location/reverse-geocode?lat=${latitude}&lon=${longitude}`);
                     console.log(result.data);
                     const address = result.data.address;
 

@@ -129,11 +129,6 @@ function CreateEditShop() {
 
     const getLatLngByAddress = async () => {
         if (!address || !city) return toast.error("Vui lòng nhập thành phố và địa chỉ");
-        // Nominatim works best with structured queries or less specific free-text if admin levels don't match exactly.
-        // Let's try combining Address + City first as it often yields better POI results than including every admin level which might mismatch.
-        // Or we can try the full string. Let's try full string but fallback to fewer details if needed?
-        // Let's stick to the full string for precision but be aware OSM data might not have exact Ward names.
-        // actually, usually POI + City is enough.
 
         let query = `${address}, ${commune}, ${district}, ${city}`;
 
@@ -172,8 +167,25 @@ function CreateEditShop() {
             toast.error("Lỗi khi tìm kiếm vị trí.");
         }
     };
+    const [loading, setLoading] = useState(false);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // Basic Validation
+        if (!name || !city || !district || !commune || !address) {
+            return toast.error("Vui lòng điền đầy đủ thông tin chung và địa chỉ");
+        }
+
+        // For new shops, licenses and main image are required
+        if (!myShopData) {
+            if (!backendImage) return toast.error("Vui lòng chọn ảnh đại diện cho quán");
+            if (!businessLicense) return toast.error("Vui lòng tải lên Giấy phép kinh doanh");
+            if (!foodSafetyLicense) return toast.error("Vui lòng tải lên Giấy chứng nhận ATTP");
+            if (!firePreventionLicense) return toast.error("Vui lòng tải lên Giấy PCCC");
+        }
+
+        setLoading(true);
         try {
             const formData = new FormData();
             formData.append("name", name);
@@ -192,17 +204,20 @@ function CreateEditShop() {
             if (businessLicense) formData.append("businessLicense", businessLicense);
             if (foodSafetyLicense) formData.append("foodSafetyLicense", foodSafetyLicense);
             if (firePreventionLicense) formData.append("firePreventionLicense", firePreventionLicense);
-            const result = await axios.post(`${serverUrl}/api/shop/create-edit`, formData, { withCredentials: true });
-            toast.success("Shop details saved successfully", { duration: 2000 });
 
-            // Re-fetch complete shop data including items to ensure UI consistency
+            const result = await axios.post(`${serverUrl}/api/shop/create-edit`, formData, { withCredentials: true });
+
+            toast.success("Thông tin shop đã được lưu thành công!", { duration: 2000 });
+            navigate("/");
+
             const shopData = await axios.get(`${serverUrl}/api/shop/get-my`, { withCredentials: true });
             dispatch(setMyShopData(shopData.data));
 
-            navigate("/");
-            console.log(shopData.data);
         } catch (error) {
-            console.log(error);
+            console.error(error);
+            toast.error(error.response?.data?.message || "Có lỗi xảy ra khi lưu thông tin shop");
+        } finally {
+            setLoading(false);
         }
     }
     return (
@@ -398,8 +413,18 @@ function CreateEditShop() {
                             </div>
                         </div>
 
-                        <button className="w-full bg-[#ff4d2d] text-white py-4 px-6 rounded-xl hover:bg-[#e64323] font-bold text-lg shadow-lg shadow-orange-200 hover:shadow-orange-300 transition-all duration-200 cursor-pointer active:scale-[0.98]">
-                            {myShopData ? "Lưu thay đổi" : "Đăng ký cửa hàng"}
+                        <button
+                            disabled={loading}
+                            className={`w-full bg-[#ff4d2d] text-white py-4 px-6 rounded-xl font-bold text-lg shadow-lg shadow-orange-200 transition-all duration-200 cursor-pointer active:scale-[0.98] flex items-center justify-center gap-2 ${loading ? 'opacity-70 cursor-not-allowed' : 'hover:bg-[#e64323] hover:shadow-orange-300'}`}
+                        >
+                            {loading ? (
+                                <>
+                                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                    Đang xử lý...
+                                </>
+                            ) : (
+                                myShopData ? "Lưu thay đổi" : "Đăng ký cửa hàng"
+                            )}
                         </button>
                     </div>
                 </form>

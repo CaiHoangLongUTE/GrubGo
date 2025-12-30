@@ -10,7 +10,7 @@ import userRouter from "./routes/userRoute.js";
 import shopRouter from "./routes/shopRoute.js";
 import itemRouter from './routes/itemRoute.js';
 import orderRouter from "./routes/orderRoute.js";
-import paymentRouter from "./routes/paymentRoute.js"; 
+import paymentRouter from "./routes/paymentRoute.js";
 import addressRoute from "./routes/addressRoute.js";
 import adminRouter from "./routes/adminRoute.js";
 import categoryRouter from "./routes/categoryRoute.js";
@@ -20,6 +20,7 @@ import http from "http";
 import { Server } from "socket.io";
 import { socketHandler } from "./socket.js";
 import { seedAdmin } from "./utils/seedAdmin.js";
+import locationRoute from './routes/locationRoute.js';
 
 const app = express();
 const server = http.createServer(app);
@@ -49,6 +50,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
 app.use("/api/address", addressRoute);
 app.use("/api/shop", shopRouter);
+app.use("/api/location", locationRoute);
 app.use("/api/item", itemRouter)
 app.use("/api/order", orderRouter);
 app.use("/api/payment", paymentRouter);
