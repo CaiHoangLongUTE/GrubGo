@@ -3,6 +3,7 @@ import axios from 'axios';
 import { serverUrl } from '../App';
 import toast from 'react-hot-toast';
 import { translateShopStatus, getShopStatusColor } from '../utils/statusTranslator';
+import { FaFilePdf, FaTimes, FaExclamationTriangle, FaSearch } from 'react-icons/fa';
 
 const AdminShops = () => {
     const [shops, setShops] = useState([]);
@@ -115,8 +116,8 @@ const AdminShops = () => {
                         onChange={(e) => setSearch(e.target.value)}
                         className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff4d2d]"
                     />
-                    <button type="submit" className="px-6 py-2 bg-[#ff4d2d] text-white rounded-lg hover:bg-[#e63c1d]">
-                        Tìm
+                    <button type="submit" className="px-6 py-2 bg-[#ff4d2d] text-white rounded-lg hover:bg-[#e63c1d] flex items-center gap-2">
+                        <FaSearch /> Tìm
                     </button>
                 </form>
             </div>
@@ -213,9 +214,7 @@ const AdminShops = () => {
                         <div className="sticky top-0 bg-white z-10 px-6 py-4 border-b border-gray-100 flex justify-between items-center">
                             <h3 className="text-xl font-bold text-gray-900">Chi tiết quán ăn</h3>
                             <button onClick={() => setIsDetailOpen(false)} className="p-2 hover:bg-gray-100 rounded-full text-gray-500 transition-colors">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                </svg>
+                                <FaTimes size={24} />
                             </button>
                         </div>
 
@@ -262,9 +261,7 @@ const AdminShops = () => {
                                                 {doc.file ? (
                                                     (typeof doc.file === 'string' && doc.file.endsWith('.pdf')) ? (
                                                         <a href={doc.file} target="_blank" rel="noreferrer" className="flex flex-col items-center p-4 text-gray-600 hover:text-[#ff4d2d] transition-colors">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                                                            </svg>
+                                                            <FaFilePdf size={48} className="mb-2" />
                                                             <span className="text-xs font-bold">Xem PDF</span>
                                                         </a>
                                                     ) : (
@@ -335,9 +332,7 @@ const AdminShops = () => {
                     <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all scale-100 animate-in fade-in zoom-in duration-200">
                         <div className="p-6 text-center">
                             <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-orange-100 mb-4">
-                                <svg className="h-6 w-6 text-[#ff4d2d]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                </svg>
+                                <FaExclamationTriangle size={24} className="text-[#ff4d2d]" />
                             </div>
                             <h3 className="text-lg font-bold text-gray-900 mb-2">Xác nhận hành động</h3>
                             <p className="text-sm text-gray-500 mb-6">

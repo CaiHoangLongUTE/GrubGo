@@ -51,8 +51,8 @@ function AddItem() {
                 formData.append("image", backendImage);
             }
             const result = await axios.post(`${serverUrl}/api/item/add-item`, formData, { withCredentials: true });
-            toast.success("Thêm món ăn thành công", { duration: 2000 });
             navigate("/");
+            toast.success("Thêm món ăn thành công", { duration: 2000 });
             dispatch(setMyShopData(result.data));
             console.log(result.data);
         } catch (error) {

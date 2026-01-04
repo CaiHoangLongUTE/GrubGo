@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { serverUrl } from '../App';
 import toast from 'react-hot-toast';
-import { FaSearch, FaEye, FaCheck, FaTimes, FaBan, FaUnlock, FaUser, FaStore, FaMotorcycle } from 'react-icons/fa';
+import { FaSearch, FaEye, FaCheck, FaTimes, FaBan, FaUnlock, FaUser, FaStore, FaMotorcycle, FaExclamationTriangle } from 'react-icons/fa';
 import { translateUserStatus, getUserStatusColor } from '../utils/statusTranslator';
 
 const AdminUsers = () => {
@@ -223,7 +223,7 @@ const AdminUsers = () => {
                 <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
                     <div className="bg-white rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
                         <div className="p-6 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white z-10">
-                            <h3 className="text-xl font-bold text-gray-800">Hồ sơ tài xế</h3>
+                            <h3 className="text-xl font-bold text-gray-800">Hồ sơ người dùng</h3>
                             <button onClick={() => setIsModalOpen(false)} className="p-2 hover:bg-gray-100 rounded-full text-gray-500"><FaTimes /></button>
                         </div>
 
@@ -313,6 +313,9 @@ const AdminUsers = () => {
                 isConfirmOpen && (
                     <div className="fixed inset-0 bg-black/50 z-[60] flex items-center justify-center p-4">
                         <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl animate-fade-in-up">
+                            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-orange-100 mb-4">
+                                <FaExclamationTriangle className="w-6 h-6 text-[#ff4d2d]" />
+                            </div>
                             <h3 className="text-lg font-bold text-gray-900 mb-2">Xác nhận hành động</h3>
                             <p className="text-gray-600 mb-6">
                                 Bạn có chắc chắn muốn thực hiện hành động này không?

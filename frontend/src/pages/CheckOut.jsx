@@ -78,7 +78,7 @@ function CheckOut() {
                     shop: item.shop, // Assume shop is populated object
                     items: [],
                     subTotal: 0,
-                    deliveryFee: 15000,
+                    deliveryFee: 10000,
                     distance: 0
                 };
             }

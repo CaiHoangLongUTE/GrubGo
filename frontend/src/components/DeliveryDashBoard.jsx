@@ -21,6 +21,8 @@ function DeliveryDashBoard() {
   const [otp, setOtp] = useState("");
   const [isClaimingOrder, setIsClaimingOrder] = useState(false);
   const [revenueStats, setRevenueStats] = useState({ total: 0, today: 0, thisMonth: 0 });
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   const getRevenueStats = async () => {
     try {
@@ -326,40 +328,106 @@ function DeliveryDashBoard() {
                   }
                 </div>
               ) : (
-                // Delivered Orders List
-                deliveredOrders.length > 0
-                  ? (
-                    deliveredOrders.map((order, index) => (
-                      <div className='border border-green-100 rounded-lg p-4 flex flex-col gap-3 bg-white' key={index}>
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <div className='flex items-center gap-2 mb-1'>
-                              <p className='text-lg font-bold text-[#ff4d2d]'>{order.shop.name}</p>
-                              <span className="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-bold">HOÀN THÀNH</span>
-                            </div>
-                            <p className='text-xs text-gray-400 mb-1'>{new Date(order.deliveryAt).toLocaleString('vi-VN')}</p>
-                            <p className='text-sm text-gray-600'><span className='font-semibold'>Giao đến:</span> {order.deliveryAddress?.address}, {order.deliveryAddress?.commune}, {order.deliveryAddress?.district}, {order.deliveryAddress?.city}</p>
-                          </div>
-                        </div>
+                // Delivered Orders List with Filter
+                <div className="flex flex-col gap-4">
+                  {/* Date Filter */}
+                  <div className="flex flex-col sm:flex-row gap-3 items-center bg-gray-50 p-3 rounded-xl border border-gray-100">
+                    <div className="flex items-center gap-2 w-full sm:w-auto">
+                      <span className="text-sm text-gray-600 whitespace-nowrap">Từ ngày:</span>
+                      <input
+                        type="date"
+                        className="border border-gray-300 rounded-lg px-2 py-1.5 text-sm outline-none focus:border-orange-500 w-full"
+                        value={startDate}
+                        onChange={(e) => setStartDate(e.target.value)}
+                      />
+                    </div>
+                    <div className="flex items-center gap-2 w-full sm:w-auto">
+                      <span className="text-sm text-gray-600 whitespace-nowrap">Đến ngày:</span>
+                      <input
+                        type="date"
+                        className="border border-gray-300 rounded-lg px-2 py-1.5 text-sm outline-none focus:border-orange-500 w-full"
+                        value={endDate}
+                        onChange={(e) => setEndDate(e.target.value)}
+                      />
+                    </div>
+                    {/* Clear Filter Button - Only show if filters are active */}
+                    {(startDate || endDate) &&
+                      <button
+                        onClick={() => { setStartDate(""); setEndDate(""); }}
+                        className="text-sm bg-red-50 text-red-500 hover:bg-red-100 border border-red-200 font-medium px-4 py-1.5 rounded-lg transition-colors whitespace-nowrap"
+                      >
+                        Xem tất cả
+                      </button>}
+                  </div>
 
-                        <div className="bg-green-50/50 p-3 rounded-lg border border-green-100">
-                          <div className="space-y-1">
-                            {order.items?.map((item, idx) => (
-                              <div key={idx} className="flex justify-between text-sm">
-                                <span className="text-gray-700">{item.quantity} x {item.name}</span>
-                                <span className="text-gray-500">{item.quantity} x {item.price.toLocaleString()} đ</span>
+                  {/* Filtered List */}
+                  {deliveredOrders.filter(order => {
+                    if (!startDate && !endDate) return true;
+                    const orderDate = new Date(order.deliveryAt);
+                    orderDate.setHours(0, 0, 0, 0);
+
+                    let start = startDate ? new Date(startDate) : null;
+                    if (start) start.setHours(0, 0, 0, 0);
+
+                    let end = endDate ? new Date(endDate) : null;
+                    if (end) end.setHours(0, 0, 0, 0);
+
+                    if (start && end) return orderDate >= start && orderDate <= end;
+                    if (start) return orderDate >= start;
+                    if (end) return orderDate <= end;
+                    return true;
+                  }).length > 0
+                    ? (
+                      deliveredOrders
+                        .filter(order => {
+                          if (!startDate && !endDate) return true;
+                          const orderDate = new Date(order.deliveryAt);
+                          orderDate.setHours(0, 0, 0, 0);
+
+                          let start = startDate ? new Date(startDate) : null;
+                          if (start) start.setHours(0, 0, 0, 0);
+
+                          let end = endDate ? new Date(endDate) : null;
+                          if (end) end.setHours(0, 0, 0, 0);
+
+                          if (start && end) return orderDate >= start && orderDate <= end;
+                          if (start) return orderDate >= start;
+                          if (end) return orderDate <= end;
+                          return true;
+                        })
+                        .map((order, index) => (
+                          <div className='border border-green-100 rounded-lg p-4 flex flex-col gap-3 bg-white' key={index}>
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <div className='flex items-center gap-2 mb-1'>
+                                  <p className='text-lg font-bold text-[#ff4d2d]'>{order.shop.name}</p>
+                                  <span className="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-bold">HOÀN THÀNH</span>
+                                </div>
+                                <p className='text-xs text-gray-400 mb-1'>{new Date(order.deliveryAt).toLocaleString('vi-VN')}</p>
+                                <p className='text-sm text-gray-600'><span className='font-semibold'>Giao đến:</span> {order.deliveryAddress?.address}, {order.deliveryAddress?.commune}, {order.deliveryAddress?.district}, {order.deliveryAddress?.city}</p>
                               </div>
-                            ))}
+                            </div>
+
+                            <div className="bg-green-50/50 p-3 rounded-lg border border-green-100">
+                              <div className="space-y-1">
+                                {order.items?.map((item, idx) => (
+                                  <div key={idx} className="flex justify-between text-sm">
+                                    <span className="text-gray-700">{item.quantity} x {item.name}</span>
+                                    <span className="text-gray-500">{item.quantity} x {item.price.toLocaleString()} đ</span>
+                                  </div>
+                                ))}
+                              </div>
+                              <div className="border-t border-green-200 mt-2 pt-2 flex justify-between items-center">
+                                <span className="text-sm font-semibold text-gray-600">Tổng thu (gồm ship):</span>
+                                <span className="text-sm font-bold text-gray-800">{(order.subTotal + order.deliveryFee)?.toLocaleString()} đ</span>
+                              </div>
+                            </div>
                           </div>
-                          <div className="border-t border-green-200 mt-2 pt-2 flex justify-between items-center">
-                            <span className="text-sm font-semibold text-gray-600">Tổng thu (gồm ship):</span>
-                            <span className="text-sm font-bold text-gray-800">{(order.subTotal + order.deliveryFee)?.toLocaleString()} đ</span>
-                          </div>
-                        </div>
-                      </div>
-                    ))
-                  )
-                  : <p className='text-gray-400 text-sm italic text-center py-4'>Bạn chưa giao đơn hàng nào...</p>
+                        ))
+                    )
+                    : <p className='text-gray-400 text-sm italic text-center py-4'>Không tìm thấy đơn hàng nào trong khoảng thời gian này...</p>
+                  }
+                </div>
               )}
             </div>
           </div>

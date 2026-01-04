@@ -208,10 +208,9 @@ function CreateEditShop() {
             const result = await axios.post(`${serverUrl}/api/shop/create-edit`, formData, { withCredentials: true });
 
             toast.success("Thông tin shop đã được lưu thành công!", { duration: 2000 });
-            navigate("/");
-
             const shopData = await axios.get(`${serverUrl}/api/shop/get-my`, { withCredentials: true });
             dispatch(setMyShopData(shopData.data));
+            navigate("/");
 
         } catch (error) {
             console.error(error);
@@ -269,7 +268,7 @@ function CreateEditShop() {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Hình ảnh shop</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Hình ảnh </label>
                                     <input type="file" accept="image/*" className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#ff4d2d]/20 focus:border-[#ff4d2d] transition-all text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-[#ff4d2d] hover:file:bg-orange-100" onChange={handleImage} />
                                     {frontendImage &&
                                         <div className="mt-4">
@@ -423,7 +422,7 @@ function CreateEditShop() {
                                     Đang xử lý...
                                 </>
                             ) : (
-                                myShopData ? "Lưu thay đổi" : "Đăng ký cửa hàng"
+                                myShopData ? "Lưu thay đổi" : "Đăng ký nhà hàng"
                             )}
                         </button>
                     </div>

@@ -54,8 +54,8 @@ function EditItem() {
                 formData.append("image", backendImage);
             }
             const result = await axios.post(`${serverUrl}/api/item/edit-item/${itemId}`, formData, { withCredentials: true });
-            toast.success("Cập nhật món ăn thành công", { duration: 2000 });
             navigate("/");
+            toast.success("Cập nhật món ăn thành công", { duration: 2000 });
             dispatch(setMyShopData(result.data));
             console.log(result.data);
         } catch (error) {
