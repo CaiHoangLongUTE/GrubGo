@@ -96,7 +96,8 @@ export const createReview = async (req, res) => {
             isReviewed: true
         });
 
-        await review.populate('user', 'fullName');
+        await review.populate('user', 'fullName avatar');
+
         return res.status(201).json(review);
     } catch (error) {
         return res.status(500).json({ message: `Tạo đánh giá thất bại. Lỗi: ${error.message}` });
@@ -107,7 +108,8 @@ export const getShopReviews = async (req, res) => {
     try {
         const { shopId } = req.params;
         const reviews = await Review.find({ shop: shopId })
-            .populate('user', 'fullName')
+            .populate('user', 'fullName avatar')
+
             .sort({ createdAt: -1 })
             .limit(50);
 
@@ -137,7 +139,8 @@ export const getDeliveryPersonReviews = async (req, res) => {
             deliveryPerson: deliveryPersonId,
             deliveryRating: { $exists: true, $ne: null }
         })
-            .populate('user', 'fullName')
+            .populate('user', 'fullName avatar')
+
             .sort({ createdAt: -1 })
             .limit(50);
 
@@ -151,7 +154,8 @@ export const getReviewByShopOrderId = async (req, res) => {
     try {
         const { shopOrderId } = req.params;
         const review = await Review.findOne({ shopOrder: shopOrderId })
-            .populate('user', 'fullName')
+            .populate('user', 'fullName avatar')
+
             .populate('shop', 'name image');
 
         if (!review) {

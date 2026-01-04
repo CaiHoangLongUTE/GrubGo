@@ -131,9 +131,9 @@ function TrackOrder() {
                             <span className="text-[#ff4d2d]">📍</span> Địa chỉ giao hàng
                         </p>
                         <p className="text-gray-700 font-medium">{currentOrder.deliveryAddress.address}</p>
-                        {currentOrder.deliveryAddress.city && currentOrder.deliveryAddress.state && (
+                        {currentOrder.deliveryAddress.city && currentOrder.deliveryAddress.district && (
                             <p className="text-gray-500 text-sm mt-1">
-                                {currentOrder.deliveryAddress.city}, {currentOrder.deliveryAddress.state}
+                                {currentOrder.deliveryAddress.commune}, {currentOrder.deliveryAddress.district}, {currentOrder.deliveryAddress.city}
                             </p>
                         )}
                     </div>

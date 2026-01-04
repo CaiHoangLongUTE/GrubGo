@@ -12,9 +12,13 @@ function useUpdateLocation() {
             const result = await axios.post(`${serverUrl}/api/user/update-location`, { lat, lon }, { withCredentials: true });
             console.log(result.data);
         }
-        navigator.geolocation.watchPosition((pos) => {
+        const watchId = navigator.geolocation.watchPosition((pos) => {
             updateLocation(pos.coords.latitude, pos.coords.longitude);
-        })
+        });
+
+        return () => {
+            navigator.geolocation.clearWatch(watchId);
+        };
     }, [userData])
 }
 

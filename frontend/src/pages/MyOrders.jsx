@@ -1,6 +1,7 @@
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { IoArrowBack } from "react-icons/io5";
+import { FaCalendarAlt } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom';
 import UserOrderCard from '../components/UserOrderCard';
 import OwnerOrderCard from '../components/OwnerOrderCard';
@@ -12,6 +13,8 @@ function MyOrders() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const [activeTab, setActiveTab] = useState('active'); // 'active', 'delivered', 'cancelled'
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
 
     useEffect(() => {
         socket?.on("newOrder", (data) => {
@@ -46,12 +49,14 @@ function MyOrders() {
         }
     }, [socket, myOrders, userData._id, dispatch, userData.role]);
 
-    // Filter orders based on tab
+    // Filter orders based on tab and date
     const filterOrders = (orders) => {
         if (!orders) return [];
 
+        let filtered = [];
+
         if (userData.role === 'user') {
-            return orders.filter(order => {
+            filtered = orders.filter(order => {
                 const hasActiveOrder = order.shopOrders.some(so => so.status !== 'delivered' && so.status !== 'cancelled');
 
                 if (activeTab === 'active') return hasActiveOrder;
@@ -60,14 +65,34 @@ function MyOrders() {
                 return false;
             });
         } else if (userData.role === 'owner') {
-            return orders.filter(order => {
+            filtered = orders.filter(order => {
                 if (activeTab === 'active') return order.shopOrders?.status !== 'delivered' && order.shopOrders?.status !== 'cancelled';
                 if (activeTab === 'delivered') return order.shopOrders?.status === 'delivered';
                 if (activeTab === 'cancelled') return order.shopOrders?.status === 'cancelled';
                 return false;
             });
         }
-        return orders;
+
+        // Apply date filter for history tabs
+        if (activeTab !== 'active' && (startDate || endDate)) {
+            filtered = filtered.filter(order => {
+                const orderDate = new Date(order.createdAt).setHours(0, 0, 0, 0);
+                const start = startDate ? new Date(startDate).setHours(0, 0, 0, 0) : null;
+                const end = endDate ? new Date(endDate).setHours(23, 59, 59, 999) : null;
+
+                if (start && end) return orderDate >= start && orderDate <= end;
+                if (start) return orderDate >= start;
+                if (end) return orderDate <= end;
+                return true;
+            });
+        }
+
+        return filtered;
+    };
+
+    const clearFilters = () => {
+        setStartDate('');
+        setEndDate('');
     };
 
     const filteredOrders = filterOrders(myOrders);
@@ -112,6 +137,42 @@ function MyOrders() {
                         Đã hủy
                     </button>
                 </div>
+
+                {/* Date Filter Section - Only show for history tabs */}
+                {activeTab !== 'active' && (
+                    <div className="flex flex-wrap items-end gap-4 mb-6 bg-white p-4 rounded-xl shadow-sm border border-gray-100 animate-in fade-in slide-in-from-top-2">
+                        <div className="flex-1 min-w-[150px]">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Từ ngày</label>
+                            <div className="relative">
+                                <input
+                                    type="date"
+                                    value={startDate}
+                                    onChange={(e) => setStartDate(e.target.value)}
+                                    className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
+                                />
+                                <FaCalendarAlt className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                            </div>
+                        </div>
+                        <div className="flex-1 min-w-[150px]">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Đến ngày</label>
+                            <div className="relative">
+                                <input
+                                    type="date"
+                                    value={endDate}
+                                    onChange={(e) => setEndDate(e.target.value)}
+                                    className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
+                                />
+                                <FaCalendarAlt className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                            </div>
+                        </div>
+                        <button
+                            onClick={clearFilters}
+                            className="px-4 py-2 bg-red-50 text-[#ff4d2d] border border-red-100 rounded-lg hover:bg-[#ff4d2d] hover:text-white transition-all font-medium text-sm h-[38px]"
+                        >
+                            Xem tất cả
+                        </button>
+                    </div>
+                )}
 
                 <div className='space-y-6'>
                     {filteredOrders.length > 0 ? (

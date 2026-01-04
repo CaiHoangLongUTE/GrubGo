@@ -78,7 +78,7 @@ function CheckOut() {
                     shop: item.shop, // Assume shop is populated object
                     items: [],
                     subTotal: 0,
-                    deliveryFee: 15000,
+                    deliveryFee: 10000,
                     distance: 0
                 };
             }
@@ -199,9 +199,9 @@ function CheckOut() {
                                                     <p className="text-sm text-gray-700 leading-relaxed font-medium">
                                                         {selectedAddress?.address}
                                                     </p>
-                                                    {selectedAddress?.city && selectedAddress?.state && (
+                                                    {selectedAddress?.city && selectedAddress?.district && (
                                                         <p className="text-xs text-gray-500">
-                                                            {selectedAddress.city}, {selectedAddress.state}
+                                                            {selectedAddress.commune}, {selectedAddress.district}, {selectedAddress.city}
                                                         </p>
                                                     )}
                                                 </div>

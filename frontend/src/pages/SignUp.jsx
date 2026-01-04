@@ -29,8 +29,17 @@ function SignUp() {
             }, { withCredentials: true });
             dispatch(setUserData(result.data));
             toast.success("Đăng ký thành công", { duration: 2000 });
-            navigate('/signin');
-            console.log(result);
+            if (result.data.role !== 'admin') {
+                if (result.data.role === 'owner') {
+                    navigate("/create-edit-shop");
+                } else if (result.data.role === 'delivery') {
+                    navigate("/delivery-onboarding");
+                } else {
+                    navigate("/");
+                }
+            } else {
+                navigate("/admin");
+            }
         } catch (error) {
             toast.error(error.response?.data?.message || "Đăng ký thất bại", { duration: 2000 });
             console.log(error);

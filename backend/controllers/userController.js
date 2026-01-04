@@ -52,7 +52,7 @@ export const updateUserLocation = async (req, res) => {
 export const updateProfile = async (req, res) => {
     try {
         const userId = req.userId;
-        const { fullName, mobile, gender, avatar } = req.body;
+        const { fullName, mobile, gender, birthDay, typeOfVehicle, licensePlate } = req.body;
 
         if (!userId) {
             return res.status(401).json({ message: "Chưa xác thực" });
@@ -62,7 +62,31 @@ export const updateProfile = async (req, res) => {
         if (fullName) updateData.fullName = fullName;
         if (mobile) updateData.mobile = mobile;
         if (gender) updateData.gender = gender;
-        if (avatar) updateData.avatar = avatar;
+        if (birthDay) updateData.birthDay = birthDay;
+        if (typeOfVehicle) updateData.typeOfVehicle = typeOfVehicle;
+        if (licensePlate) updateData.licensePlate = licensePlate;
+
+        // Handle file uploads
+        if (req.files) {
+            const uploadPromises = [];
+
+            const uploadField = async (fieldName) => {
+                if (req.files[fieldName]) {
+                    const url = await uploadOnCloudinary(req.files[fieldName][0].path);
+                    return { [fieldName]: url };
+                }
+                return {};
+            };
+
+            if (req.files['avatar']) uploadPromises.push(uploadField('avatar'));
+            if (req.files['citizenIdentityFront']) uploadPromises.push(uploadField('citizenIdentityFront'));
+            if (req.files['citizenIdentityBack']) uploadPromises.push(uploadField('citizenIdentityBack'));
+            if (req.files['driverLicenseFront']) uploadPromises.push(uploadField('driverLicenseFront'));
+            if (req.files['driverLicenseBack']) uploadPromises.push(uploadField('driverLicenseBack'));
+
+            const results = await Promise.all(uploadPromises);
+            results.forEach(result => Object.assign(updateData, result));
+        }
 
         const user = await User.findByIdAndUpdate(userId, updateData, { new: true });
 
@@ -77,17 +101,3 @@ export const updateProfile = async (req, res) => {
     }
 }
 
-export const uploadAvatar = async (req, res) => {
-    try {
-        if (!req.file) {
-            return res.status(400).json({ message: "Không có tệp hình ảnh nào được cung cấp" });
-        }
-
-        const imageUrl = await uploadOnCloudinary(req.file.path);
-
-        return res.status(200).json({ message: "Tải ảnh đại diện lên thành công", url: imageUrl });
-    } catch (error) {
-        console.error("Lỗi tải ảnh đại diện:", error);
-        return res.status(500).json({ message: `Tải lên thất bại. Lỗi: ${error.message}` });
-    }
-}

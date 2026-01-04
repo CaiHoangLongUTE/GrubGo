@@ -41,7 +41,7 @@ function OwnerOrderCard({ data }) {
         <div className="w-full md:w-auto">
           <div className="bg-gray-50 rounded-lg p-2.5 text-xs text-gray-600 flex items-start gap-2 border border-gray-100 max-w-md">
             <div className="mt-0.5 text-[#ff4d2d] flex-shrink-0">📍</div>
-            <p className="line-clamp-2">{data.deliveryAddress?.address} - {data.deliveryAddress?.state} - {data.deliveryAddress?.city}</p>
+            <p className="line-clamp-2">{data.deliveryAddress?.address}, {data.deliveryAddress?.commune}, {data.deliveryAddress?.district}, {data.deliveryAddress?.city}</p>
           </div>
         </div>
       </div>

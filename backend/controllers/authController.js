@@ -45,12 +45,18 @@ export const signUp = async (req, res) => {
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
+
+
+        // Default status: 'pending' for delivery, 'active' for others
+        const initialStatus = role === 'delivery' ? 'pending' : 'active';
+
         user = await User.create({
             fullName,
             email,
             password: hashedPassword,
             mobile,
-            role
+            role,
+            status: initialStatus
         });
 
         const token = await genToken(user._id);

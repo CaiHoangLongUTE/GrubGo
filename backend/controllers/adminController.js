@@ -89,7 +89,7 @@ export const updateUserStatus = async (req, res) => {
         const { userId } = req.params;
         const { status } = req.body;
 
-        if (!['active', 'banned'].includes(status)) {
+        if (!['active', 'banned', 'pending', 'rejected'].includes(status)) {
             return res.status(400).json({ message: "Trạng thái không hợp lệ" });
         }
 
@@ -160,7 +160,7 @@ export const updateShopStatus = async (req, res) => {
         const { shopId } = req.params;
         const { status } = req.body;
 
-        if (!['active', 'disabled'].includes(status)) {
+        if (!['active', 'disabled', 'rejected', 'pending'].includes(status)) {
             return res.status(400).json({ message: "Trạng thái không hợp lệ" });
         }
 
@@ -195,7 +195,10 @@ export const getAllOrders = async (req, res) => {
 
         const orders = await Order.find(query)
             .populate('user', 'fullName email mobile')
-            .populate('shopOrders.shop', 'name')
+            .populate('shopOrders.shop', 'name image address')
+            .populate('shopOrders.shopOrderItems.item', 'name image price')
+            .populate('deliveryAddress')
+            .populate('shopOrders.assignedDeliveryPerson', 'fullName mobile licensePlate')
             .sort({ createdAt: -1 })
             .limit(100);
 

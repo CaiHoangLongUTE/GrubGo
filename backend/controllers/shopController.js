@@ -1,21 +1,49 @@
 import uploadOnCloudinary from "../utils/cloudinary.js";
 import Shop from './../models/shopModel.js';
 import Item from './../models/itemModel.js';
+import Order from './../models/orderModel.js';
 
 export const createEditShop = async (req, res) => {
     try {
-        const { name, city, state, address, hotline, openTime, closeTime, lat, lon } = req.body;
+        const { name, city, district, commune, address, hotline, openTime, closeTime, lat, lon } = req.body;
+
         let image;
-        if (req.file) {
-            console.log(req.file);
-            image = await uploadOnCloudinary(req.file.path);
+        if (req.files && req.files['image']) {
+            image = await uploadOnCloudinary(req.files['image'][0].path);
         }
+
+        let businessLicense, foodSafetyLicense, firePreventionLicense;
+        if (req.files && req.files['businessLicense']) {
+            businessLicense = await uploadOnCloudinary(req.files['businessLicense'][0].path);
+        }
+        if (req.files && req.files['foodSafetyLicense']) {
+            foodSafetyLicense = await uploadOnCloudinary(req.files['foodSafetyLicense'][0].path);
+        }
+        if (req.files && req.files['firePreventionLicense']) {
+            firePreventionLicense = await uploadOnCloudinary(req.files['firePreventionLicense'][0].path);
+        }
+
         let shop = await Shop.findOne({ owner: req.userId });
         if (!shop) {
-            shop = await Shop.create({ name, city, state, address, lat, lon, hotline, openTime, closeTime, image, owner: req.userId });
+            shop = await Shop.create({
+                name, city, district, commune, address, lat, lon, hotline, openTime, closeTime,
+                image,
+                businessLicense, foodSafetyLicense, firePreventionLicense,
+                owner: req.userId,
+                status: "pending" // Default to pending
+            });
         }
         else {
-            shop = await Shop.findByIdAndUpdate(shop._id, { name, city, state, address, lat, lon, hotline, openTime, closeTime, image }, { new: true });
+            const updateData = { name, city, district, commune, address, lat, lon, hotline, openTime, closeTime };
+            if (image) updateData.image = image;
+            if (businessLicense) updateData.businessLicense = businessLicense;
+            if (foodSafetyLicense) updateData.foodSafetyLicense = foodSafetyLicense;
+            if (firePreventionLicense) updateData.firePreventionLicense = firePreventionLicense;
+
+            // If updating critical info/licenses, reset to pending? User didn't explicitly ask, but it's safe.
+            // keeping status update manual for now unless user asks.
+
+            shop = await Shop.findByIdAndUpdate(shop._id, updateData, { new: true });
         }
         await shop.populate("owner");
         return res.status(201).json(shop);
@@ -43,7 +71,8 @@ export const getMyShop = async (req, res) => {
             image: shop.image,
             owner: shop.owner,
             city: shop.city,
-            state: shop.state,
+            district: shop.district,
+            commune: shop.commune,
             address: shop.address,
             lat: shop.lat,
             lon: shop.lon,
@@ -54,6 +83,9 @@ export const getMyShop = async (req, res) => {
             createdAt: shop.createdAt,
             updatedAt: shop.updatedAt,
             ratings: shop.ratings,
+            businessLicense: shop.businessLicense,
+            foodSafetyLicense: shop.foodSafetyLicense,
+            firePreventionLicense: shop.firePreventionLicense,
             items: items
         });
     } catch (error) {
@@ -73,5 +105,108 @@ export const getShopByCity = async (req, res) => {
         return res.status(200).json(shops);
     } catch (error) {
         return res.status(500).json({ message: `Lấy quán ăn theo thành phố thất bại. Lỗi: ${error.message}` });
+    }
+}
+
+export const getShopStats = async (req, res) => {
+    try {
+        const shop = await Shop.findOne({ owner: req.userId });
+        if (!shop) {
+            return res.status(404).json({ message: "Không tìm thấy quán ăn" });
+        }
+
+        // Aggregate stats
+        const stats = await Order.aggregate([
+            { $unwind: "$shopOrders" },
+            { $match: { "shopOrders.shop": shop._id } },
+            {
+                $facet: {
+                    overall: [
+                        {
+                            $group: {
+                                _id: null,
+                                totalOrders: { $sum: 1 },
+                                cancelledOrders: {
+                                    $sum: { $cond: [{ $eq: ["$shopOrders.status", "cancelled"] }, 1, 0] }
+                                },
+                                successfulOrders: {
+                                    $sum: { $cond: [{ $eq: ["$shopOrders.status", "delivered"] }, 1, 0] }
+                                },
+                                // Revenue: Sum subTotal where payment is TRUE
+                                totalRevenue: {
+                                    $sum: { $cond: [{ $eq: ["$shopOrders.payment", true] }, "$shopOrders.subTotal", 0] }
+                                }
+                            }
+                        }
+                    ],
+                    revenueChart: [
+                        {
+                            $match: { "shopOrders.payment": true }
+                        },
+                        {
+                            $group: {
+                                _id: { $dateToString: { format: "%Y-%m-%d", date: "$shopOrders.createdAt" } },
+                                revenue: { $sum: "$shopOrders.subTotal" },
+                                orders: { $sum: 1 }
+                            }
+                        },
+                        { $sort: { _id: 1 } },
+                        { $limit: 30 }
+                    ],
+                    statusChart: [
+                        {
+                            $group: {
+                                _id: "$shopOrders.status",
+                                count: { $sum: 1 }
+                            }
+                        }
+                    ],
+                    topItems: [
+                        { $unwind: "$shopOrders.shopOrderItems" },
+                        {
+                            $group: {
+                                _id: "$shopOrders.shopOrderItems.item",
+                                name: { $first: "$shopOrders.shopOrderItems.name" },
+                                soldCount: { $sum: "$shopOrders.shopOrderItems.quantity" },
+                                revenue: { $sum: { $multiply: ["$shopOrders.shopOrderItems.price", "$shopOrders.shopOrderItems.quantity"] } }
+                            }
+                        },
+                        { $sort: { soldCount: -1 } },
+                        { $limit: 5 },
+                        {
+                            $lookup: {
+                                from: "items",
+                                localField: "_id",
+                                foreignField: "_id",
+                                as: "itemDetails"
+                            }
+                        },
+                        { $unwind: { path: "$itemDetails", preserveNullAndEmptyArrays: true } },
+                        {
+                            $project: {
+                                name: 1,
+                                soldCount: 1,
+                                revenue: 1,
+                                image: "$itemDetails.image"
+                            }
+                        }
+                    ]
+                }
+            }
+        ]);
+
+        const result = stats[0];
+        const overallStats = result.overall[0] || { totalOrders: 0, cancelledOrders: 0, successfulOrders: 0, totalRevenue: 0 };
+
+        return res.status(200).json({
+            overallStats,
+            revenueChart: result.revenueChart,
+            statusChart: result.statusChart,
+            topItems: result.topItems
+        });
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: `Lấy thống kê thất bại. Lỗi: ${error.message}` });
     }
 }

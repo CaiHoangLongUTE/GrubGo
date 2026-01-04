@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { serverUrl } from '../App';
 import toast from 'react-hot-toast';
-import { FaPlus, FaPen, FaTrashAlt, FaSpinner } from 'react-icons/fa';
+import { FaPlus, FaPen, FaTrashAlt, FaSpinner, FaExclamationTriangle } from 'react-icons/fa';
 
 const AdminCategories = () => {
     const [categories, setCategories] = useState([]);
@@ -13,6 +13,8 @@ const AdminCategories = () => {
     const [formData, setFormData] = useState({ name: '', image: null });
     const [submitting, setSubmitting] = useState(false);
     const [imagePreview, setImagePreview] = useState(null);
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
+    const [deleteId, setDeleteId] = useState(null);
 
     useEffect(() => {
         fetchCategories();
@@ -62,15 +64,22 @@ const AdminCategories = () => {
         }
     };
 
-    const handleDelete = async (id) => {
-        if (!window.confirm('Bạn có chắc chắn muốn xóa category này?')) return;
+    const handleDelete = (id) => {
+        setDeleteId(id);
+        setShowConfirmModal(true);
+    };
 
+    const confirmDelete = async () => {
+        if (!deleteId) return;
         try {
-            await axios.delete(`${serverUrl}/api/category/delete/${id}`, { withCredentials: true });
+            await axios.delete(`${serverUrl}/api/category/delete/${deleteId}`, { withCredentials: true });
             toast.success("Xóa category thành công");
             fetchCategories();
         } catch (error) {
             toast.error(error.response?.data?.message || "Xóa thất bại");
+        } finally {
+            setShowConfirmModal(false);
+            setDeleteId(null);
         }
     };
 
@@ -158,11 +167,11 @@ const AdminCategories = () => {
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
                     <div className="bg-white rounded-2xl p-8 w-full max-w-md shadow-2xl">
                         <h2 className="text-2xl font-bold mb-6 text-gray-800">
-                            {editMode ? 'Cập nhật Category' : 'Tạo Category Mới'}
+                            {editMode ? 'Cập nhật danh mục' : 'Tạo danh mục mới'}
                         </h2>
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Tên Category</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Tên danh mục</label>
                                 <input
                                     type="text"
                                     value={formData.name}
@@ -227,6 +236,35 @@ const AdminCategories = () => {
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Confirmation Modal */}
+            {showConfirmModal && (
+                <div className="fixed inset-0 bg-black/50 z-[60] flex items-center justify-center p-4">
+                    <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl animate-fade-in-up">
+                        <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-orange-100 mb-4">
+                            <FaExclamationTriangle className="w-6 h-6 text-[#ff4d2d]" />
+                        </div>
+                        <h3 className="text-lg font-bold text-gray-900 mb-2 text-center">Xác nhận xóa</h3>
+                        <p className="text-gray-600 mb-6 text-center">
+                            Bạn có chắc chắn muốn xóa danh mục này? Hành động này không thể hoàn tác.
+                        </p>
+                        <div className="flex justify-center gap-3">
+                            <button
+                                onClick={() => setShowConfirmModal(false)}
+                                className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg font-medium transition-colors"
+                            >
+                                Hủy
+                            </button>
+                            <button
+                                onClick={confirmDelete}
+                                className="px-4 py-2 bg-[#ff4d2d] text-white rounded-lg font-bold hover:bg-[#e63c1d] shadow-lg transition-all"
+                            >
+                                Xóa ngay
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
